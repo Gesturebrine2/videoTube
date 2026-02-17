@@ -1,0 +1,317 @@
+name: Update Video Gallery
+
+on:
+  # Webhook trigger from Bunny.net
+  repository_dispatch:
+    types: [bunny-video-uploaded]
+  
+  # Manual trigger for adding videos
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'add'
+        type: choice
+        options:
+          - add
+          - remove
+          - list
+      video_id:
+        description: 'Video ID (from Bunny.net)'
+        required: false
+        type: string
+      video_title:
+        description: 'Video Title'
+        required: false
+        type: string
+      video_duration:
+        description: 'Video Duration (e.g., 5:30)'
+        required: false
+        type: string
+      library_id:
+        description: 'Bunny.net Library ID'
+        required: false
+        type: string
+      cdn_hostname:
+        description: 'Bunny.net CDN Hostname'
+        required: false
+        type: string
+
+jobs:
+  update-videos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Process webhook event
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          cat > process-webhook.js << 'EOF'
+          const fs = require('fs');
+          
+          const eventData = process.env.WEBHOOK_DATA ? JSON.parse(process.env.WEBHOOK_DATA) : null;
+          
+          if (!eventData) {
+            console.log('No webhook data received');
+            process.exit(0);
+          }
+          
+          console.log('Received webhook data:', JSON.stringify(eventData, null, 2));
+          
+          // Read existing videos
+          let videos = [];
+          if (fs.existsSync('videos.json')) {
+            try {
+              videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
+              if (!Array.isArray(videos)) videos = [];
+            } catch (e) {
+              console.error('Error reading videos.json:', e.message);
+              videos = [];
+            }
+          }
+          
+          // Extract video data from Bunny.net webhook
+          const videoId = eventData.VideoGuid || eventData.videoId;
+          const libraryId = eventData.LibraryId || process.env.BUNNY_LIBRARY_ID;
+          const cdnHost = process.env.BUNNY_CDN_HOST;
+          
+          if (!videoId) {
+            console.log('No video ID found in webhook data');
+            process.exit(0);
+          }
+          
+          if (!libraryId) {
+            console.error('No Library ID available. Set BUNNY_LIBRARY_ID secret.');
+            process.exit(1);
+          }
+          
+          // Check if video already exists
+          const existingIndex = videos.findIndex(v => v.id === videoId);
+          
+          // Format duration from seconds to MM:SS
+          function formatDuration(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+          }
+          
+          const newVideo = {
+            id: videoId,
+            title: eventData.Title || `Video ${videoId}`,
+            embedUrl: `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`,
+            thumbnail: cdnHost ? `https://${cdnHost}/${videoId}/thumbnail.jpg` : '',
+            duration: formatDuration(eventData.Length),
+            uploadDate: new Date().toISOString().split('T')[0]
+          };
+          
+          if (existingIndex >= 0) {
+            videos[existingIndex] = { ...videos[existingIndex], ...newVideo };
+            console.log(`Updated video: ${newVideo.title}`);
+          } else {
+            videos.unshift(newVideo);
+            console.log(`Added new video: ${newVideo.title}`);
+          }
+          
+          fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
+          console.log('videos.json updated successfully');
+          EOF
+          
+          node process-webhook.js
+        env:
+          WEBHOOK_DATA: ${{ toJson(github.event.client_payload) }}
+          BUNNY_LIBRARY_ID: ${{ secrets.BUNNY_LIBRARY_ID }}
+          BUNNY_CDN_HOST: ${{ secrets.BUNNY_CDN_HOST }}
+      
+      - name: Manual add video
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'add'
+        run: |
+          cat > manual-add.js << 'EOF'
+          const fs = require('fs');
+          
+          const videoId = process.env.VIDEO_ID?.trim();
+          const videoTitle = process.env.VIDEO_TITLE?.trim();
+          const videoDuration = process.env.VIDEO_DURATION?.trim() || '0:00';
+          const libraryId = process.env.LIBRARY_ID?.trim() || process.env.DEFAULT_LIBRARY_ID;
+          const cdnHostname = process.env.CDN_HOSTNAME?.trim() || process.env.DEFAULT_CDN_HOST;
+          
+          if (!videoId || !videoTitle) {
+            console.error('❌ Video ID and Title are required');
+            console.error('Usage: Provide video_id and video_title inputs');
+            process.exit(1);
+          }
+          
+          if (!libraryId) {
+            console.error('❌ Library ID is required. Provide it as input or set BUNNY_LIBRARY_ID secret.');
+            process.exit(1);
+          }
+          
+          let videos = [];
+          if (fs.existsSync('videos.json')) {
+            try {
+              videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
+              if (!Array.isArray(videos)) videos = [];
+            } catch (e) {
+              console.error('Error reading videos.json:', e.message);
+              videos = [];
+            }
+          }
+          
+          // Check if video already exists
+          if (videos.find(v => v.id === videoId)) {
+            console.error(`❌ Video with ID "${videoId}" already exists`);
+            console.error('Use "remove" action first if you want to replace it');
+            process.exit(1);
+          }
+          
+          const newVideo = {
+            id: videoId,
+            title: videoTitle,
+            embedUrl: `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`,
+            thumbnail: cdnHostname ? `https://${cdnHostname}/${videoId}/thumbnail.jpg` : '',
+            duration: videoDuration,
+            uploadDate: new Date().toISOString().split('T')[0]
+          };
+          
+          videos.unshift(newVideo);
+          
+          fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
+          
+          console.log('✅ Video added successfully!');
+          console.log(`Title: ${videoTitle}`);
+          console.log(`ID: ${videoId}`);
+          console.log(`Embed URL: ${newVideo.embedUrl}`);
+          console.log(`Thumbnail: ${newVideo.thumbnail || '(not set)'}`);
+          console.log(`Duration: ${videoDuration}`);
+          EOF
+          
+          node manual-add.js
+        env:
+          VIDEO_ID: ${{ github.event.inputs.video_id }}
+          VIDEO_TITLE: ${{ github.event.inputs.video_title }}
+          VIDEO_DURATION: ${{ github.event.inputs.video_duration }}
+          LIBRARY_ID: ${{ github.event.inputs.library_id }}
+          CDN_HOSTNAME: ${{ github.event.inputs.cdn_hostname }}
+          DEFAULT_LIBRARY_ID: ${{ secrets.BUNNY_LIBRARY_ID }}
+          DEFAULT_CDN_HOST: ${{ secrets.BUNNY_CDN_HOST }}
+      
+      - name: Manual remove video
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'remove'
+        run: |
+          cat > manual-remove.js << 'EOF'
+          const fs = require('fs');
+          
+          const videoId = process.env.VIDEO_ID?.trim();
+          
+          if (!videoId) {
+            console.error('❌ Video ID is required');
+            console.error('Usage: Provide video_id input');
+            process.exit(1);
+          }
+          
+          let videos = [];
+          if (fs.existsSync('videos.json')) {
+            try {
+              videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
+              if (!Array.isArray(videos)) videos = [];
+            } catch (e) {
+              console.error('Error reading videos.json:', e.message);
+              process.exit(1);
+            }
+          }
+          
+          const initialLength = videos.length;
+          const removedVideo = videos.find(v => v.id === videoId);
+          videos = videos.filter(v => v.id !== videoId);
+          
+          if (videos.length === initialLength) {
+            console.error(`❌ Video with ID "${videoId}" not found`);
+            console.error('Available videos:');
+            videos.forEach(v => console.error(`  - ${v.id}: ${v.title}`));
+            process.exit(1);
+          }
+          
+          fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
+          console.log('✅ Video removed successfully!');
+          console.log(`Removed: ${removedVideo?.title || videoId}`);
+          console.log(`Remaining videos: ${videos.length}`);
+          EOF
+          
+          node manual-remove.js
+        env:
+          VIDEO_ID: ${{ github.event.inputs.video_id }}
+      
+      - name: List videos
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'list'
+        run: |
+          cat > list-videos.js << 'EOF'
+          const fs = require('fs');
+          
+          let videos = [];
+          if (fs.existsSync('videos.json')) {
+            try {
+              videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
+              if (!Array.isArray(videos)) videos = [];
+            } catch (e) {
+              console.error('Error reading videos.json:', e.message);
+              videos = [];
+            }
+          }
+          
+          console.log('\n' + '═'.repeat(80));
+          console.log(`📹 VIDEO GALLERY - ${videos.length} video(s)`);
+          console.log('═'.repeat(80));
+          
+          if (videos.length === 0) {
+            console.log('\nNo videos found. Add videos using the "add" action.');
+          } else {
+            videos.forEach((video, index) => {
+              console.log(`\n${index + 1}. ${video.title}`);
+              console.log(`   ID: ${video.id}`);
+              console.log(`   Duration: ${video.duration || '--:--'}`);
+              console.log(`   Upload Date: ${video.uploadDate || 'Unknown'}`);
+              console.log(`   Embed URL: ${video.embedUrl || '(not set)'}`);
+              console.log(`   Thumbnail: ${video.thumbnail || '(not set)'}`);
+            });
+          }
+          
+          console.log('\n' + '═'.repeat(80));
+          console.log('💡 Tip: Use "add" action to add new videos');
+          console.log('💡 Tip: Use "remove" action with video_id to delete');
+          console.log('═'.repeat(80) + '\n');
+          EOF
+          
+          node list-videos.js
+      
+      - name: Commit and push changes
+        if: |
+          (github.event_name == 'repository_dispatch') || 
+          (github.event_name == 'workflow_dispatch' && github.event.inputs.action != 'list')
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git add videos.json
+          
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            git commit -m "🎬 Auto-update: Add new video from Bunny.net"
+          else
+            git commit -m "🎬 Manual update: ${{ github.event.inputs.action }} video"
+          fi
+          
+          git push
