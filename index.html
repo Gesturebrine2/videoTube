@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery</title>
+    <meta name="description" content="Watch our collection of videos">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-card-hover: #222230;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --border: #2a2a3a;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-hover) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: var(--text-secondary);
+        }
+
+        /* Error State */
+        .error {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .error h2 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .error button {
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .error button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Video Card - Now a link */
+        .video-card {
+            display: block;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .video-card:hover .play-button {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .video-card:hover .thumbnail img {
+            transform: scale(1.05);
+        }
+
+        /* Thumbnail */
+        .thumbnail {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        /* Play Button */
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 64px;
+            height: 64px;
+            background: rgba(99, 102, 241, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .play-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        /* Duration Badge */
+        .duration {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Video Info */
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .video-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Video Gallery</h1>
+        <p>Watch our latest videos</p>
+    </header>
+
+    <main class="container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading videos...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <h2>Failed to load videos</h2>
+            <p>Please check your connection and try again.</p>
+            <button onclick="loadVideos()">Retry</button>
+        </div>
+
+        <div id="videoGrid" class="video-grid" style="display: none;"></div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">🎬</div>
+            <h2>No videos yet</h2>
+            <p>Videos will appear here once they're uploaded.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Powered by Bunny.net</p>
+    </footer>
+
+    <script>
+        // Load videos on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+        });
+
+        // Fetch videos from JSON
+        async function loadVideos() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const gridEl = document.getElementById('videoGrid');
+            const emptyEl = document.getElementById('emptyState');
+
+            loadingEl.style.display = 'flex';
+            errorEl.style.display = 'none';
+            gridEl.style.display = 'none';
+            emptyEl.style.display = 'none';
+
+            try {
+                const response = await fetch('videos.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const videos = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (!Array.isArray(videos) || videos.length === 0) {
+                    emptyEl.style.display = 'block';
+                } else {
+                    renderVideos(videos);
+                    gridEl.style.display = 'grid';
+                }
+            } catch (err) {
+                console.error('Error loading videos:', err);
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Render video grid
+        function renderVideos(videos) {
+            const gridEl = document.getElementById('videoGrid');
+            gridEl.innerHTML = videos.map(video => {
+                const videoUrl = `video.html?id=${encodeURIComponent(video.id)}`;
+                return `
+                    <a href="${videoUrl}" class="video-card">
+                        <div class="thumbnail">
+                            <img src="${escapeHtml(video.thumbnail)}" alt="${escapeHtml(video.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22360%22%3E%3Crect width=%22640%22 height=%22360%22 fill=%22%231a1a24%22/%3E%3Ctext x=%22320%22 y=%22180%22 text-anchor=%22middle%22 fill=%22%236366f1%22 font-size=%2224%22%3EVideo%3C/text%3E%3C/svg%3E'">
+                            <div class="play-button"></div>
+                            <span class="duration">${escapeHtml(video.duration)}</span>
+                        </div>
+                        <div class="video-info">
+                            <h3 class="video-title">${escapeHtml(video.title)}</h3>
+                            <div class="video-meta">
+                                <span class="video-date">📅 ${formatDate(video.uploadDate)}</span>
+                                <span>▶ Watch</span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = Math.abs(now - date);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 0) return 'Today';
+                if (diffDays === 1) return 'Yesterday';
+                if (diffDays < 7) return `${diffDays} days ago`;
+                if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+                if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+                return `${Math.floor(diffDays / 365)} years ago`;
+            } catch (e) {
+                return dateString;
+            }
+        }
+    </script>
+</body>
+</html>
+>No videos yet</h2>
+            <p>Videos will appear here once they're uploaded.</p>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()" aria-label="Close"></button>
+            <div class="video-player">
+                <iframe id="videoIframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="modal-video-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDate"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">✓</div>
+        <span id="toastMessage">Link copied to clipboard!</span>
+    </div>
+
+    <script>
+        let videos = [];
+        let currentVideoId = null;
+
+        // Load videos on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            
+            // Check URL parameters for video ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            if (videoId) {
+                // Store for later when videos load
+                window.pendingVideoId = videoId;
+            }
+        });
+
+        // Fetch videos from JSON
+        async function loadVideos() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const gridEl = document.getElementById('videoGrid');
+            const emptyEl = document.getElementById('emptyState');
+
+            loadingEl.style.display = 'flex';
+            errorEl.style.display = 'none';
+            gridEl.style.display = 'none';
+            emptyEl.style.display = 'none';
+
+            try {
+                const response = await fetch('videos.json');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch videos');
+                }
+                videos = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (videos.length === 0) {
+                    emptyEl.style.display = 'block';
+                } else {
+                    renderVideos();
+                    gridEl.style.display = 'grid';
+                    
+                    // Check if there's a pending video to open
+                    if (window.pendingVideoId) {
+                        const video = videos.find(v => v.id === window.pendingVideoId);
+                        if (video) {
+                            openModal(video);
+                        }
+                        window.pendingVideoId = null;
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading videos:', err);
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Render video grid
+        function renderVideos() {
+            const gridEl = document.getElementById('videoGrid');
+            gridEl.innerHTML = videos.map(video => `
+                <div class="video-card" onclick="handleCardClick(event, '${video.id}')">
+                    <div class="thumbnail">
+                        <img src="${video.thumbnail}" alt="${video.title}" loading="lazy">
+                        <div class="play-button"></div>
+                        <span class="duration">${video.duration}</span>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${video.title}</h3>
+                        <div class="video-meta">
+                            <span class="video-date">📅 ${formatDate(video.uploadDate)}</span>
+                            <button class="share-btn" onclick="handleShare(event, '${video.id}')" title="Copy link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle card click (open modal)
+        function handleCardClick(event, videoId) {
+            // Don't open if clicking share button
+            if (event.target.closest('.share-btn')) return;
+            
+            const video = videos.find(v => v.id === videoId);
+            if (video) {
+                openModal(video);
+            }
+        }
+
+        // Open modal with video
+        function openModal(video) {
+            currentVideoId = video.id;
+            const modal = document.getElementById('modal');
+            const iframe = document.getElementById('videoIframe');
+            const title = document.getElementById('modalTitle');
+            const date = document.getElementById('modalDate');
+
+            iframe.src = video.embedUrl;
+            title.textContent = video.title;
+            date.textContent = `Uploaded on ${formatDate(video.uploadDate)}`;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Update URL without reloading
+            const newUrl = `${window.location.pathname}?v=${video.id}`;
+            history.pushState({ videoId: video.id }, '', newUrl);
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const iframe = document.getElementById('videoIframe');
+
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            iframe.src = '';
+            currentVideoId = null;
+
+            // Reset URL
+            history.pushState({}, '', window.location.pathname);
+        }
+
+        // Handle share button click
+        function handleShare(event, videoId) {
+            event.stopPropagation();
+            
+            const video = videos.find(v => v.id === videoId);
+            if (!video) return;
+
+            const shareUrl = `${window.location.origin}${window.location.pathname}?v=${videoId}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast('Link copied to clipboard!');
+                
+                // Visual feedback on button
+                const btn = event.currentTarget;
+                const originalText = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Copied!
+                `;
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showToast('Failed to copy link');
+            });
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+            return `${Math.floor(diffDays / 365)} years ago`;
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('modal').classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModal();
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (e) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('v');
+            
+            if (videoId) {
+                const video = videos.find(v => v.id === videoId);
+                if (video && !document.getElementById('modal').classList.contains('active')) {
+                    openModal(video);
+                }
+            } else {
+                if (document.getElementById('modal').classList.contains('active')) {
+                    closeModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
