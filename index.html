@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Gallery</title>
-    <meta name="description" content="Watch our collection of videos">
+    <title>Xplitleaks</title>
+    <meta name="description" content="Discover exclusive leaked videos and content on Xplitleaks">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://xplitleaks.qzz.io/">
+    <meta property="og:title" content="Xplitleaks">
+    <meta property="og:description" content="Discover exclusive leaked videos and content">
+    <meta property="og:image" content="https://xplitleaks.qzz.io/og-image.jpg">
+    <meta property="og:site_name" content="Xplitleaks">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://xplitleaks.qzz.io/">
+    <meta name="twitter:title" content="Xplitleaks">
+    <meta name="twitter:description" content="Discover exclusive leaked videos and content">
+    <meta name="twitter:image" content="https://xplitleaks.qzz.io/og-image.jpg">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +52,6 @@
             line-height: 1.6;
         }
 
-        /* Header */
         .header {
             padding: 2rem 1.5rem;
             text-align: center;
@@ -44,13 +59,14 @@
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #fff 0%, var(--accent-hover) 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -1px;
         }
 
         .header p {
@@ -58,14 +74,12 @@
             font-size: 1rem;
         }
 
-        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
         }
 
-        /* Loading State */
         .loading {
             display: flex;
             flex-direction: column;
@@ -88,11 +102,6 @@
             to { transform: rotate(360deg); }
         }
 
-        .loading p {
-            color: var(--text-secondary);
-        }
-
-        /* Error State */
         .error {
             text-align: center;
             padding: 4rem 2rem;
@@ -126,7 +135,6 @@
             background: var(--accent-hover);
         }
 
-        /* Video Grid */
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -140,7 +148,6 @@
             }
         }
 
-        /* Video Card - Now a link */
         .video-card {
             display: block;
             background: var(--bg-card);
@@ -169,7 +176,6 @@
             transform: scale(1.05);
         }
 
-        /* Thumbnail */
         .thumbnail {
             position: relative;
             aspect-ratio: 16 / 9;
@@ -184,7 +190,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Play Button */
         .play-button {
             position: absolute;
             top: 50%;
@@ -192,14 +197,14 @@
             transform: translate(-50%, -50%) scale(0.9);
             width: 64px;
             height: 64px;
-            background: rgba(99, 102, 241, 0.95);
+            background: rgba(255, 107, 107, 0.95);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0.9;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.4);
         }
 
         .play-button::after {
@@ -212,7 +217,6 @@
             margin-left: 4px;
         }
 
-        /* Duration Badge */
         .duration {
             position: absolute;
             bottom: 12px;
@@ -225,7 +229,6 @@
             font-weight: 600;
         }
 
-        /* Video Info */
         .video-info {
             padding: 1rem;
         }
@@ -256,7 +259,6 @@
             gap: 0.5rem;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -269,7 +271,6 @@
             opacity: 0.5;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 3rem 1.5rem;
@@ -282,8 +283,8 @@
 </head>
 <body>
     <header class="header">
-        <h1>Video Gallery</h1>
-        <p>Watch our latest videos</p>
+        <h1>Xplitleaks</h1>
+        <p>Exclusive content, leaked daily</p>
     </header>
 
     <main class="container">
@@ -309,16 +310,15 @@
     </main>
 
     <footer class="footer">
-        <p>Powered by Bunny.net</p>
+        <p>© 2024 Xplitleaks • Content provided by community contributors</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.6;">18+ Only • All content is user-submitted</p>
     </footer>
 
     <script>
-        // Load videos on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadVideos();
         });
 
-        // Fetch videos from JSON
         async function loadVideos() {
             const loadingEl = document.getElementById('loading');
             const errorEl = document.getElementById('error');
@@ -331,7 +331,7 @@
             emptyEl.style.display = 'none';
 
             try {
-                const response = await fetch('videos.json?v=' + Date.now());
+                const response = await fetch('./videos.json?v=' + Date.now());
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -352,7 +352,6 @@
             }
         }
 
-        // Render video grid
         function renderVideos(videos) {
             const gridEl = document.getElementById('videoGrid');
             gridEl.innerHTML = videos.map(video => {
@@ -360,7 +359,7 @@
                 return `
                     <a href="${videoUrl}" class="video-card">
                         <div class="thumbnail">
-                            <img src="${escapeHtml(video.thumbnail)}" alt="${escapeHtml(video.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22360%22%3E%3Crect width=%22640%22 height=%22360%22 fill=%22%231a1a24%22/%3E%3Ctext x=%22320%22 y=%22180%22 text-anchor=%22middle%22 fill=%22%236366f1%22 font-size=%2224%22%3EVideo%3C/text%3E%3C/svg%3E'">
+                            <img src="${escapeHtml(video.thumbnail)}" alt="${escapeHtml(video.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22360%22%3E%3Crect width=%22640%22 height=%22360%22 fill=%22%231a1a24%22/%3E%3Ctext x=%22320%22 y=%22180%22 text-anchor=%22middle%22 fill=%22%23ff6b6b%22 font-size=%2224%22%3EXplitleaks%3C/text%3E%3C/svg%3E'">
                             <div class="play-button"></div>
                             <span class="duration">${escapeHtml(video.duration)}</span>
                         </div>
@@ -376,7 +375,6 @@
             }).join('');
         }
 
-        // Escape HTML to prevent XSS
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -384,7 +382,6 @@
             return div.innerHTML;
         }
 
-        // Format date
         function formatDate(dateString) {
             if (!dateString) return 'Unknown';
             try {
