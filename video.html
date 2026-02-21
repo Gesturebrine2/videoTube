@@ -4,25 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xplitleaks</title>
-    <meta name="description" content="Watch exclusive leaked content on Xplitleaks">
+    <meta name="description" content="Watch exclusive content on Xplitleaks">
     
-    <!-- Open Graph / Social Media Meta Tags (Dynamic - Updated by JavaScript) -->
     <meta property="og:type" content="video.other">
     <meta property="og:url" content="https://xplitleaks.qzz.io/video.html">
     <meta property="og:title" content="Xplitleaks">
-    <meta property="og:description" content="Watch exclusive leaked content">
+    <meta property="og:description" content="Watch exclusive content">
     <meta property="og:image" content="">
     <meta property="og:site_name" content="Xplitleaks">
     
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Xplitleaks">
-    <meta name="twitter:description" content="Watch exclusive leaked content">
+    <meta name="twitter:description" content="Watch exclusive content">
     <meta name="twitter:image" content="">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -30,157 +26,76 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a24;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --accent: #ff6b6b;
-            --accent-hover: #feca57;
-            --border: #2a2a3a;
-            --shadow: rgba(0, 0, 0, 0.5);
-        }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background: #0a0a0f;
+            color: #fff;
             min-height: 100vh;
-            line-height: 1.6;
         }
 
+        /* Header */
         .header {
             padding: 1rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            border-bottom: 1px solid #1a1a24;
         }
 
         .back-btn {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s;
-            padding: 0.5rem;
-            border-radius: 8px;
         }
 
         .back-btn:hover {
-            color: var(--text-primary);
-            background: var(--bg-card);
-        }
-
-        .back-btn svg {
-            width: 20px;
-            height: 20px;
+            color: #fff;
         }
 
         .logo {
-            font-weight: 800;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
             background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .share-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--accent);
-            color: white;
-            border: none;
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
             padding: 0.5rem 1rem;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.875rem;
-            font-weight: 500;
-            transition: background 0.2s;
         }
 
         .share-btn:hover {
-            background: #ff5252;
+            border-color: #ff6b6b;
+            color: #ff6b6b;
         }
 
-        .share-btn.copied {
-            background: #10b981;
-        }
-
-        .share-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
+        /* Main */
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 400px;
-            gap: 1rem;
-        }
-
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-secondary);
-        }
-
-        .error a {
-            display: inline-block;
-            margin-top: 1.5rem;
-            padding: 0.75rem 2rem;
-            background: var(--accent);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            background: var(--bg-secondary);
-            border-radius: 16px;
+        /* Video Player */
+        .player-wrapper {
+            background: #000;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px var(--shadow);
+            margin-bottom: 1rem;
         }
 
         .video-player {
             position: relative;
             aspect-ratio: 16 / 9;
-            background: #000;
         }
 
         .video-player iframe {
@@ -192,99 +107,117 @@
             border: none;
         }
 
-        .video-placeholder {
+        /* Loading state */
+        .player-placeholder {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
-            color: var(--text-secondary);
+            background: #12121a;
+            color: #666;
         }
 
+        /* Video Info */
         .video-info {
-            padding: 1.5rem;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
+            padding: 1rem 0;
         }
 
         .video-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
         }
 
         .video-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--text-secondary);
+            color: #666;
             font-size: 0.875rem;
+            display: flex;
+            gap: 1rem;
         }
 
-        .related-section {
+        /* Related Videos */
+        .related {
             margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #1a1a24;
         }
 
-        .related-title {
-            font-size: 1.25rem;
+        .related h2 {
+            font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1rem;
+            color: #888;
         }
 
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
         }
 
         .related-card {
-            display: flex;
-            gap: 1rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
             text-decoration: none;
             color: inherit;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-        }
-
-        .related-card:hover {
-            border-color: var(--accent);
         }
 
         .related-thumb {
-            width: 120px;
-            height: 68px;
+            aspect-ratio: 16 / 9;
+            background: #1a1a24;
             border-radius: 8px;
             overflow: hidden;
-            flex-shrink: 0;
+            margin-bottom: 0.5rem;
         }
 
         .related-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
+        .related-title {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .related-meta {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--bg-card);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            z-index: 2000;
+            background: #1a1a24;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            pointer-events: none;
         }
 
         .toast.show {
@@ -292,81 +225,59 @@
             opacity: 1;
         }
 
-        .footer {
+        /* Loading/Error */
+        .loading, .error {
             text-align: center;
-            padding: 3rem 1.5rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border);
-            margin-top: 3rem;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .error a {
+            color: #ff6b6b;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="header-left">
-            <a href="index.html" class="back-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                <span>Back</span>
-            </a>
-            <span class="logo">Xplitleaks</span>
-        </div>
-        <button class="share-btn" id="shareBtn" onclick="shareVideo()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            <span id="shareText">Share</span>
-        </button>
+        <a href="index.html" class="back-btn">← Back</a>
+        <span class="logo">Xplitleaks</span>
+        <button class="share-btn" onclick="shareVideo()">Share</button>
     </header>
 
     <main class="container">
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading video...</p>
-        </div>
-
+        <div id="loading" class="loading">Loading...</div>
+        
         <div id="error" class="error" style="display: none;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">😕</div>
-            <h2>Video not found</h2>
-            <p>This video doesn't exist or has been removed.</p>
-            <a href="index.html">Back to Xplitleaks</a>
+            <p>Video not found</p>
+            <a href="index.html">Back to home</a>
         </div>
 
-        <div id="videoContent" style="display: none;">
-            <div class="video-wrapper">
+        <div id="content" style="display: none;">
+            <div class="player-wrapper">
                 <div class="video-player">
-                    <div id="bunnyEmbed" class="video-placeholder">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">▶️</div>
-                        <div style="font-size: 1.25rem;">Loading Player...</div>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h1 class="video-title" id="videoTitle">Loading...</h1>
-                    <div class="video-meta">
-                        <span id="videoDuration">⏱ --:--</span>
-                        <span id="videoDate">📅 --</span>
+                    <div id="playerContainer" class="player-placeholder">
+                        Loading player...
                     </div>
                 </div>
             </div>
 
-            <div class="related-section" id="relatedSection" style="display: none;">
-                <h2 class="related-title">More Videos</h2>
+            <div class="video-info">
+                <h1 class="video-title" id="videoTitle">...</h1>
+                <div class="video-meta">
+                    <span id="videoDuration">--:--</span>
+                    <span id="videoDate">--</span>
+                </div>
+            </div>
+
+            <div class="related" id="relatedSection" style="display: none;">
+                <h2>More Videos</h2>
                 <div class="related-grid" id="relatedGrid"></div>
             </div>
         </div>
     </main>
 
-    <footer class="footer">
-        <p>© 2026 Xplitleaks • Content provided by community contributors</p>
-        <p style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.6;">18+ Only • All content is user-submitted•For content removal reach out to admin on telegram</p>
-    </footer>
-
-    <div id="toast" class="toast">
-        <span id="toastMessage">Link copied!</span>
-    </div>
+    <div id="toast" class="toast">Link copied!</div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -393,29 +304,33 @@
                     return;
                 }
 
-                updatePageContent();
-                loadBunnyEmbed();
-                showRelatedVideos();
-                updateMetaTags();
+                renderVideo();
+                loadPlayer();
+                renderRelated();
 
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('videoContent').style.display = 'block';
+                document.getElementById('content').style.display = 'block';
 
             } catch (err) {
-                console.error('Error:', err);
+                console.error(err);
                 showError();
             }
         }
 
-        function updatePageContent() {
+        function renderVideo() {
             document.getElementById('videoTitle').textContent = currentVideo.title;
-            document.getElementById('videoDuration').textContent = `⏱ ${currentVideo.duration || '--:--'}`;
-            document.getElementById('videoDate').textContent = `📅 ${formatDate(currentVideo.uploadDate)}`;
-            document.title = `${currentVideo.title} - Xplitleaks`;
+            document.getElementById('videoDuration').textContent = currentVideo.duration || '--:--';
+            document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
+            document.title = currentVideo.title + ' - Xplitleaks';
+            
+            // Update meta tags
+            document.querySelector('meta[property="og:title"]').content = currentVideo.title;
+            document.querySelector('meta[property="og:description"]').content = 'Watch ' + currentVideo.title;
+            document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
         }
 
-        function loadBunnyEmbed() {
-            const embedContainer = document.getElementById('bunnyEmbed');
+        function loadPlayer() {
+            const container = document.getElementById('playerContainer');
             let libraryId = '';
             
             if (currentVideo.embedUrl) {
@@ -424,50 +339,36 @@
             }
 
             if (libraryId && currentVideo.id) {
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://iframe.mediadelivery.net/embed/${libraryId}/${currentVideo.id}`;
-                iframe.allow = 'accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;';
-                iframe.allowFullscreen = true;
-                iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
-                
-                embedContainer.innerHTML = '';
-                embedContainer.className = '';
-                embedContainer.appendChild(iframe);
+                container.innerHTML = `<iframe src="https://iframe.mediadelivery.net/embed/${libraryId}/${currentVideo.id}" 
+                    allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" 
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+                </iframe>`;
+                container.className = '';
             }
         }
 
-        function showRelatedVideos() {
-            const related = allVideos.filter(v => v.id !== videoId).slice(0, 4);
+        function renderRelated() {
+            const related = allVideos.filter(v => v.id !== videoId).slice(0, 6);
             if (related.length === 0) return;
 
             document.getElementById('relatedSection').style.display = 'block';
-            document.getElementById('relatedGrid').innerHTML = related.map(video => `
-                <a href="video.html?id=${encodeURIComponent(video.id)}" class="related-card">
+            document.getElementById('relatedGrid').innerHTML = related.map(v => `
+                <a href="video.html?id=${encodeURIComponent(v.id)}" class="related-card">
                     <div class="related-thumb">
-                        <img src="${video.thumbnail}" loading="lazy" onerror="this.style.display='none'">
+                        <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
                     </div>
-                    <div>
-                        <h4 style="font-size: 0.875rem; margin-bottom: 0.25rem;">${video.title}</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary);">${video.duration || '--:--'}</p>
-                    </div>
+                    <div class="related-title">${escapeHtml(v.title)}</div>
+                    <div class="related-meta">${v.duration || '--:--'}</div>
                 </a>
             `).join('');
         }
 
-        function updateMetaTags() {
-            const ogTags = {
-                'og:title': currentVideo.title + ' - Xplitleaks',
-                'og:description': `Watch ${currentVideo.title} on Xplitleaks`,
-                'og:url': window.location.href,
-                'og:image': currentVideo.thumbnail || '',
-                'twitter:title': currentVideo.title + ' - Xplitleaks',
-                'twitter:description': `Watch ${currentVideo.title} on Xplitleaks`,
-                'twitter:image': currentVideo.thumbnail || ''
-            };
-
-            Object.entries(ogTags).forEach(([property, content]) => {
-                let el = document.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
-                if (el) el.content = content;
+        function shareVideo() {
+            if (!currentVideo) return;
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
             });
         }
 
@@ -476,27 +377,23 @@
             document.getElementById('error').style.display = 'block';
         }
 
-        function shareVideo() {
-            if (!currentVideo) return;
-            
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            });
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function formatDate(dateString) {
-            if (!dateString) return 'Unknown';
+            if (!dateString) return '';
             const date = new Date(dateString);
             const now = new Date();
-            const diffDays = Math.floor(Math.abs(now - date) / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) return 'Today';
-            if (diffDays === 1) return 'Yesterday';
-            if (diffDays < 7) return `${diffDays} days ago`;
-            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-            return `${Math.floor(diffDays / 30)} months ago`;
+            const days = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return days + 'd ago';
+            if (days < 30) return Math.floor(days/7) + 'w ago';
+            return Math.floor(days/30) + 'mo ago';
         }
     </script>
 </body>
