@@ -1,0 +1,100 @@
+name: Add Storage Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_filename:
+        description: 'Video filename (e.g., video1.mp4)'
+        required: true
+      video_title:
+        description: 'Video Title'
+        required: true
+      video_duration:
+        description: 'Duration (e.g., 5:30)'
+        required: true
+      thumbnail_filename:
+        description: 'Thumbnail filename (optional, e.g., thumb1.jpg)'
+        required: false
+
+jobs:
+  add-video:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Add video to JSON
+        run: |
+          cat > add-video.js << 'EOF'
+          const fs = require('fs');
+          
+          const filename = process.env.VIDEO_FILENAME.trim();
+          const title = process.env.VIDEO_TITLE.trim();
+          const duration = process.env.VIDEO_DURATION.trim();
+          const thumbFilename = process.env.THUMB_FILENAME?.trim() || '';
+          const cdnHost = process.env.CDN_HOST.trim();
+          
+          // Create video ID from filename (remove extension)
+          const videoId = filename.replace(/\.[^/.]+$/, "");
+          
+          // Build URLs
+          const videoUrl = `https://${cdnHost}/${filename}`;
+          
+          // Thumbnail: use provided one, or default to video filename + .jpg
+          const thumbnailUrl = thumbFilename 
+            ? `https://${cdnHost}/${thumbFilename}`
+            : `https://${cdnHost}/${videoId}.jpg`;
+          
+          let videos = [];
+          if (fs.existsSync('videos.json')) {
+            try {
+              videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
+              if (!Array.isArray(videos)) videos = [];
+            } catch (e) {
+              videos = [];
+            }
+          }
+          
+          // Check for duplicates
+          if (videos.find(v => v.id === videoId)) {
+            console.error('❌ Video already exists!');
+            process.exit(1);
+          }
+          
+          const newVideo = {
+            id: videoId,
+            title: title,
+            videoUrl: videoUrl,
+            thumbnail: thumbnailUrl,
+            duration: duration,
+            uploadDate: new Date().toISOString().split('T')[0],
+            type: 'storage'
+          };
+          
+          videos.unshift(newVideo);
+          fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
+          
+          console.log('✅ Storage video added!');
+          console.log('ID:', videoId);
+          console.log('Video URL:', videoUrl);
+          console.log('Thumbnail:', thumbnailUrl);
+          EOF
+          
+          node add-video.js
+        env:
+          VIDEO_FILENAME: ${{ github.event.inputs.video_filename }}
+          VIDEO_TITLE: ${{ github.event.inputs.video_title }}
+          VIDEO_DURATION: ${{ github.event.inputs.video_duration }}
+          THUMB_FILENAME: ${{ github.event.inputs.thumbnail_filename }}
+          CDN_HOST: ${{ secrets.BUNNY_STORAGE_HOST }}
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add videos.json
+          git commit -m "Add storage video: ${{ github.event.inputs.video_title }}" || exit 0
+          git push
