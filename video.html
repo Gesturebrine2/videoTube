@@ -312,7 +312,7 @@
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
             
-            // Determine type and set badge
+            // Determine type
             const isStorage = isStorageVideo(currentVideo);
             document.getElementById('videoType').textContent = isStorage ? 'HD' : 'STREAM';
             
@@ -323,29 +323,47 @@
         }
 
         function isStorageVideo(video) {
-            // Storage videos have videoUrl (direct MP4) or type: 'storage'
-            // Stream videos have embedUrl with mediadelivery.net
-            if (video.videoUrl && !video.videoUrl.includes('mediadelivery')) {
-                return true;
-            }
+            // STORAGE video has:
+            // 1. type: "storage" field, OR
+            // 2. videoUrl that does NOT contain "mediadelivery.net", OR
+            // 3. No embedUrl at all (only videoUrl)
+            
+            // Check explicit type first
             if (video.type === 'storage') {
                 return true;
             }
-            // If it has embedUrl with mediadelivery, it's Stream
+            
+            // Check if has videoUrl and it's not a Bunny Stream URL
+            if (video.videoUrl) {
+                // If videoUrl contains mediadelivery, it's actually a Stream video
+                if (video.videoUrl.includes('mediadelivery')) {
+                    return false;
+                }
+                // Otherwise it's Storage (direct MP4 from CDN)
+                return true;
+            }
+            
+            // If has embedUrl with mediadelivery, it's Stream
             if (video.embedUrl && video.embedUrl.includes('mediadelivery')) {
                 return false;
             }
-            // Default to storage if videoUrl exists
-            return !!video.videoUrl;
+            
+            // Default: if no videoUrl but has embedUrl, it's Stream
+            return false;
         }
 
         function initPlayer() {
             const container = document.getElementById('playerContainer');
             const isStorage = isStorageVideo(currentVideo);
             
+            console.log('Video type:', isStorage ? 'STORAGE (Plyr)' : 'STREAM (Bunny iframe)');
+            console.log('videoUrl:', currentVideo.videoUrl);
+            console.log('embedUrl:', currentVideo.embedUrl);
+            
             if (isStorage) {
-                // STORAGE - Use Plyr with direct video URL
-                const videoUrl = currentVideo.videoUrl || currentVideo.embedUrl;
+                // STORAGE VIDEO - Use Plyr player
+                const videoUrl = currentVideo.videoUrl;
+                
                 container.innerHTML = `
                     <video id="plyrPlayer" playsinline controls>
                         <source src="${videoUrl}" type="video/mp4" />
@@ -362,10 +380,14 @@
                 });
                 
             } else {
-                // STREAM - Use Bunny iframe
+                // STREAM VIDEO - Use Bunny iframe
                 let libraryId = '';
-                const match = currentVideo.embedUrl.match(/\/embed\/([^/]+)\//);
-                if (match) libraryId = match[1];
+                
+                // Extract library ID from embedUrl
+                if (currentVideo.embedUrl) {
+                    const match = currentVideo.embedUrl.match(/\/embed\/([^/]+)\//);
+                    if (match) libraryId = match[1];
+                }
                 
                 if (libraryId) {
                     container.innerHTML = `
@@ -377,7 +399,7 @@
                         </iframe>
                     `;
                 } else {
-                    // Fallback - try to use embedUrl directly
+                    // Fallback - use embedUrl directly
                     container.innerHTML = `
                         <iframe 
                             src="${currentVideo.embedUrl}" 
