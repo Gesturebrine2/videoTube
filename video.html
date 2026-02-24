@@ -20,6 +20,8 @@
     
     <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <!-- HLS.js for Stream videos -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -210,9 +212,7 @@
 
         <div id="content" style="display: none;">
             <div class="player-wrapper">
-                <video id="player" playsinline controls>
-                    <source src="" type="video/mp4" />
-                </video>
+                <video id="player" playsinline controls></video>
             </div>
 
             <div class="video-info">
@@ -278,52 +278,67 @@
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
             
-            // Update meta tags
             document.querySelector('meta[property="og:title"]').content = currentVideo.title;
             document.querySelector('meta[property="og:description"]').content = 'Watch ' + currentVideo.title;
             document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
         }
 
         function initPlayer() {
-            // Get video URL - works for both Storage and Stream
+            const video = document.getElementById('player');
             let videoUrl = '';
-            
-            if (currentVideo.videoUrl) {
-                // Storage video
+            let isHLS = false;
+
+            // Check if Storage or Stream video
+            if (currentVideo.videoUrl && !currentVideo.videoUrl.includes('mediadelivery')) {
+                // STORAGE VIDEO - Direct MP4 URL
                 videoUrl = currentVideo.videoUrl;
-            } else if (currentVideo.embedUrl) {
-                // Stream video - need to convert to direct MP4 URL
-                // Extract library ID and video ID from embedUrl
+                isHLS = false;
+                console.log('Storage video:', videoUrl);
+            } else if (currentVideo.embedUrl && currentVideo.embedUrl.includes('mediadelivery')) {
+                // STREAM VIDEO - Need HLS URL
                 const match = currentVideo.embedUrl.match(/\/embed\/(\d+)\/([a-f0-9-]+)/);
                 if (match) {
                     const libraryId = match[1];
                     const vidId = match[2];
-                    // Bunny Stream direct URL format
-                    videoUrl = `https://iframe.mediadelivery.net/${libraryId}/${vidId}/master.mp4`;
-                } else {
-                    // Fallback - try to use as-is
-                    videoUrl = currentVideo.embedUrl;
+                    // Bunny Stream HLS URL
+                    videoUrl = `https://iframe.mediadelivery.net/${libraryId}/${vidId}/playlist.m3u8`;
+                    isHLS = true;
+                    console.log('Stream video (HLS):', videoUrl);
                 }
             }
-            
-            // Set video source
-            const videoElement = document.getElementById('player');
-            videoElement.querySelector('source').src = videoUrl;
-            
+
+            if (!videoUrl) {
+                console.error('No video URL found');
+                return;
+            }
+
             // Initialize Plyr
-            player = new Plyr('#player', {
+            player = new Plyr(video, {
                 title: currentVideo.title,
                 controls: [
                     'play-large', 'play', 'progress', 'current-time', 
                     'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
                 ],
-                settings: ['quality', 'speed', 'loop'],
-                quality: {
-                    default: 720,
-                    options: [1080, 720, 480, 360]
-                },
+                settings: ['quality', 'speed'],
                 ratio: '16:9'
             });
+
+            // Load video based on type
+            if (isHLS && Hls.isSupported()) {
+                // HLS for Stream videos
+                const hls = new Hls();
+                hls.loadSource(videoUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari)
+                video.src = videoUrl;
+            } else {
+                // Direct MP4 for Storage videos
+                video.src = videoUrl;
+            }
         }
 
         function renderRelated() {
