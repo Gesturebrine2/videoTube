@@ -82,23 +82,15 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 1rem;
-            position: relative;
-            aspect-ratio: 16 / 9;
-        }
-
-        .bunny-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
         }
 
         .plyr {
             --plyr-color-main: #ff6b6b;
             --plyr-video-background: #000;
-            height: 100%;
+        }
+
+        .plyr__video-wrapper {
+            aspect-ratio: 16 / 9;
         }
 
         .video-info {
@@ -109,20 +101,6 @@
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .video-type-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #1a1a24;
-            border-radius: 4px;
-            font-size: 0.625rem;
-            font-weight: 600;
-            color: #888;
         }
 
         .video-meta {
@@ -166,7 +144,6 @@
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 0.5rem;
-            position: relative;
         }
 
         .related-thumb img {
@@ -174,18 +151,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-        }
-
-        .related-type {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 1px 4px;
-            border-radius: 2px;
-            font-size: 0.5rem;
-            font-weight: 600;
         }
 
         .related-title {
@@ -244,13 +209,14 @@
         </div>
 
         <div id="content" style="display: none;">
-            <div class="player-wrapper" id="playerContainer"></div>
+            <div class="player-wrapper">
+                <video id="player" playsinline controls>
+                    <source src="" type="video/mp4" />
+                </video>
+            </div>
 
             <div class="video-info">
-                <h1 class="video-title" id="videoTitle">
-                    <span id="titleText">...</span>
-                    <span class="video-type-badge" id="videoType">--</span>
-                </h1>
+                <h1 class="video-title" id="videoTitle">...</h1>
                 <div class="video-meta">
                     <span id="videoDuration">--:--</span> • <span id="videoDate">--</span>
                 </div>
@@ -307,14 +273,10 @@
         }
 
         function renderVideo() {
-            document.getElementById('titleText').textContent = currentVideo.title;
+            document.getElementById('videoTitle').textContent = currentVideo.title;
             document.getElementById('videoDuration').textContent = currentVideo.duration || '--:--';
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
-            
-            // Determine type
-            const isStorage = isStorageVideo(currentVideo);
-            document.getElementById('videoType').textContent = isStorage ? 'HD' : 'STREAM';
             
             // Update meta tags
             document.querySelector('meta[property="og:title"]').content = currentVideo.title;
@@ -322,93 +284,46 @@
             document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
         }
 
-        function isStorageVideo(video) {
-            // STORAGE video has:
-            // 1. type: "storage" field, OR
-            // 2. videoUrl that does NOT contain "mediadelivery.net", OR
-            // 3. No embedUrl at all (only videoUrl)
-            
-            // Check explicit type first
-            if (video.type === 'storage') {
-                return true;
-            }
-            
-            // Check if has videoUrl and it's not a Bunny Stream URL
-            if (video.videoUrl) {
-                // If videoUrl contains mediadelivery, it's actually a Stream video
-                if (video.videoUrl.includes('mediadelivery')) {
-                    return false;
-                }
-                // Otherwise it's Storage (direct MP4 from CDN)
-                return true;
-            }
-            
-            // If has embedUrl with mediadelivery, it's Stream
-            if (video.embedUrl && video.embedUrl.includes('mediadelivery')) {
-                return false;
-            }
-            
-            // Default: if no videoUrl but has embedUrl, it's Stream
-            return false;
-        }
-
         function initPlayer() {
-            const container = document.getElementById('playerContainer');
-            const isStorage = isStorageVideo(currentVideo);
+            // Get video URL - works for both Storage and Stream
+            let videoUrl = '';
             
-            console.log('Video type:', isStorage ? 'STORAGE (Plyr)' : 'STREAM (Bunny iframe)');
-            console.log('videoUrl:', currentVideo.videoUrl);
-            console.log('embedUrl:', currentVideo.embedUrl);
-            
-            if (isStorage) {
-                // STORAGE VIDEO - Use Plyr player
-                const videoUrl = currentVideo.videoUrl;
-                
-                container.innerHTML = `
-                    <video id="plyrPlayer" playsinline controls>
-                        <source src="${videoUrl}" type="video/mp4" />
-                    </video>
-                `;
-                
-                player = new Plyr('#plyrPlayer', {
-                    title: currentVideo.title,
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 
-                        'duration', 'mute', 'volume', 'fullscreen'
-                    ],
-                    ratio: '16:9'
-                });
-                
-            } else {
-                // STREAM VIDEO - Use Bunny iframe
-                let libraryId = '';
-                
-                // Extract library ID from embedUrl
-                if (currentVideo.embedUrl) {
-                    const match = currentVideo.embedUrl.match(/\/embed\/([^/]+)\//);
-                    if (match) libraryId = match[1];
-                }
-                
-                if (libraryId) {
-                    container.innerHTML = `
-                        <iframe 
-                            src="https://iframe.mediadelivery.net/embed/${libraryId}/${currentVideo.id}" 
-                            class="bunny-iframe"
-                            allowfullscreen 
-                            allow="autoplay; encrypted-media; picture-in-picture">
-                        </iframe>
-                    `;
+            if (currentVideo.videoUrl) {
+                // Storage video
+                videoUrl = currentVideo.videoUrl;
+            } else if (currentVideo.embedUrl) {
+                // Stream video - need to convert to direct MP4 URL
+                // Extract library ID and video ID from embedUrl
+                const match = currentVideo.embedUrl.match(/\/embed\/(\d+)\/([a-f0-9-]+)/);
+                if (match) {
+                    const libraryId = match[1];
+                    const vidId = match[2];
+                    // Bunny Stream direct URL format
+                    videoUrl = `https://iframe.mediadelivery.net/${libraryId}/${vidId}/master.mp4`;
                 } else {
-                    // Fallback - use embedUrl directly
-                    container.innerHTML = `
-                        <iframe 
-                            src="${currentVideo.embedUrl}" 
-                            class="bunny-iframe"
-                            allowfullscreen>
-                        </iframe>
-                    `;
+                    // Fallback - try to use as-is
+                    videoUrl = currentVideo.embedUrl;
                 }
             }
+            
+            // Set video source
+            const videoElement = document.getElementById('player');
+            videoElement.querySelector('source').src = videoUrl;
+            
+            // Initialize Plyr
+            player = new Plyr('#player', {
+                title: currentVideo.title,
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time', 
+                    'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                ],
+                settings: ['quality', 'speed', 'loop'],
+                quality: {
+                    default: 720,
+                    options: [1080, 720, 480, 360]
+                },
+                ratio: '16:9'
+            });
         }
 
         function renderRelated() {
@@ -416,20 +331,14 @@
             if (related.length === 0) return;
 
             document.getElementById('relatedSection').style.display = 'block';
-            document.getElementById('relatedGrid').innerHTML = related.map(v => {
-                const isStorage = isStorageVideo(v);
-                const typeLabel = isStorage ? 'HD' : 'STR';
-                
-                return `
-                    <a href="video.html?id=${encodeURIComponent(v.id)}" class="related-card">
-                        <div class="related-thumb">
-                            <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
-                            <span class="related-type">${typeLabel}</span>
-                        </div>
-                        <div class="related-title">${escapeHtml(v.title)}</div>
-                    </a>
-                `;
-            }).join('');
+            document.getElementById('relatedGrid').innerHTML = related.map(v => `
+                <a href="video.html?id=${encodeURIComponent(v.id)}" class="related-card">
+                    <div class="related-thumb">
+                        <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
+                    </div>
+                    <div class="related-title">${escapeHtml(v.title)}</div>
+                </a>
+            `).join('');
         }
 
         function shareVideo() {
