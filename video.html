@@ -25,39 +25,11 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BK3KJL2B1F"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        
-        // Configure with your specific ID
-        gtag('config', 'G-BK3KJL2B1F', {
-            'send_page_view': true,
-            'anonymize_ip': false
-        });
-        
-        // Set user properties immediately for device tracking
-        gtag('set', 'user_properties', {
-            device_category: window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
-            device_type: /Mobile|Android|iPhone/.test(navigator.userAgent) ? 'mobile' : 'desktop',
-            browser_name: navigator.userAgent.indexOf('Chrome') > -1 ? 'Chrome' : 
-                         navigator.userAgent.indexOf('Safari') > -1 ? 'Safari' : 
-                         navigator.userAgent.indexOf('Firefox') > -1 ? 'Firefox' : 'Other',
-            os_name: navigator.userAgent.indexOf('Win') !== -1 ? 'Windows' : 
-                    navigator.userAgent.indexOf('Mac') !== -1 ? 'MacOS' : 
-                    navigator.userAgent.indexOf('Android') !== -1 ? 'Android' : 'Other',
-            screen_resolution: `${window.screen.width}x${window.screen.height}`,
-            viewport_size: `${window.innerWidth}x${window.innerHeight}`,
-            device_memory_gb: navigator.deviceMemory || 'unknown',
-            cpu_cores: navigator.hardwareConcurrency || 'unknown',
-            language: navigator.language,
-            platform: navigator.platform
-        });
-        
-        // Send device info event immediately
-        gtag('event', 'device_info', {
-            event_category: 'technical',
-            non_interaction: true
-        });
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BK3KJL2B1F');
     </script>
     
     <style>
@@ -686,15 +658,6 @@
                 renderVideo();
                 initPlayer();
                 renderSmartRecommendations();
-                
-                // Track page view with video info
-                gtag('event', 'page_view', {
-                    page_title: currentVideo.title,
-                    page_location: window.location.href,
-                    video_id: currentVideo.id,
-                    video_title: currentVideo.title,
-                    video_category: currentVideo.category || 'uncategorized'
-                });
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
@@ -758,12 +721,6 @@
             });
 
             player.on('play', () => {
-                gtag('event', 'video_play', {
-                    event_category: 'engagement',
-                    event_label: currentVideo.id,
-                    video_title: currentVideo.title,
-                    video_category: currentVideo.category || 'uncategorized'
-                });
                 startWatchTimeTracking();
             });
 
@@ -870,14 +827,13 @@
                 relatedSubtitle.textContent = `${others.length} more videos available`;
             }
             
-            relatedGrid.innerHTML = finalRecommendations.map((item, index) => {
+            relatedGrid.innerHTML = finalRecommendations.map((item) => {
                 const v = item.video;
                 const vidId = v.numericId || v.id;
                 const cleanId = encodeURIComponent(vidId);
                 
                 return `
-                    <a href="video.html?id=${cleanId}" class="related-card" 
-                       onclick="gtag('event', 'recommendation_click', {event_category: 'navigation', event_label: '${v.id}', position: ${index + 1}})">
+                    <a href="video.html?id=${cleanId}" class="related-card">
                         <div class="related-thumb">
                             <img src="${v.thumbnail || ''}" 
                                  alt="" 
@@ -936,9 +892,9 @@
             
             if (days === 0) return 'Today';
             if (days === 1) return 'Yesterday';
-            if (days < 7) return days + 'd ago';
-            if (days < 30) return Math.floor(days/7) + 'w ago';
-            return Math.floor(days/30) + 'mo ago';
+            if (days < 7) return days + ' days ago';
+            if (days < 30) return Math.floor(days/7) + ' weeks ago';
+            return Math.floor(days/30) + ' months ago';
         }
     </script>
 </body>
