@@ -6,7 +6,6 @@
     <title>Xplitleaks</title>
     <meta name="description" content="Discover exclusive leaked videos and content on Xplitleaks">
     
-    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://xplitleaks.qzz.io/">
     <meta property="og:title" content="Xplitleaks">
@@ -19,7 +18,6 @@
     <meta name="twitter:description" content="Discover exclusive leaked videos and content">
     <meta name="twitter:image" content="https://xplitleaks.qzz.io/og-image.jpg">
     
-    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -73,6 +71,88 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 1.5rem;
+        }
+
+        /* Search Bar */
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #00b3ff;
+            box-shadow: 0 0 0 3px rgba(0, 179, 255, 0.1);
+        }
+
+        .search-bar input::placeholder {
+            color: #666;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .search-stats {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 0.625rem 1.25rem;
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-transform: capitalize;
+        }
+
+        .category-btn:hover {
+            border-color: rgba(0, 179, 255, 0.3);
+            color: #fff;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
+            color: #000;
+            border-color: transparent;
+            font-weight: 600;
         }
 
         /* Stats Bar */
@@ -200,11 +280,6 @@
             object-fit: cover;
             display: block;
             transition: transform 0.5s ease;
-            opacity: 0;
-        }
-
-        .thumbnail img.loaded {
-            opacity: 1;
         }
 
         .video-card:hover .thumbnail img {
@@ -221,11 +296,17 @@
             background: linear-gradient(90deg, #1a1a24 25%, #252530 50%, #1a1a24 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
+            z-index: 1;
         }
 
         @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
+        }
+
+        .thumbnail img.loaded {
+            position: relative;
+            z-index: 2;
         }
 
         .thumbnail img.loaded + .skeleton {
@@ -243,7 +324,7 @@
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
-            z-index: 2;
+            z-index: 3;
         }
 
         .video-type-indicator {
@@ -258,7 +339,22 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            z-index: 2;
+            z-index: 3;
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00b3ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            z-index: 3;
+            border: 1px solid rgba(0, 179, 255, 0.3);
         }
 
         .play-overlay {
@@ -275,7 +371,7 @@
             justify-content: center;
             opacity: 0;
             transition: all 0.3s ease;
-            z-index: 2;
+            z-index: 3;
         }
 
         .video-card:hover .play-overlay {
@@ -318,14 +414,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .video-views {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            color: #00b3ff;
-            font-weight: 500;
         }
 
         /* Pagination */
@@ -438,6 +526,21 @@
     </header>
 
     <main class="container">
+        <div class="search-section">
+            <div class="search-bar">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search videos..." autocomplete="off">
+            </div>
+            <div class="search-stats" id="searchStats"></div>
+        </div>
+
+        <div class="categories" id="categoriesContainer">
+            <button class="category-btn active" data-category="all">All</button>
+        </div>
+
         <div class="stats-bar" id="statsBar" style="display: none;">
             <div class="stat-item">
                 <span class="stat-value" id="totalVideos">0</span>
@@ -476,7 +579,7 @@
                     <line x1="15" y1="9" x2="9" y2="15"/>
                 </svg>
             </div>
-            <p>No videos available</p>
+            <p>No videos found</p>
         </div>
     </main>
 
@@ -486,33 +589,49 @@
             <a href="#" onclick="showDMCA()">DMCA</a>
             <a href="#" onclick="showContact()">Contact</a>
         </div>
-        <p>© 2026 Xplitleaks • 18+ Only • All rights reserved</p>
+        <p>© 2024 Xplitleaks • 18+ Only • All rights reserved</p>
     </footer>
 
     <script>
-        // Configuration
         const ITEMS_PER_PAGE = 12;
-        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F'; // Replace with your GA4 ID
+        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
         
         let allVideos = [];
+        let filteredVideos = [];
         let currentPage = 1;
-        let totalPages = 1;
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let categories = new Set();
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Update GA ID
             const gaScript = document.querySelector('script[src*="googletagmanager"]');
             if (gaScript) {
                 gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
             }
             gtag('config', GA_MEASUREMENT_ID);
             
-            // Check for page parameter in URL
             const urlParams = new URLSearchParams(window.location.search);
             const pageParam = parseInt(urlParams.get('page')) || 1;
             currentPage = pageParam;
             
+            // Setup search
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', debounce(handleSearch, 300));
+            
             loadVideos();
         });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
         async function loadVideos() {
             const loadingEl = document.getElementById('loading');
@@ -532,38 +651,106 @@
                 const response = await fetch('./videos.json?v=' + Date.now());
                 allVideos = await response.json();
                 
+                // Extract categories
+                allVideos.forEach(v => {
+                    if (v.category) categories.add(v.category.toLowerCase());
+                });
+                renderCategories();
+                
+                // Initialize filtered videos
+                filteredVideos = [...allVideos];
+                
                 loadingEl.style.display = 'none';
                 
                 if (!Array.isArray(allVideos) || allVideos.length === 0) {
                     emptyEl.style.display = 'block';
-                    gtag('event', 'empty_state_shown', {
-                        'event_category': 'content',
-                        'event_label': 'no_videos'
-                    });
                 } else {
                     updateStats();
                     renderVideos();
                     gridEl.style.display = 'grid';
                     document.getElementById('statsBar').style.display = 'flex';
-                    initLazyLoading();
                 }
             } catch (err) {
                 console.error('Error:', err);
                 loadingEl.style.display = 'none';
                 errorEl.style.display = 'block';
-                gtag('event', 'load_error', {
-                    'event_category': 'error',
-                    'event_label': err.message
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const categoryArray = Array.from(categories).sort();
+            
+            categoryArray.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = cat;
+                btn.dataset.category = cat;
+                btn.onclick = () => selectCategory(cat);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectCategory(category) {
+            currentCategory = category;
+            currentPage = 1;
+            
+            // Update active state
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+            
+            filterVideos();
+            
+            gtag('event', 'category_select', {
+                'event_category': 'navigation',
+                'event_label': category
+            });
+        }
+
+        function handleSearch(e) {
+            searchQuery = e.target.value.toLowerCase().trim();
+            currentPage = 1;
+            filterVideos();
+            
+            if (searchQuery) {
+                gtag('event', 'search', {
+                    'event_category': 'engagement',
+                    'event_label': searchQuery
                 });
             }
         }
 
-        function updateStats() {
-            document.getElementById('totalVideos').textContent = allVideos.length;
+        function filterVideos() {
+            filteredVideos = allVideos.filter(video => {
+                const matchesCategory = currentCategory === 'all' || 
+                    (video.category && video.category.toLowerCase() === currentCategory);
+                
+                const matchesSearch = !searchQuery || 
+                    video.title.toLowerCase().includes(searchQuery) ||
+                    (video.category && video.category.toLowerCase().includes(searchQuery));
+                
+                return matchesCategory && matchesSearch;
+            });
             
-            // Calculate total duration
+            // Update search stats
+            const statsEl = document.getElementById('searchStats');
+            if (searchQuery) {
+                statsEl.textContent = `Found ${filteredVideos.length} result${filteredVideos.length !== 1 ? 's' : ''} for "${searchQuery}"`;
+            } else {
+                statsEl.textContent = '';
+            }
+            
+            updateStats();
+            renderVideos();
+        }
+
+        function updateStats() {
+            const videosToCount = searchQuery || currentCategory !== 'all' ? filteredVideos : allVideos;
+            document.getElementById('totalVideos').textContent = videosToCount.length;
+            
             let totalMinutes = 0;
-            allVideos.forEach(v => {
+            videosToCount.forEach(v => {
                 if (v.duration) {
                     const parts = v.duration.split(':');
                     if (parts.length === 2) {
@@ -578,27 +765,39 @@
         function renderVideos() {
             const gridEl = document.getElementById('videoGrid');
             
+            if (filteredVideos.length === 0) {
+                gridEl.style.display = 'none';
+                document.getElementById('pagination').style.display = 'none';
+                document.getElementById('paginationInfo').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('emptyState').style.display = 'none';
+            gridEl.style.display = 'grid';
+            
             // Calculate pagination
-            totalPages = Math.ceil(allVideos.length / ITEMS_PER_PAGE);
+            const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE);
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
             
             const start = (currentPage - 1) * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
-            const videosToShow = allVideos.slice(start, end);
+            const videosToShow = filteredVideos.slice(start, end);
             
-            gridEl.innerHTML = videosToShow.map((video, index) => {
-                // Use numericId if available, fallback to regular id
+            gridEl.innerHTML = videosToShow.map((video) => {
                 const videoId = video.numericId || video.id;
                 const videoUrl = `video.html?id=${encodeURIComponent(videoId)}`;
                 const thumbUrl = video.thumbnail || '';
+                const categoryTag = video.category ? `<span class="category-tag">${escapeHtml(video.category)}</span>` : '';
                 
                 return `
                     <a href="${videoUrl}" class="video-card" onclick="trackVideoClick('${video.id}', '${video.title}')">
                         <div class="thumbnail">
                             <div class="skeleton"></div>
-                            <img data-src="${escapeHtml(thumbUrl)}" alt="" loading="lazy">
+                            <img src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="handleImageError(this)">
                             <span class="video-type-indicator">HD</span>
+                            ${categoryTag}
                             <span class="duration">${escapeHtml(video.duration)}</span>
                             <div class="play-overlay">
                                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -622,52 +821,15 @@
                 `;
             }).join('');
             
-            renderPagination();
-            
-            // Track page view
-            gtag('event', 'page_view', {
-                'page_title': `Page ${currentPage}`,
-                'page_location': window.location.href,
-                'videos_shown': videosToShow.length
-            });
+            renderPagination(totalPages);
         }
 
-        function initLazyLoading() {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        const src = img.getAttribute('data-src');
-                        
-                        if (src) {
-                            img.src = src;
-                            img.removeAttribute('data-src');
-                            
-                            img.onload = () => {
-                                img.classList.add('loaded');
-                            };
-                            
-                            img.onerror = () => {
-                                // Fallback to placeholder
-                                img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%%22 height=%22100%%22%3E%3Crect width=%22100%%22 height=%22100%%22 fill=%22%231a1a24%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22%3EError%3C/text%3E%3C/svg%3E';
-                                img.classList.add('loaded');
-                            };
-                        }
-                        
-                        observer.unobserve(img);
-                    }
-                });
-            }, {
-                rootMargin: '50px 0px',
-                threshold: 0.01
-            });
-
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
+        function handleImageError(img) {
+            img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%%22 height=%22100%%22%3E%3Crect width=%22100%%22 height=%22100%%22 fill=%22%231a1a24%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22%3ENo Image%3C/text%3E%3C/svg%3E';
+            img.classList.add('loaded');
         }
 
-        function renderPagination() {
+        function renderPagination(totalPages) {
             const paginationEl = document.getElementById('pagination');
             const infoEl = document.getElementById('paginationInfo');
             
@@ -679,14 +841,12 @@
             
             let html = '';
             
-            // Previous button
             html += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="15 18 9 12 15 6"/>
                 </svg>
             </button>`;
             
-            // Page numbers
             const maxButtons = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
             let endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -709,7 +869,6 @@
                 html += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
             }
             
-            // Next button
             html += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6"/>
@@ -720,17 +879,19 @@
             paginationEl.style.display = 'flex';
             
             const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-            const end = Math.min(currentPage * ITEMS_PER_PAGE, allVideos.length);
-            infoEl.textContent = `Showing ${start}-${end} of ${allVideos.length} videos`;
+            const end = Math.min(currentPage * ITEMS_PER_PAGE, filteredVideos.length);
+            infoEl.textContent = `Showing ${start}-${end} of ${filteredVideos.length} videos`;
             infoEl.style.display = 'block';
         }
 
         function changePage(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
+            if (page < 1) return;
+            const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE);
+            if (page > totalPages) return;
+            if (page === currentPage) return;
             
             currentPage = page;
             
-            // Update URL without reload
             const url = new URL(window.location);
             if (page === 1) {
                 url.searchParams.delete('page');
@@ -739,16 +900,9 @@
             }
             window.history.pushState({}, '', url);
             
-            // Scroll to top smoothly
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
             renderVideos();
-            initLazyLoading();
-            
-            gtag('event', 'page_change', {
-                'event_category': 'navigation',
-                'event_label': `page_${page}`
-            });
         }
 
         function trackVideoClick(videoId, videoTitle) {
@@ -780,26 +934,16 @@
             return `${Math.floor(diffDays / 30)}mo ago`;
         }
 
-        function showAbout() {
-            alert('Xplitleaks - Exclusive content platform');
-        }
+        function showAbout() { alert('Xplitleaks - Exclusive content platform'); }
+        function showDMCA() { alert('DMCA Contact: dmca@xplitleaks.qzz.io'); }
+        function showContact() { alert('Contact us at: contact@xplitleaks.qzz.io'); }
 
-        function showDMCA() {
-            alert('DMCA Contact: dmca@xplitleaks.qzz.io');
-        }
-
-        function showContact() {
-            alert('Contact us at: contact@xplitleaks.qzz.io');
-        }
-
-        // Handle browser back/forward buttons
         window.addEventListener('popstate', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const pageParam = parseInt(urlParams.get('page')) || 1;
             if (pageParam !== currentPage) {
                 currentPage = pageParam;
                 renderVideos();
-                initLazyLoading();
             }
         });
     </script>
