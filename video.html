@@ -21,7 +21,20 @@
     <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID', {
+            'send_page_view': true,
+            'anonymize_ip': true
+        });
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -42,12 +55,21 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid #1a1a24;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.9);
         }
 
         .back-btn {
             color: #888;
             text-decoration: none;
             font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
         }
 
         .back-btn:hover {
@@ -57,115 +79,204 @@
         .logo {
             font-weight: 700;
             font-size: 1.25rem;
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .share-btn {
-            background: transparent;
-            color: #888;
-            border: 1px solid #333;
+            background: rgba(0, 179, 255, 0.1);
+            color: #00b3ff;
+            border: 1px solid rgba(0, 179, 255, 0.3);
             padding: 0.5rem 1rem;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .share-btn:hover {
+            background: rgba(0, 179, 255, 0.2);
+            border-color: rgba(0, 179, 255, 0.5);
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
+        /* Premium Player Wrapper */
         .player-wrapper {
             background: #000;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             position: relative;
             aspect-ratio: 16 / 9;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
         }
 
-        .bunny-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
+        /* Plyr Customization - Blue Theme */
         .plyr {
-            --plyr-color-main: #ff6b6b;
+            --plyr-color-main: #00b3ff;
             --plyr-video-background: #000;
+            --plyr-control-radius: 8px;
+            --plyr-control-spacing: 10px;
+            --plyr-video-control-background-hover: rgba(0, 179, 255, 0.2);
+            --plyr-range-fill-background: #00b3ff;
+            --plyr-range-thumb-background: #00b3ff;
+            --plyr-range-thumb-shadow: 0 0 10px rgba(0, 179, 255, 0.5);
+            --plyr-tooltip-background: rgba(0, 0, 0, 0.9);
+            --plyr-tooltip-color: #fff;
+            --plyr-font-size-time: 13px;
+            --plyr-font-size-menu: 14px;
             height: 100%;
+            border-radius: 16px;
         }
 
+        .plyr__control--overlaid {
+            background: rgba(0, 179, 255, 0.9);
+            padding: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0, 179, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .plyr__control--overlaid:hover {
+            background: #00b3ff;
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(0, 179, 255, 0.7);
+        }
+
+        .plyr__control--overlaid svg {
+            width: 24px;
+            height: 24px;
+            left: 2px;
+            position: relative;
+        }
+
+        .plyr--video .plyr__controls {
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 20px;
+            padding-top: 60px;
+        }
+
+        .plyr__progress__buffer {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .plyr__menu__container {
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Video Info Premium Style */
         .video-info {
-            padding: 1rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.8) 0%, rgba(10, 10, 15, 0.8) 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
         }
 
         .video-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .video-type-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: #1a1a24;
-            border-radius: 4px;
-            font-size: 0.625rem;
-            font-weight: 600;
-            color: #888;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .video-meta {
-            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #888;
             font-size: 0.875rem;
+            flex-wrap: wrap;
         }
 
+        .video-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            background: rgba(0, 179, 255, 0.15);
+            border: 1px solid rgba(0, 179, 255, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #00b3ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .video-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Related Videos Premium Grid */
         .related {
             margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #1a1a24;
+        }
+
+        .related-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
         }
 
         .related h2 {
-            font-size: 1rem;
-            color: #888;
-            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
         }
 
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
         @media (max-width: 640px) {
             .related-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .video-title {
+                font-size: 1.125rem;
             }
         }
 
         .related-card {
             text-decoration: none;
             color: inherit;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .related-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(0, 179, 255, 0.3);
         }
 
         .related-thumb {
             aspect-ratio: 16 / 9;
             background: #1a1a24;
-            border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 0.5rem;
             position: relative;
         }
 
@@ -174,69 +285,168 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .related-card:hover .related-thumb img {
+            transform: scale(1.05);
         }
 
         .related-type {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            background: rgba(0,0,0,0.8);
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 179, 255, 0.9);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .related-duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 1px 4px;
-            border-radius: 2px;
-            font-size: 0.5rem;
-            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .related-info {
+            padding: 1rem;
         }
 
         .related-title {
-            font-size: 0.8125rem;
+            font-size: 0.9375rem;
             font-weight: 500;
-            line-height: 1.3;
+            line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: #fff;
+            margin-bottom: 0.5rem;
         }
 
-        .loading, .error {
+        .related-meta {
+            font-size: 0.8125rem;
+            color: #666;
+        }
+
+        /* Loading & Error States */
+        .loading {
             text-align: center;
             padding: 4rem;
             color: #666;
         }
 
-        .error a {
-            color: #ff6b6b;
-            text-decoration: none;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 179, 255, 0.2);
+            border-top-color: #00b3ff;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
         }
 
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 4rem;
+            color: #888;
+        }
+
+        .error a {
+            color: #00b3ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #1a1a24;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            background: rgba(20, 20, 30, 0.95);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 179, 255, 0.3);
+            backdrop-filter: blur(10px);
             opacity: 0;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             pointer-events: none;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
         }
 
         .toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+
+        .toast-icon {
+            color: #00b3ff;
+        }
+
+        /* Keyboard shortcuts hint */
+        .shortcuts-hint {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(20, 20, 30, 0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #666;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .shortcuts-hint.visible {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="back-btn">← Back</a>
+        <a href="index.html" class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+        </a>
         <span class="logo">Xplitleaks</span>
-        <button class="share-btn" onclick="shareVideo()">Share</button>
+        <button class="share-btn" onclick="shareVideo()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            Share
+        </button>
     </header>
 
     <main class="container">
-        <div id="loading" class="loading">Loading...</div>
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading video...</p>
+        </div>
         
         <div id="error" class="error" style="display: none;">
             <p>Video not found</p>
@@ -247,46 +457,85 @@
             <div class="player-wrapper" id="playerContainer"></div>
 
             <div class="video-info">
-                <h1 class="video-title" id="videoTitle">
-                    <span id="titleText">...</span>
-                    <span class="video-type-badge" id="videoType">--</span>
-                </h1>
+                <h1 class="video-title" id="videoTitle">...</h1>
                 <div class="video-meta">
-                    <span id="videoDuration">--:--</span> • <span id="videoDate">--</span>
+                    <span class="video-badge">HD</span>
+                    <span class="video-stats">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span id="videoDuration">--:--</span>
+                    </span>
+                    <span>•</span>
+                    <span id="videoDate">--</span>
                 </div>
             </div>
 
             <div class="related" id="relatedSection" style="display: none;">
-                <h2>More Videos</h2>
+                <div class="related-header">
+                    <h2>More Videos</h2>
+                </div>
                 <div class="related-grid" id="relatedGrid"></div>
             </div>
         </div>
     </main>
 
-    <div id="toast" class="toast">Link copied!</div>
+    <div id="toast" class="toast">
+        <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        <span>Link copied to clipboard!</span>
+    </div>
+
+    <div class="shortcuts-hint" id="shortcutsHint">
+        Press <kbd>Space</kbd> to play/pause • <kbd>F</kbd> for fullscreen • <kbd>M</kbd> to mute
+    </div>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     
     <script>
+        // Replace with your actual GA4 Measurement ID
+        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
+        
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
         let player = null;
         let currentVideo = null;
         let allVideos = [];
+        let watchTime = 0;
+        let watchInterval = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Update GA ID dynamically
+            const gaScript = document.querySelector('script[src*="googletagmanager"]');
+            if (gaScript) {
+                gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+            }
+            gtag('config', GA_MEASUREMENT_ID);
+            
             if (!videoId) {
                 showError();
                 return;
             }
             loadVideo();
+            
+            // Show keyboard shortcuts hint
+            setTimeout(() => {
+                document.getElementById('shortcutsHint').classList.add('visible');
+                setTimeout(() => {
+                    document.getElementById('shortcutsHint').classList.remove('visible');
+                }, 5000);
+            }, 2000);
         });
 
         async function loadVideo() {
             try {
                 const response = await fetch('./videos.json?v=' + Date.now());
                 allVideos = await response.json();
-                currentVideo = allVideos.find(v => v.id === videoId);
+                
+                // Support both numeric IDs and legacy string IDs
+                currentVideo = allVideos.find(v => v.id === videoId || v.numericId === videoId);
 
                 if (!currentVideo) {
                     showError();
@@ -294,8 +543,9 @@
                 }
 
                 renderVideo();
-                initPlayer();
+                initPremiumPlayer();
                 renderRelated();
+                trackVideoAnalytics();
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
@@ -307,121 +557,276 @@
         }
 
         function renderVideo() {
-            document.getElementById('titleText').textContent = currentVideo.title;
+            document.getElementById('videoTitle').textContent = currentVideo.title;
             document.getElementById('videoDuration').textContent = currentVideo.duration || '--:--';
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
             
-            // Determine type and set badge
-            const isStorage = isStorageVideo(currentVideo);
-            document.getElementById('videoType').textContent = isStorage ? 'HD' : 'STREAM';
-            
-            // Update meta tags
+            // Update meta tags for SEO
             document.querySelector('meta[property="og:title"]').content = currentVideo.title;
             document.querySelector('meta[property="og:description"]').content = 'Watch ' + currentVideo.title;
             document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
         }
 
-        function isStorageVideo(video) {
-            // Storage videos have videoUrl (direct MP4) or type: 'storage'
-            // Stream videos have embedUrl with mediadelivery.net
-            if (video.videoUrl && !video.videoUrl.includes('mediadelivery')) {
-                return true;
-            }
-            if (video.type === 'storage') {
-                return true;
-            }
-            // If it has embedUrl with mediadelivery, it's Stream
-            if (video.embedUrl && video.embedUrl.includes('mediadelivery')) {
-                return false;
-            }
-            // Default to storage if videoUrl exists
-            return !!video.videoUrl;
+        function initPremiumPlayer() {
+            const container = document.getElementById('playerContainer');
+            const videoUrl = currentVideo.videoUrl;
+            
+            container.innerHTML = `
+                <video id="plyrPlayer" playsinline controls poster="${currentVideo.thumbnail || ''}">
+                    <source src="${videoUrl}" type="video/mp4" />
+                    <!-- Fallback for older browsers -->
+                    Your browser does not support the video tag.
+                </video>
+            `;
+            
+            // Premium Plyr configuration
+            player = new Plyr('#plyrPlayer', {
+                title: currentVideo.title,
+                controls: [
+                    'play-large',
+                    'play',
+                    'progress',
+                    'current-time',
+                    'duration',
+                    'mute',
+                    'volume',
+                    'captions',
+                    'settings',
+                    'pip',
+                    'airplay',
+                    'fullscreen'
+                ],
+                settings: ['captions', 'quality', 'speed', 'loop'],
+                quality: {
+                    default: 1080,
+                    options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240],
+                    forced: true,
+                    onChange: (quality) => {
+                        gtag('event', 'video_quality_change', {
+                            'event_category': 'video',
+                            'event_label': currentVideo.id,
+                            'value': quality
+                        });
+                    }
+                },
+                speed: {
+                    selected: 1,
+                    options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+                },
+                keyboard: {
+                    focused: true,
+                    global: true
+                },
+                tooltips: {
+                    controls: true,
+                    seek: true
+                },
+                displayDuration: true,
+                invertTime: false,
+                toggleInvert: true,
+                listeners: {
+                    seek: (e) => {
+                        gtag('event', 'video_seek', {
+                            'event_category': 'engagement',
+                            'event_label': currentVideo.id
+                        });
+                    }
+                },
+                ratio: '16:9',
+                storage: {
+                    enabled: true,
+                    key: 'plyr_preferences'
+                },
+                previewThumbnails: {
+                    enabled: false // Enable if you have thumbnail sprites
+                }
+            });
+
+            // Premium event tracking
+            player.on('play', () => {
+                gtag('event', 'video_play', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo.id,
+                    'video_title': currentVideo.title,
+                    'video_duration': currentVideo.duration
+                });
+                startWatchTimeTracking();
+            });
+
+            player.on('pause', () => {
+                gtag('event', 'video_pause', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo.id,
+                    'watch_time': watchTime
+                });
+                stopWatchTimeTracking();
+            });
+
+            player.on('ended', () => {
+                gtag('event', 'video_complete', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo.id,
+                    'watch_time': watchTime,
+                    'completion_rate': 100
+                });
+                stopWatchTimeTracking();
+            });
+
+            player.on('enterfullscreen', () => {
+                gtag('event', 'video_fullscreen', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo.id
+                });
+            });
+
+            player.on('volumechange', (e) => {
+                if (e.detail.plyr.volume !== 1) {
+                    gtag('event', 'video_volume_change', {
+                        'event_category': 'engagement',
+                        'event_label': currentVideo.id,
+                        'volume_level': e.detail.plyr.volume
+                    });
+                }
+            });
+
+            player.on('ratechange', (e) => {
+                gtag('event', 'video_speed_change', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo.id,
+                    'playback_speed': e.detail.plyr.speed
+                });
+            });
+
+            // Error handling
+            player.on('error', (error) => {
+                gtag('event', 'video_error', {
+                    'event_category': 'error',
+                    'event_label': currentVideo.id,
+                    'error_type': error.type
+                });
+            });
         }
 
-        function initPlayer() {
-            const container = document.getElementById('playerContainer');
-            const isStorage = isStorageVideo(currentVideo);
-            
-            if (isStorage) {
-                // STORAGE - Use Plyr with direct video URL
-                const videoUrl = currentVideo.videoUrl || currentVideo.embedUrl;
-                container.innerHTML = `
-                    <video id="plyrPlayer" playsinline controls>
-                        <source src="${videoUrl}" type="video/mp4" />
-                    </video>
-                `;
-                
-                player = new Plyr('#plyrPlayer', {
-                    title: currentVideo.title,
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 
-                        'duration', 'mute', 'volume', 'fullscreen'
-                    ],
-                    ratio: '16:9'
-                });
-                
-            } else {
-                // STREAM - Use Bunny iframe
-                let libraryId = '';
-                const match = currentVideo.embedUrl.match(/\/embed\/([^/]+)\//);
-                if (match) libraryId = match[1];
-                
-                if (libraryId) {
-                    container.innerHTML = `
-                        <iframe 
-                            src="https://iframe.mediadelivery.net/embed/${libraryId}/${currentVideo.id}" 
-                            class="bunny-iframe"
-                            allowfullscreen 
-                            allow="autoplay; encrypted-media; picture-in-picture">
-                        </iframe>
-                    `;
-                } else {
-                    // Fallback - try to use embedUrl directly
-                    container.innerHTML = `
-                        <iframe 
-                            src="${currentVideo.embedUrl}" 
-                            class="bunny-iframe"
-                            allowfullscreen>
-                        </iframe>
-                    `;
-                }
+        function startWatchTimeTracking() {
+            watchInterval = setInterval(() => {
+                watchTime += 1;
+            }, 1000);
+        }
+
+        function stopWatchTimeTracking() {
+            if (watchInterval) {
+                clearInterval(watchInterval);
+                watchInterval = null;
             }
+        }
+
+        function trackVideoAnalytics() {
+            // Track page view with video info
+            gtag('event', 'page_view', {
+                'page_title': currentVideo.title,
+                'page_location': window.location.href,
+                'video_id': currentVideo.id,
+                'video_duration': currentVideo.duration
+            });
+
+            // Track device info
+            const deviceInfo = {
+                'screen_resolution': `${window.screen.width}x${window.screen.height}`,
+                'viewport_size': `${window.innerWidth}x${window.innerHeight}`,
+                'device_memory': navigator.deviceMemory || 'unknown',
+                'connection_type': navigator.connection ? navigator.connection.effectiveType : 'unknown'
+            };
+            
+            gtag('event', 'device_info', {
+                'event_category': 'technical',
+                ...deviceInfo
+            });
         }
 
         function renderRelated() {
-            const related = allVideos.filter(v => v.id !== videoId).slice(0, 6);
+            // Filter out current video and shuffle for variety
+            const related = allVideos
+                .filter(v => v.id !== currentVideo.id && v.numericId !== currentVideo.numericId)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 6);
+                
             if (related.length === 0) return;
 
             document.getElementById('relatedSection').style.display = 'block';
             document.getElementById('relatedGrid').innerHTML = related.map(v => {
-                const isStorage = isStorageVideo(v);
-                const typeLabel = isStorage ? 'HD' : 'STR';
+                const videoUrl = `video.html?id=${encodeURIComponent(v.numericId || v.id)}`;
                 
                 return `
-                    <a href="video.html?id=${encodeURIComponent(v.id)}" class="related-card">
+                    <a href="${videoUrl}" class="related-card" onclick="trackRelatedClick('${v.id}')">
                         <div class="related-thumb">
-                            <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
-                            <span class="related-type">${typeLabel}</span>
+                            <img src="${v.thumbnail}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%%22 height=%22100%%22%3E%3Crect width=%22100%%22 height=%22100%%22 fill=%22%231a1a24%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                            <span class="related-type">HD</span>
+                            ${v.duration ? `<span class="related-duration">${v.duration}</span>` : ''}
                         </div>
-                        <div class="related-title">${escapeHtml(v.title)}</div>
+                        <div class="related-info">
+                            <div class="related-title">${escapeHtml(v.title)}</div>
+                            <div class="related-meta">${formatDate(v.uploadDate)}</div>
+                        </div>
                     </a>
                 `;
             }).join('');
         }
 
+        function trackRelatedClick(videoId) {
+            gtag('event', 'related_video_click', {
+                'event_category': 'navigation',
+                'event_label': videoId,
+                'source_video': currentVideo.id
+            });
+        }
+
         function shareVideo() {
             if (!currentVideo) return;
+            
+            const shareData = {
+                title: currentVideo.title,
+                text: `Check out "${currentVideo.title}" on Xplitleaks`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).then(() => {
+                    gtag('event', 'share', {
+                        'event_category': 'engagement',
+                        'event_label': 'native_share',
+                        'content_type': 'video',
+                        'item_id': currentVideo.id
+                    });
+                }).catch(() => {
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+        }
+
+        function fallbackShare() {
             navigator.clipboard.writeText(window.location.href).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2000);
+                gtag('event', 'share', {
+                    'event_category': 'engagement',
+                    'event_label': 'copy_link',
+                    'content_type': 'video',
+                    'item_id': currentVideo.id
+                });
+                setTimeout(() => toast.classList.remove('show'), 3000);
             });
         }
 
         function showError() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'block';
+            gtag('event', 'video_load_error', {
+                'event_category': 'error',
+                'event_label': videoId || 'unknown'
+            });
         }
 
         function escapeHtml(text) {
@@ -436,12 +841,26 @@
             const date = new Date(dateString);
             const now = new Date();
             const days = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
             if (days === 0) return 'Today';
             if (days === 1) return 'Yesterday';
-            if (days < 7) return days + 'd ago';
-            if (days < 30) return Math.floor(days/7) + 'w ago';
-            return Math.floor(days/30) + 'mo ago';
+            if (days < 7) return days + ' days ago';
+            if (days < 30) return Math.floor(days/7) + ' weeks ago';
+            if (days < 365) return Math.floor(days/30) + ' months ago';
+            return Math.floor(days/365) + ' years ago';
         }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopWatchTimeTracking();
+            if (watchTime > 0) {
+                gtag('event', 'video_session_end', {
+                    'event_category': 'engagement',
+                    'event_label': currentVideo ? currentVideo.id : 'unknown',
+                    'total_watch_time': watchTime
+                });
+            }
+        });
     </script>
 </body>
 </html>
