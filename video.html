@@ -18,12 +18,10 @@
     <meta name="twitter:description" content="Watch exclusive content">
     <meta name="twitter:image" content="">
     
-    <!-- Plyr CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -106,7 +104,6 @@
             padding: 1.5rem;
         }
 
-        /* Premium Player Wrapper */
         .player-wrapper {
             background: #000;
             border-radius: 16px;
@@ -117,7 +114,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
         }
 
-        /* Plyr Customization - Blue Theme */
         .plyr {
             --plyr-color-main: #00b3ff;
             --plyr-video-background: #000;
@@ -162,10 +158,6 @@
             padding-top: 60px;
         }
 
-        .plyr__progress__buffer {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .plyr__menu__container {
             background: rgba(20, 20, 30, 0.95);
             backdrop-filter: blur(10px);
@@ -173,7 +165,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Video Info Premium Style */
         .video-info {
             padding: 1.5rem;
             background: linear-gradient(135deg, rgba(20, 20, 30, 0.8) 0%, rgba(10, 10, 15, 0.8) 100%);
@@ -216,13 +207,36 @@
             letter-spacing: 0.5px;
         }
 
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .category-badge:hover {
+            background: rgba(0, 179, 255, 0.2);
+            border-color: rgba(0, 179, 255, 0.4);
+        }
+
         .video-stats {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        /* Related Videos Premium Grid */
+        /* Related Videos Section */
         .related {
             margin-top: 2rem;
         }
@@ -232,12 +246,19 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .related h2 {
             font-size: 1.25rem;
             font-weight: 600;
             color: #fff;
+        }
+
+        .related-subtitle {
+            color: #666;
+            font-size: 0.875rem;
         }
 
         .related-grid {
@@ -306,6 +327,20 @@
             letter-spacing: 0.5px;
         }
 
+        .related-category {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00b3ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid rgba(0, 179, 255, 0.3);
+        }
+
         .related-duration {
             position: absolute;
             bottom: 8px;
@@ -339,7 +374,7 @@
             color: #666;
         }
 
-        /* Loading & Error States */
+        /* Loading & Error */
         .loading {
             text-align: center;
             padding: 4rem;
@@ -372,7 +407,7 @@
             font-weight: 500;
         }
 
-        /* Toast Notification */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -403,23 +438,14 @@
             color: #00b3ff;
         }
 
-        /* Keyboard shortcuts hint */
-        .shortcuts-hint {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            background: rgba(20, 20, 30, 0.8);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
+        /* No recommendations state */
+        .no-related {
+            text-align: center;
+            padding: 3rem;
             color: #666;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .shortcuts-hint.visible {
-            opacity: 1;
+            background: rgba(20, 20, 30, 0.3);
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
@@ -460,6 +486,7 @@
                 <h1 class="video-title" id="videoTitle">...</h1>
                 <div class="video-meta">
                     <span class="video-badge">HD</span>
+                    <a href="#" class="category-badge" id="categoryBadge" style="display: none;"></a>
                     <span class="video-stats">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
@@ -474,7 +501,10 @@
 
             <div class="related" id="relatedSection" style="display: none;">
                 <div class="related-header">
-                    <h2>More Videos</h2>
+                    <div>
+                        <h2 id="relatedTitle">More Videos</h2>
+                        <div class="related-subtitle" id="relatedSubtitle"></div>
+                    </div>
                 </div>
                 <div class="related-grid" id="relatedGrid"></div>
             </div>
@@ -488,14 +518,9 @@
         <span>Link copied to clipboard!</span>
     </div>
 
-    <div class="shortcuts-hint" id="shortcutsHint">
-        Press <kbd>Space</kbd> to play/pause • <kbd>F</kbd> for fullscreen • <kbd>M</kbd> to mute
-    </div>
-
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     
     <script>
-        // Replace with your actual GA4 Measurement ID
         const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
         
         const urlParams = new URLSearchParams(window.location.search);
@@ -507,7 +532,6 @@
         let watchInterval = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Update GA ID dynamically
             const gaScript = document.querySelector('script[src*="googletagmanager"]');
             if (gaScript) {
                 gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -519,14 +543,6 @@
                 return;
             }
             loadVideo();
-            
-            // Show keyboard shortcuts hint
-            setTimeout(() => {
-                document.getElementById('shortcutsHint').classList.add('visible');
-                setTimeout(() => {
-                    document.getElementById('shortcutsHint').classList.remove('visible');
-                }, 5000);
-            }, 2000);
         });
 
         async function loadVideo() {
@@ -534,7 +550,6 @@
                 const response = await fetch('./videos.json?v=' + Date.now());
                 allVideos = await response.json();
                 
-                // Support both numeric IDs and legacy string IDs
                 currentVideo = allVideos.find(v => v.id === videoId || v.numericId === videoId);
 
                 if (!currentVideo) {
@@ -544,7 +559,7 @@
 
                 renderVideo();
                 initPremiumPlayer();
-                renderRelated();
+                renderSmartRecommendations();
                 trackVideoAnalytics();
 
                 document.getElementById('loading').style.display = 'none';
@@ -562,7 +577,14 @@
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
             
-            // Update meta tags for SEO
+            // Show category if exists
+            if (currentVideo.category) {
+                const catBadge = document.getElementById('categoryBadge');
+                catBadge.textContent = currentVideo.category;
+                catBadge.style.display = 'inline-flex';
+                catBadge.href = `index.html?category=${encodeURIComponent(currentVideo.category)}`;
+            }
+            
             document.querySelector('meta[property="og:title"]').content = currentVideo.title;
             document.querySelector('meta[property="og:description"]').content = 'Watch ' + currentVideo.title;
             document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
@@ -575,81 +597,43 @@
             container.innerHTML = `
                 <video id="plyrPlayer" playsinline controls poster="${currentVideo.thumbnail || ''}">
                     <source src="${videoUrl}" type="video/mp4" />
-                    <!-- Fallback for older browsers -->
-                    Your browser does not support the video tag.
                 </video>
             `;
             
-            // Premium Plyr configuration
             player = new Plyr('#plyrPlayer', {
                 title: currentVideo.title,
                 controls: [
-                    'play-large',
-                    'play',
-                    'progress',
-                    'current-time',
-                    'duration',
-                    'mute',
-                    'volume',
-                    'captions',
-                    'settings',
-                    'pip',
-                    'airplay',
-                    'fullscreen'
+                    'play-large', 'play', 'progress', 'current-time',
+                    'duration', 'mute', 'volume', 'captions',
+                    'settings', 'pip', 'airplay', 'fullscreen'
                 ],
                 settings: ['captions', 'quality', 'speed', 'loop'],
                 quality: {
                     default: 1080,
                     options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240],
-                    forced: true,
-                    onChange: (quality) => {
-                        gtag('event', 'video_quality_change', {
-                            'event_category': 'video',
-                            'event_label': currentVideo.id,
-                            'value': quality
-                        });
-                    }
+                    forced: true
                 },
                 speed: {
                     selected: 1,
                     options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
                 },
-                keyboard: {
-                    focused: true,
-                    global: true
-                },
-                tooltips: {
-                    controls: true,
-                    seek: true
-                },
+                keyboard: { focused: true, global: true },
+                tooltips: { controls: true, seek: true },
                 displayDuration: true,
                 invertTime: false,
                 toggleInvert: true,
-                listeners: {
-                    seek: (e) => {
-                        gtag('event', 'video_seek', {
-                            'event_category': 'engagement',
-                            'event_label': currentVideo.id
-                        });
-                    }
-                },
                 ratio: '16:9',
-                storage: {
-                    enabled: true,
-                    key: 'plyr_preferences'
-                },
-                previewThumbnails: {
-                    enabled: false // Enable if you have thumbnail sprites
-                }
+                storage: { enabled: true, key: 'plyr_preferences' }
             });
 
-            // Premium event tracking
+            // Event tracking
             player.on('play', () => {
                 gtag('event', 'video_play', {
                     'event_category': 'engagement',
                     'event_label': currentVideo.id,
                     'video_title': currentVideo.title,
-                    'video_duration': currentVideo.duration
+                    'video_duration': currentVideo.duration,
+                    'video_category': currentVideo.category || 'uncategorized'
                 });
                 startWatchTimeTracking();
             });
@@ -679,39 +663,10 @@
                     'event_label': currentVideo.id
                 });
             });
-
-            player.on('volumechange', (e) => {
-                if (e.detail.plyr.volume !== 1) {
-                    gtag('event', 'video_volume_change', {
-                        'event_category': 'engagement',
-                        'event_label': currentVideo.id,
-                        'volume_level': e.detail.plyr.volume
-                    });
-                }
-            });
-
-            player.on('ratechange', (e) => {
-                gtag('event', 'video_speed_change', {
-                    'event_category': 'engagement',
-                    'event_label': currentVideo.id,
-                    'playback_speed': e.detail.plyr.speed
-                });
-            });
-
-            // Error handling
-            player.on('error', (error) => {
-                gtag('event', 'video_error', {
-                    'event_category': 'error',
-                    'event_label': currentVideo.id,
-                    'error_type': error.type
-                });
-            });
         }
 
         function startWatchTimeTracking() {
-            watchInterval = setInterval(() => {
-                watchTime += 1;
-            }, 1000);
+            watchInterval = setInterval(() => { watchTime += 1; }, 1000);
         }
 
         function stopWatchTimeTracking() {
@@ -722,15 +677,14 @@
         }
 
         function trackVideoAnalytics() {
-            // Track page view with video info
             gtag('event', 'page_view', {
                 'page_title': currentVideo.title,
                 'page_location': window.location.href,
                 'video_id': currentVideo.id,
-                'video_duration': currentVideo.duration
+                'video_duration': currentVideo.duration,
+                'video_category': currentVideo.category || 'uncategorized'
             });
 
-            // Track device info
             const deviceInfo = {
                 'screen_resolution': `${window.screen.width}x${window.screen.height}`,
                 'viewport_size': `${window.innerWidth}x${window.innerHeight}`,
@@ -744,24 +698,72 @@
             });
         }
 
-        function renderRelated() {
-            // Filter out current video and shuffle for variety
-            const related = allVideos
-                .filter(v => v.id !== currentVideo.id && v.numericId !== currentVideo.numericId)
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 6);
+        function renderSmartRecommendations() {
+            const relatedSection = document.getElementById('relatedSection');
+            const relatedGrid = document.getElementById('relatedGrid');
+            const relatedTitle = document.getElementById('relatedTitle');
+            const relatedSubtitle = document.getElementById('relatedSubtitle');
+            
+            // Filter out current video
+            let candidates = allVideos.filter(v => 
+                v.id !== currentVideo.id && v.numericId !== currentVideo.numericId
+            );
+            
+            if (candidates.length === 0) {
+                relatedSection.style.display = 'none';
+                return;
+            }
+            
+            // Smart scoring algorithm
+            const scored = candidates.map(video => {
+                let score = 0;
                 
-            if (related.length === 0) return;
-
-            document.getElementById('relatedSection').style.display = 'block';
-            document.getElementById('relatedGrid').innerHTML = related.map(v => {
-                const videoUrl = `video.html?id=${encodeURIComponent(v.numericId || v.id)}`;
+                // Same category = high priority
+                if (currentVideo.category && video.category === currentVideo.category) {
+                    score += 100;
+                }
+                
+                // Similar title words
+                const currentWords = currentVideo.title.toLowerCase().split(/\s+/);
+                const videoWords = video.title.toLowerCase().split(/\s+/);
+                const commonWords = currentWords.filter(w => videoWords.includes(w));
+                score += commonWords.length * 10;
+                
+                // Recent uploads get slight boost
+                const daysSinceUpload = (new Date() - new Date(video.uploadDate)) / (1000 * 60 * 60 * 24);
+                if (daysSinceUpload < 7) score += 5;
+                
+                // Random factor for variety (0-10)
+                score += Math.random() * 10;
+                
+                return { video, score };
+            });
+            
+            // Sort by score and take top 6
+            scored.sort((a, b) => b.score - a.score);
+            const related = scored.slice(0, 6).map(s => s.video);
+            
+            // Determine what type of recommendations these are
+            const sameCategory = related.filter(v => v.category === currentVideo.category);
+            if (sameCategory.length > 0 && currentVideo.category) {
+                relatedTitle.textContent = `More in ${currentVideo.category}`;
+                relatedSubtitle.textContent = `Related videos from the same category`;
+            } else {
+                relatedTitle.textContent = 'Recommended for You';
+                relatedSubtitle.textContent = 'Videos you might enjoy';
+            }
+            
+            relatedSection.style.display = 'block';
+            relatedGrid.innerHTML = related.map(v => {
+                const vidId = v.numericId || v.id;
+                const categoryTag = v.category ? `<span class="related-category">${escapeHtml(v.category)}</span>` : '';
                 
                 return `
-                    <a href="${videoUrl}" class="related-card" onclick="trackRelatedClick('${v.id}')">
+                    <a href="video.html?id=${encodeURIComponent(vidId)}" class="related-card" onclick="trackRelatedClick('${v.id}')">
                         <div class="related-thumb">
-                            <img src="${v.thumbnail}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%%22 height=%22100%%22%3E%3Crect width=%22100%%22 height=%22100%%22 fill=%22%231a1a24%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                            <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
                             <span class="related-type">HD</span>
+                            ${categoryTag}
                             ${v.duration ? `<span class="related-duration">${v.duration}</span>` : ''}
                         </div>
                         <div class="related-info">
@@ -777,7 +779,8 @@
             gtag('event', 'related_video_click', {
                 'event_category': 'navigation',
                 'event_label': videoId,
-                'source_video': currentVideo.id
+                'source_video': currentVideo.id,
+                'source_category': currentVideo.category || 'uncategorized'
             });
         }
 
@@ -798,9 +801,7 @@
                         'content_type': 'video',
                         'item_id': currentVideo.id
                     });
-                }).catch(() => {
-                    fallbackShare();
-                });
+                }).catch(() => fallbackShare());
             } else {
                 fallbackShare();
             }
@@ -850,7 +851,6 @@
             return Math.floor(days/365) + ' years ago';
         }
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             stopWatchTimeTracking();
             if (watchTime > 0) {
