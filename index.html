@@ -19,7 +19,19 @@
     <meta name="twitter:description" content="Discover exclusive leaked videos and content">
     <meta name="twitter:image" content="https://xplitleaks.qzz.io/og-image.jpg">
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID', {
+            'send_page_view': true,
+            'anonymize_ip': true
+        });
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -35,46 +47,80 @@
         }
 
         .header {
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid #1a1a24;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(180deg, rgba(0, 179, 255, 0.05) 0%, transparent 100%);
         }
 
         .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
         }
 
         .header p {
-            color: #888;
-            font-size: 0.875rem;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 400;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 2rem 1.5rem;
         }
 
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem 1.5rem;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00b3ff;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.25rem;
+        }
+
+        /* Loading State */
         .loading {
             text-align: center;
             padding: 4rem 2rem;
             color: #666;
         }
 
-        .loading::after {
-            content: '';
-            display: block;
-            width: 40px;
-            height: 40px;
-            border: 2px solid #1a1a24;
-            border-top-color: #ff6b6b;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 179, 255, 0.2);
+            border-top-color: #00b3ff;
             border-radius: 50%;
-            margin: 1rem auto;
+            margin: 0 auto 1rem;
             animation: spin 1s linear infinite;
         }
 
@@ -90,24 +136,37 @@
 
         .error button {
             margin-top: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: #ff6b6b;
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
+        .error button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 179, 255, 0.3);
+        }
+
+        /* Video Grid */
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         @media (max-width: 640px) {
             .video-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
             }
         }
 
@@ -115,20 +174,23 @@
             display: block;
             text-decoration: none;
             color: inherit;
-            background: #12121a;
-            border-radius: 12px;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 16px;
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
         }
 
         .video-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 179, 255, 0.2);
         }
 
         .thumbnail {
             position: relative;
             aspect-ratio: 16 / 9;
-            background: #1a1a24;
+            background: linear-gradient(135deg, #1a1a24 0%, #0f0f14 100%);
             overflow: hidden;
         }
 
@@ -137,42 +199,106 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform 0.5s ease;
+            opacity: 0;
+        }
+
+        .thumbnail img.loaded {
+            opacity: 1;
+        }
+
+        .video-card:hover .thumbnail img {
+            transform: scale(1.05);
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #1a1a24 25%, #252530 50%, #1a1a24 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .thumbnail img.loaded + .skeleton {
+            display: none;
         }
 
         .duration {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(0,0,0,0.8);
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
             color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 500;
+            font-weight: 600;
+            z-index: 2;
         }
 
         .video-type-indicator {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 179, 255, 0.9);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 0.625rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 179, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .play-overlay svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            margin-left: 4px;
         }
 
         .video-info {
-            padding: 0.875rem;
+            padding: 1.25rem;
         }
 
         .video-title {
-            font-size: 0.9375rem;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
             line-height: 1.4;
-            margin-bottom: 0.375rem;
+            margin-bottom: 0.75rem;
             color: #fff;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -183,24 +309,125 @@
         .video-meta {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
             color: #666;
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
         }
 
+        .video-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-views {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #00b3ff;
+            font-weight: 500;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(0, 179, 255, 0.1);
+            border-color: rgba(0, 179, 255, 0.3);
+            color: #00b3ff;
+        }
+
+        .pagination-btn.active {
+            background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
+            color: #000;
+            border-color: transparent;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
             color: #666;
         }
 
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: rgba(0, 179, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 40px;
+            height: 40px;
+            color: #00b3ff;
+        }
+
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             color: #444;
-            font-size: 0.75rem;
-            border-top: 1px solid #1a1a24;
-            margin-top: 2rem;
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 4rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #00b3ff;
         }
     </style>
 </head>
@@ -211,7 +438,25 @@
     </header>
 
     <main class="container">
-        <div id="loading" class="loading">Loading videos...</div>
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item">
+                <span class="stat-value" id="totalVideos">0</span>
+                <span class="stat-label">Videos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="totalDuration">0h</span>
+                <span class="stat-label">Content</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">HD</span>
+                <span class="stat-label">Quality</span>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading videos...</p>
+        </div>
         
         <div id="error" class="error" style="display: none;">
             <p>Failed to load videos</p>
@@ -220,17 +465,54 @@
 
         <div id="videoGrid" class="video-grid" style="display: none;"></div>
 
+        <div id="pagination" class="pagination" style="display: none;"></div>
+        <div id="paginationInfo" class="pagination-info" style="display: none;"></div>
+
         <div id="emptyState" class="empty-state" style="display: none;">
-            <p>No videos yet</p>
+            <div class="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                </svg>
+            </div>
+            <p>No videos available</p>
         </div>
     </main>
 
     <footer class="footer">
-        <p>© 2024 Xplitleaks • 18+ Only</p>
+        <div class="footer-links">
+            <a href="#" onclick="showAbout()">About</a>
+            <a href="#" onclick="showDMCA()">DMCA</a>
+            <a href="#" onclick="showContact()">Contact</a>
+        </div>
+        <p>© 2026 Xplitleaks • 18+ Only • All rights reserved</p>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', loadVideos);
+        // Configuration
+        const ITEMS_PER_PAGE = 12;
+        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F'; // Replace with your GA4 ID
+        
+        let allVideos = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update GA ID
+            const gaScript = document.querySelector('script[src*="googletagmanager"]');
+            if (gaScript) {
+                gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+            }
+            gtag('config', GA_MEASUREMENT_ID);
+            
+            // Check for page parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = parseInt(urlParams.get('page')) || 1;
+            currentPage = pageParam;
+            
+            loadVideos();
+        });
 
         async function loadVideos() {
             const loadingEl = document.getElementById('loading');
@@ -242,52 +524,240 @@
             errorEl.style.display = 'none';
             gridEl.style.display = 'none';
             emptyEl.style.display = 'none';
+            document.getElementById('pagination').style.display = 'none';
+            document.getElementById('paginationInfo').style.display = 'none';
+            document.getElementById('statsBar').style.display = 'none';
 
             try {
                 const response = await fetch('./videos.json?v=' + Date.now());
-                const videos = await response.json();
+                allVideos = await response.json();
                 
                 loadingEl.style.display = 'none';
                 
-                if (!Array.isArray(videos) || videos.length === 0) {
+                if (!Array.isArray(allVideos) || allVideos.length === 0) {
                     emptyEl.style.display = 'block';
+                    gtag('event', 'empty_state_shown', {
+                        'event_category': 'content',
+                        'event_label': 'no_videos'
+                    });
                 } else {
-                    renderVideos(videos);
+                    updateStats();
+                    renderVideos();
                     gridEl.style.display = 'grid';
+                    document.getElementById('statsBar').style.display = 'flex';
+                    initLazyLoading();
                 }
             } catch (err) {
                 console.error('Error:', err);
                 loadingEl.style.display = 'none';
                 errorEl.style.display = 'block';
+                gtag('event', 'load_error', {
+                    'event_category': 'error',
+                    'event_label': err.message
+                });
             }
         }
 
-        function renderVideos(videos) {
+        function updateStats() {
+            document.getElementById('totalVideos').textContent = allVideos.length;
+            
+            // Calculate total duration
+            let totalMinutes = 0;
+            allVideos.forEach(v => {
+                if (v.duration) {
+                    const parts = v.duration.split(':');
+                    if (parts.length === 2) {
+                        totalMinutes += parseInt(parts[0]) + parseInt(parts[1]) / 60;
+                    }
+                }
+            });
+            const totalHours = Math.floor(totalMinutes / 60);
+            document.getElementById('totalDuration').textContent = totalHours > 0 ? `${totalHours}h` : `${Math.floor(totalMinutes)}m`;
+        }
+
+        function renderVideos() {
             const gridEl = document.getElementById('videoGrid');
-            gridEl.innerHTML = videos.map(video => {
-                const videoUrl = `video.html?id=${encodeURIComponent(video.id)}`;
+            
+            // Calculate pagination
+            totalPages = Math.ceil(allVideos.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const videosToShow = allVideos.slice(start, end);
+            
+            gridEl.innerHTML = videosToShow.map((video, index) => {
+                // Use numericId if available, fallback to regular id
+                const videoId = video.numericId || video.id;
+                const videoUrl = `video.html?id=${encodeURIComponent(videoId)}`;
                 const thumbUrl = video.thumbnail || '';
-                // Detect if Storage or Stream
-                const isStorage = video.videoUrl || video.type === 'storage';
-                const typeLabel = isStorage ? 'HD' : 'STREAM';
                 
                 return `
-                    <a href="${videoUrl}" class="video-card">
+                    <a href="${videoUrl}" class="video-card" onclick="trackVideoClick('${video.id}', '${video.title}')">
                         <div class="thumbnail">
-                            <img src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" 
-                                 onerror="this.style.display='none'">
-                            <span class="video-type-indicator">${typeLabel}</span>
+                            <div class="skeleton"></div>
+                            <img data-src="${escapeHtml(thumbUrl)}" alt="" loading="lazy">
+                            <span class="video-type-indicator">HD</span>
                             <span class="duration">${escapeHtml(video.duration)}</span>
+                            <div class="play-overlay">
+                                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
                         </div>
                         <div class="video-info">
                             <h3 class="video-title">${escapeHtml(video.title)}</h3>
                             <div class="video-meta">
-                                <span>📅 ${formatDate(video.uploadDate)}</span>
+                                <span class="video-date">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                    ${formatDate(video.uploadDate)}
+                                </span>
                             </div>
                         </div>
                     </a>
                 `;
             }).join('');
+            
+            renderPagination();
+            
+            // Track page view
+            gtag('event', 'page_view', {
+                'page_title': `Page ${currentPage}`,
+                'page_location': window.location.href,
+                'videos_shown': videosToShow.length
+            });
+        }
+
+        function initLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        
+                        if (src) {
+                            img.src = src;
+                            img.removeAttribute('data-src');
+                            
+                            img.onload = () => {
+                                img.classList.add('loaded');
+                            };
+                            
+                            img.onerror = () => {
+                                // Fallback to placeholder
+                                img.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%%22 height=%22100%%22%3E%3Crect width=%22100%%22 height=%22100%%22 fill=%22%231a1a24%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23666%22 font-family=%22sans-serif%22 font-size=%2214%22%3EError%3C/text%3E%3C/svg%3E';
+                                img.classList.add('loaded');
+                            };
+                        }
+                        
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px',
+                threshold: 0.01
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        function renderPagination() {
+            const paginationEl = document.getElementById('pagination');
+            const infoEl = document.getElementById('paginationInfo');
+            
+            if (totalPages <= 1) {
+                paginationEl.style.display = 'none';
+                infoEl.style.display = 'none';
+                return;
+            }
+            
+            let html = '';
+            
+            // Previous button
+            html += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>`;
+            
+            // Page numbers
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            
+            if (endPage - startPage < maxButtons - 1) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+            
+            if (startPage > 1) {
+                html += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) html += `<span style="color: #666; padding: 0 0.5rem;">...</span>`;
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span style="color: #666; padding: 0 0.5rem;">...</span>`;
+                html += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            // Next button
+            html += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>`;
+            
+            paginationEl.innerHTML = html;
+            paginationEl.style.display = 'flex';
+            
+            const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+            const end = Math.min(currentPage * ITEMS_PER_PAGE, allVideos.length);
+            infoEl.textContent = `Showing ${start}-${end} of ${allVideos.length} videos`;
+            infoEl.style.display = 'block';
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            
+            currentPage = page;
+            
+            // Update URL without reload
+            const url = new URL(window.location);
+            if (page === 1) {
+                url.searchParams.delete('page');
+            } else {
+                url.searchParams.set('page', page);
+            }
+            window.history.pushState({}, '', url);
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            renderVideos();
+            initLazyLoading();
+            
+            gtag('event', 'page_change', {
+                'event_category': 'navigation',
+                'event_label': `page_${page}`
+            });
+        }
+
+        function trackVideoClick(videoId, videoTitle) {
+            gtag('event', 'video_click', {
+                'event_category': 'engagement',
+                'event_label': videoId,
+                'video_title': videoTitle,
+                'page_number': currentPage
+            });
         }
 
         function escapeHtml(text) {
@@ -309,6 +779,29 @@
             if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
             return `${Math.floor(diffDays / 30)}mo ago`;
         }
+
+        function showAbout() {
+            alert('Xplitleaks - Exclusive content platform');
+        }
+
+        function showDMCA() {
+            alert('DMCA Contact: dmca@xplitleaks.qzz.io');
+        }
+
+        function showContact() {
+            alert('Contact us at: contact@xplitleaks.qzz.io');
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = parseInt(urlParams.get('page')) || 1;
+            if (pageParam !== currentPage) {
+                currentPage = pageParam;
+                renderVideos();
+                initLazyLoading();
+            }
+        });
     </script>
 </body>
 </html>
