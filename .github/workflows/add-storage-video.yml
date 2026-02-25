@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       video_filename:
-        description: 'Video filename (e.g., video1.mp4)'
+        description: 'Video filename (e.g., video.mp4) - NO folder path'
         required: true
       video_title:
         description: 'Video Title'
@@ -13,7 +13,7 @@ on:
         description: 'Duration (e.g., 5:30)'
         required: true
       thumbnail_filename:
-        description: 'Thumbnail filename (optional, e.g., thumb1.jpg)'
+        description: 'Thumbnail filename (optional, e.g., video.jpg) - NO folder path'
         required: false
 
 jobs:
@@ -31,22 +31,37 @@ jobs:
           cat > add-video.js << 'EOF'
           const fs = require('fs');
           
-          const filename = process.env.VIDEO_FILENAME.trim();
+          let videoFile = process.env.VIDEO_FILENAME.trim();
           const title = process.env.VIDEO_TITLE.trim();
           const duration = process.env.VIDEO_DURATION.trim();
-          const thumbFilename = process.env.THUMB_FILENAME?.trim() || '';
+          let thumbFile = process.env.THUMB_FILENAME?.trim() || '';
           const cdnHost = process.env.CDN_HOST.trim();
           
-          // Create video ID from filename (remove extension)
-          const videoId = filename.replace(/\.[^/.]+$/, "");
+          // Auto-add .mp4 if missing
+          if (!videoFile.toLowerCase().endsWith('.mp4')) {
+            videoFile += '.mp4';
+          }
           
-          // Build URLs
-          const videoUrl = `https://${cdnHost}/${filename}`;
+          // Build full paths with your folder structure
+          const videoPath = `Xplit_vids/${videoFile}`;
+          const videoId = videoFile.replace(/\.[^/.]+$/, "");
           
-          // Thumbnail: use provided one, or default to video filename + .jpg
-          const thumbnailUrl = thumbFilename 
-            ? `https://${cdnHost}/${thumbFilename}`
-            : `https://${cdnHost}/${videoId}.jpg`;
+          // Thumbnail path
+          let thumbnailPath;
+          if (thumbFile) {
+            // Auto-add .jpg if no extension
+            if (!thumbFile.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/)) {
+              thumbFile += '.jpg';
+            }
+            thumbnailPath = `Xplit_vids/thumbnails/${thumbFile}`;
+          } else {
+            // Default thumbnail same name as video
+            thumbnailPath = `Xplit_vids/thumbnails/${videoId}.jpg`;
+          }
+          
+          // Build full URLs
+          const videoUrl = `https://${cdnHost}/${videoPath}`;
+          const thumbnailUrl = `https://${cdnHost}/${thumbnailPath}`;
           
           let videos = [];
           if (fs.existsSync('videos.json')) {
@@ -77,9 +92,9 @@ jobs:
           videos.unshift(newVideo);
           fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
           
-          console.log('✅ Storage video added!');
+          console.log('✅ Video added!');
           console.log('ID:', videoId);
-          console.log('Video URL:', videoUrl);
+          console.log('Video:', videoUrl);
           console.log('Thumbnail:', thumbnailUrl);
           EOF
           
@@ -96,5 +111,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add videos.json
-          git commit -m "Add storage video: ${{ github.event.inputs.video_title }}" || exit 0
+          git commit -m "Add video: ${{ github.event.inputs.video_title }}" || exit 0
           git push
