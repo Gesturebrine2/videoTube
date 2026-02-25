@@ -108,7 +108,7 @@
             padding: 0;
         }
 
-        /* Player Wrapper - Full width on mobile */
+        /* Player Wrapper */
         .player-wrapper {
             background: #000;
             width: 100%;
@@ -126,7 +126,7 @@
             }
         }
 
-        /* Plyr Customization - Mobile Optimized */
+        /* Plyr Customization - Hover to show controls */
         .plyr {
             --plyr-color-main: #00b3ff;
             --plyr-video-background: #000;
@@ -176,25 +176,37 @@
             position: relative;
         }
 
-        /* Controls bar - Always show progress on mobile */
+        /* Controls - Hidden by default, show on hover */
         .plyr--video .plyr__controls {
             background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
             padding: 10px;
             padding-top: 40px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Show controls on hover */
+        .plyr--video:hover .plyr__controls,
+        .plyr--video.plyr--paused .plyr__controls,
+        .plyr--video.plyr--loading .plyr__controls {
+            opacity: 1;
+        }
+
+        /* Always show controls on mobile touch */
+        @media (hover: none) and (pointer: coarse) {
+            .plyr--video .plyr__controls {
+                opacity: 1;
+            }
         }
 
         @media (min-width: 768px) {
             .plyr--video .plyr__controls {
                 padding: 15px;
                 padding-top: 50px;
-                gap: 8px;
             }
         }
 
-        /* Progress bar - Always visible and larger on mobile */
+        /* Progress bar - Larger for easier seeking */
         .plyr__progress {
             flex: 1 1 100%;
             margin: 0 0 8px 0;
@@ -202,19 +214,20 @@
         }
 
         .plyr__progress input[type="range"] {
-            height: 6px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         @media (min-width: 768px) {
             .plyr__progress input[type="range"] {
-                height: 4px;
+                height: 6px;
             }
         }
 
         .plyr__progress__buffer {
             background: rgba(255, 255, 255, 0.25);
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         /* Time display */
@@ -270,7 +283,7 @@
             font-weight: 500;
         }
 
-        /* Video Info - Mobile optimized spacing */
+        /* Video Info */
         .video-info {
             padding: 1rem;
             background: linear-gradient(135deg, rgba(20, 20, 30, 0.8) 0%, rgba(10, 10, 15, 0.8) 100%);
@@ -629,7 +642,7 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     
     <script>
-        const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
         
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
@@ -659,16 +672,10 @@
                 const response = await fetch('./videos.json?v=' + Date.now());
                 allVideos = await response.json();
                 
-                console.log('Loaded videos:', allVideos.length);
-                console.log('Looking for ID:', videoId);
-                
                 // Try multiple matching strategies
                 currentVideo = allVideos.find(v => v.numericId === videoId) || 
                               allVideos.find(v => v.id === videoId) ||
-                              allVideos.find(v => encodeURIComponent(v.id) === videoId) ||
-                              allVideos.find(v => v.id.replace(/[^a-zA-Z0-9]/g, '-') === videoId);
-                
-                console.log('Found video:', currentVideo);
+                              allVideos.find(v => encodeURIComponent(v.id) === videoId);
 
                 if (!currentVideo) {
                     showError();
@@ -677,7 +684,7 @@
 
                 renderVideo();
                 initPlayer();
-                renderRecommendations();
+                renderSmartRecommendations();
                 trackAnalytics();
 
                 document.getElementById('loading').style.display = 'none';
@@ -711,14 +718,14 @@
             
             player = new Plyr('#plyrPlayer', {
                 title: currentVideo.title,
+                // REMOVED: 'volume' from controls, REMOVED: 'mute' (keep only if you want mute button without slider)
                 controls: [
                     'play-large',
                     'play',
                     'progress',
                     'current-time',
                     'duration',
-                    'mute',
-                    'volume',
+                    'mute', // Keep mute button but no volume slider
                     'captions',
                     'settings',
                     'pip',
@@ -737,7 +744,8 @@
                 toggleInvert: true,
                 ratio: '16:9',
                 clickToPlay: true,
-                hideControls: false, // Don't hide controls on mobile
+                // Controls hide when playing, show on hover
+                hideControls: true,
                 resetOnEnd: false,
                 storage: { enabled: true, key: 'plyr_preferences' }
             });
@@ -759,43 +767,133 @@
             });
         }
 
-        function renderRecommendations() {
+        function renderSmartRecommendations() {
             const relatedGrid = document.getElementById('relatedGrid');
+            const relatedTitle = document.getElementById('relatedTitle');
             const relatedSubtitle = document.getElementById('relatedSubtitle');
             
             // Get all videos except current
+            const currentVideoId = currentVideo.numericId || currentVideo.id;
             const others = allVideos.filter(v => {
-                const currentId = currentVideo.numericId || currentVideo.id;
                 const otherId = v.numericId || v.id;
-                return otherId !== currentId;
+                return otherId !== currentVideoId;
             });
             
-            console.log('Other videos:', others.length);
-            
             if (others.length === 0) {
+                relatedTitle.textContent = 'No Recommendations';
                 relatedSubtitle.textContent = 'No other videos available';
-                relatedGrid.innerHTML = '<div class="no-related">No recommendations available</div>';
+                relatedGrid.innerHTML = '<div class="no-related">Check back later for more content</div>';
                 return;
             }
             
-            // Shuffle and take 6
-            const shuffled = others.sort(() => 0.5 - Math.random());
-            const recommendations = shuffled.slice(0, 6);
+            // SMART SCORING ALGORITHM
+            const scored = others.map(video => {
+                let score = 0;
+                let reasons = [];
+                
+                // 1. Same category = highest priority (+100)
+                if (currentVideo.category && video.category && 
+                    video.category.toLowerCase() === currentVideo.category.toLowerCase()) {
+                    score += 100;
+                    reasons.push('same category');
+                }
+                
+                // 2. Similar title words (+15 per common word)
+                const currentWords = currentVideo.title.toLowerCase()
+                    .replace(/[^\w\s]/g, '')
+                    .split(/\s+/)
+                    .filter(w => w.length > 3); // Only words > 3 chars
+                
+                const videoWords = video.title.toLowerCase()
+                    .replace(/[^\w\s]/g, '')
+                    .split(/\s+/)
+                    .filter(w => w.length > 3);
+                
+                const commonWords = currentWords.filter(w => videoWords.includes(w));
+                if (commonWords.length > 0) {
+                    score += commonWords.length * 15;
+                    reasons.push(`${commonWords.length} title matches`);
+                }
+                
+                // 3. Recent uploads get boost (+20 if <7 days, +10 if <30 days)
+                const daysSinceUpload = (new Date() - new Date(video.uploadDate)) / (1000 * 60 * 60 * 24);
+                if (daysSinceUpload < 7) {
+                    score += 20;
+                    reasons.push('very recent');
+                } else if (daysSinceUpload < 30) {
+                    score += 10;
+                    reasons.push('recent');
+                }
+                
+                // 4. Random factor for variety (+0-10)
+                const randomFactor = Math.random() * 10;
+                score += randomFactor;
+                
+                return { 
+                    video, 
+                    score, 
+                    reasons,
+                    isSmart: score >= 50 // Threshold for "smart" recommendation
+                };
+            });
             
-            relatedSubtitle.textContent = `${others.length} more videos available`;
+            // Sort by score
+            scored.sort((a, b) => b.score - a.score);
             
-            relatedGrid.innerHTML = recommendations.map(v => {
+            // Try to get smart recommendations first (score >= 50)
+            let smartRecommendations = scored.filter(s => s.isSmart).slice(0, 6);
+            
+            // If we have less than 3 smart recommendations, fill with random high scorers
+            if (smartRecommendations.length < 3) {
+                const additional = scored
+                    .filter(s => !s.isSmart)
+                    .slice(0, 6 - smartRecommendations.length);
+                smartRecommendations = smartRecommendations.concat(additional);
+            }
+            
+            // If still no recommendations (shouldn't happen if others > 0), use random
+            const finalRecommendations = smartRecommendations.length > 0 
+                ? smartRecommendations 
+                : scored.slice(0, 6);
+            
+            // Determine header text based on recommendation quality
+            const hasSmartMatches = finalRecommendations.some(r => r.isSmart);
+            const hasCategoryMatch = finalRecommendations.some(r => 
+                r.reasons.includes('same category')
+            );
+            
+            if (hasCategoryMatch && currentVideo.category) {
+                relatedTitle.textContent = `More ${currentVideo.category}`;
+                relatedSubtitle.textContent = 'Related videos from the same category';
+            } else if (hasSmartMatches) {
+                relatedTitle.textContent = 'Recommended for You';
+                relatedSubtitle.textContent = 'Based on your viewing preferences';
+            } else {
+                relatedTitle.textContent = 'You Might Also Like';
+                relatedSubtitle.textContent = `${others.length} more videos available`;
+            }
+            
+            // Render cards
+            relatedGrid.innerHTML = finalRecommendations.map((item, index) => {
+                const v = item.video;
                 const vidId = v.numericId || v.id;
                 const cleanId = encodeURIComponent(vidId);
                 
+                // Debug info (remove in production)
+                const debugScore = false; // Set to true to see scores
+                const scoreBadge = debugScore ? 
+                    `<span style="position:absolute;bottom:6px;left:6px;background:red;color:white;padding:2px 4px;font-size:10px;">${Math.round(item.score)}</span>` : '';
+                
                 return `
-                    <a href="video.html?id=${cleanId}" class="related-card">
+                    <a href="video.html?id=${cleanId}" class="related-card" 
+                       onclick="trackRecommendationClick('${v.id}', '${item.reasons.join(', ')}', ${index + 1})">
                         <div class="related-thumb">
                             <img src="${v.thumbnail || ''}" 
                                  alt="" 
                                  loading="lazy" 
                                  onerror="this.style.opacity='0.5'; this.style.background='#1a1a24';">
                             <span class="related-type">HD</span>
+                            ${scoreBadge}
                             ${v.duration ? `<span class="related-duration">${v.duration}</span>` : ''}
                         </div>
                         <div class="related-info">
@@ -805,6 +903,24 @@
                     </a>
                 `;
             }).join('');
+            
+            // Log for debugging
+            console.log('Smart Recommendations:', finalRecommendations.map(r => ({
+                title: r.video.title.substring(0, 30),
+                score: Math.round(r.score),
+                reasons: r.reasons,
+                isSmart: r.isSmart
+            })));
+        }
+
+        function trackRecommendationClick(videoId, reasons, position) {
+            gtag('event', 'recommendation_click', {
+                'event_category': 'navigation',
+                'event_label': videoId,
+                'recommendation_reason': reasons,
+                'position': position,
+                'source_video': currentVideo.id
+            });
         }
 
         function startWatchTimeTracking() {
