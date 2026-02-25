@@ -207,38 +207,18 @@
             letter-spacing: 0.5px;
         }
 
-        .category-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.375rem 0.875rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-
-        .category-badge:hover {
-            background: rgba(0, 179, 255, 0.2);
-            border-color: rgba(0, 179, 255, 0.4);
-        }
-
         .video-stats {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        /* Related Videos Section */
+        /* RELATED VIDEOS - FORCE VISIBLE */
         .related {
             margin-top: 2rem;
+            display: block !important; /* Force show */
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .related-header {
@@ -259,6 +239,7 @@
         .related-subtitle {
             color: #666;
             font-size: 0.875rem;
+            margin-top: 0.25rem;
         }
 
         .related-grid {
@@ -286,6 +267,7 @@
             overflow: hidden;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            display: block; /* Ensure visible */
         }
 
         .related-card:hover {
@@ -325,20 +307,6 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .related-category {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #00b3ff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: 1px solid rgba(0, 179, 255, 0.3);
         }
 
         .related-duration {
@@ -438,14 +406,16 @@
             color: #00b3ff;
         }
 
-        /* No recommendations state */
-        .no-related {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-            background: rgba(20, 20, 30, 0.3);
-            border-radius: 12px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
+        /* Debug info */
+        .debug-info {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid red;
+            color: red;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
         }
     </style>
 </head>
@@ -486,7 +456,6 @@
                 <h1 class="video-title" id="videoTitle">...</h1>
                 <div class="video-meta">
                     <span class="video-badge">HD</span>
-                    <a href="#" class="category-badge" id="categoryBadge" style="display: none;"></a>
                     <span class="video-stats">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
@@ -499,14 +468,17 @@
                 </div>
             </div>
 
-            <div class="related" id="relatedSection" style="display: none;">
+            <!-- RELATED SECTION - ALWAYS IN DOM -->
+            <div class="related" id="relatedSection">
                 <div class="related-header">
                     <div>
                         <h2 id="relatedTitle">More Videos</h2>
-                        <div class="related-subtitle" id="relatedSubtitle"></div>
+                        <div class="related-subtitle" id="relatedSubtitle">Loading recommendations...</div>
                     </div>
                 </div>
-                <div class="related-grid" id="relatedGrid"></div>
+                <div class="related-grid" id="relatedGrid">
+                    <!-- Content injected here -->
+                </div>
             </div>
         </div>
     </main>
@@ -521,7 +493,7 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     
     <script>
-        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
+        const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
         
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
@@ -531,7 +503,11 @@
         let watchTime = 0;
         let watchInterval = null;
 
+        console.log('🔍 Video ID from URL:', videoId);
+
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded');
+            
             const gaScript = document.querySelector('script[src*="googletagmanager"]');
             if (gaScript) {
                 gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -539,51 +515,78 @@
             gtag('config', GA_MEASUREMENT_ID);
             
             if (!videoId) {
+                console.error('❌ No video ID provided');
                 showError();
                 return;
             }
+            
+            // Force show related section initially
+            const relatedSection = document.getElementById('relatedSection');
+            if (relatedSection) {
+                relatedSection.style.display = 'block';
+                console.log('✅ Related section found and shown');
+            } else {
+                console.error('❌ Related section not found in DOM');
+            }
+            
             loadVideo();
         });
 
         async function loadVideo() {
+            console.log('🚀 Loading video...');
+            
             try {
+                console.log('📡 Fetching videos.json...');
                 const response = await fetch('./videos.json?v=' + Date.now());
-                allVideos = await response.json();
+                console.log('📡 Response status:', response.status);
                 
-                currentVideo = allVideos.find(v => v.id === videoId || v.numericId === videoId);
+                allVideos = await response.json();
+                console.log('📊 Total videos loaded:', allVideos.length);
+                console.log('📊 First few videos:', allVideos.slice(0, 3).map(v => ({id: v.id, numericId: v.numericId, title: v.title.substring(0, 30)})));
+
+                // Try to find video by numericId first, then by id
+                currentVideo = allVideos.find(v => v.numericId === videoId) || 
+                              allVideos.find(v => v.id === videoId);
+                
+                console.log('🎯 Current video found:', currentVideo ? 'YES' : 'NO');
+                if (currentVideo) {
+                    console.log('🎯 Video details:', {
+                        id: currentVideo.id,
+                        numericId: currentVideo.numericId,
+                        title: currentVideo.title
+                    });
+                }
 
                 if (!currentVideo) {
+                    console.error('❌ Video not found in library');
                     showError();
                     return;
                 }
 
                 renderVideo();
                 initPremiumPlayer();
-                renderSmartRecommendations();
+                
+                console.log('🎨 Rendering recommendations...');
+                renderRecommendations();
+                
                 trackVideoAnalytics();
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
+                console.log('✅ Content shown');
 
             } catch (err) {
-                console.error(err);
+                console.error('❌ Error in loadVideo:', err);
                 showError();
             }
         }
 
         function renderVideo() {
+            console.log('📝 Rendering video info...');
             document.getElementById('videoTitle').textContent = currentVideo.title;
             document.getElementById('videoDuration').textContent = currentVideo.duration || '--:--';
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
             document.title = currentVideo.title + ' - Xplitleaks';
-            
-            // Show category if exists
-            if (currentVideo.category) {
-                const catBadge = document.getElementById('categoryBadge');
-                catBadge.textContent = currentVideo.category;
-                catBadge.style.display = 'inline-flex';
-                catBadge.href = `index.html?category=${encodeURIComponent(currentVideo.category)}`;
-            }
             
             document.querySelector('meta[property="og:title"]').content = currentVideo.title;
             document.querySelector('meta[property="og:description"]').content = 'Watch ' + currentVideo.title;
@@ -591,6 +594,7 @@
         }
 
         function initPremiumPlayer() {
+            console.log('🎬 Initializing player...');
             const container = document.getElementById('playerContainer');
             const videoUrl = currentVideo.videoUrl;
             
@@ -608,162 +612,73 @@
                     'settings', 'pip', 'airplay', 'fullscreen'
                 ],
                 settings: ['captions', 'quality', 'speed', 'loop'],
-                quality: {
-                    default: 1080,
-                    options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240],
-                    forced: true
-                },
-                speed: {
-                    selected: 1,
-                    options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
-                },
                 keyboard: { focused: true, global: true },
                 tooltips: { controls: true, seek: true },
-                displayDuration: true,
-                invertTime: false,
-                toggleInvert: true,
-                ratio: '16:9',
-                storage: { enabled: true, key: 'plyr_preferences' }
+                ratio: '16:9'
             });
 
-            // Event tracking
             player.on('play', () => {
                 gtag('event', 'video_play', {
                     'event_category': 'engagement',
-                    'event_label': currentVideo.id,
-                    'video_title': currentVideo.title,
-                    'video_duration': currentVideo.duration,
-                    'video_category': currentVideo.category || 'uncategorized'
+                    'event_label': currentVideo.id
                 });
                 startWatchTimeTracking();
             });
-
-            player.on('pause', () => {
-                gtag('event', 'video_pause', {
-                    'event_category': 'engagement',
-                    'event_label': currentVideo.id,
-                    'watch_time': watchTime
-                });
-                stopWatchTimeTracking();
-            });
-
-            player.on('ended', () => {
-                gtag('event', 'video_complete', {
-                    'event_category': 'engagement',
-                    'event_label': currentVideo.id,
-                    'watch_time': watchTime,
-                    'completion_rate': 100
-                });
-                stopWatchTimeTracking();
-            });
-
-            player.on('enterfullscreen', () => {
-                gtag('event', 'video_fullscreen', {
-                    'event_category': 'engagement',
-                    'event_label': currentVideo.id
-                });
-            });
         }
 
-        function startWatchTimeTracking() {
-            watchInterval = setInterval(() => { watchTime += 1; }, 1000);
-        }
-
-        function stopWatchTimeTracking() {
-            if (watchInterval) {
-                clearInterval(watchInterval);
-                watchInterval = null;
-            }
-        }
-
-        function trackVideoAnalytics() {
-            gtag('event', 'page_view', {
-                'page_title': currentVideo.title,
-                'page_location': window.location.href,
-                'video_id': currentVideo.id,
-                'video_duration': currentVideo.duration,
-                'video_category': currentVideo.category || 'uncategorized'
-            });
-
-            const deviceInfo = {
-                'screen_resolution': `${window.screen.width}x${window.screen.height}`,
-                'viewport_size': `${window.innerWidth}x${window.innerHeight}`,
-                'device_memory': navigator.deviceMemory || 'unknown',
-                'connection_type': navigator.connection ? navigator.connection.effectiveType : 'unknown'
-            };
+        function renderRecommendations() {
+            console.log('🔥 renderRecommendations() called');
+            console.log('📊 allVideos length:', allVideos.length);
             
-            gtag('event', 'device_info', {
-                'event_category': 'technical',
-                ...deviceInfo
-            });
-        }
-
-        function renderSmartRecommendations() {
             const relatedSection = document.getElementById('relatedSection');
             const relatedGrid = document.getElementById('relatedGrid');
             const relatedTitle = document.getElementById('relatedTitle');
             const relatedSubtitle = document.getElementById('relatedSubtitle');
             
-            // Filter out current video
-            let candidates = allVideos.filter(v => 
-                v.id !== currentVideo.id && v.numericId !== currentVideo.numericId
-            );
-            
-            if (candidates.length === 0) {
-                relatedSection.style.display = 'none';
+            if (!relatedSection || !relatedGrid) {
+                console.error('❌ Related elements not found:', {relatedSection, relatedGrid});
                 return;
             }
             
-            // Smart scoring algorithm
-            const scored = candidates.map(video => {
-                let score = 0;
-                
-                // Same category = high priority
-                if (currentVideo.category && video.category === currentVideo.category) {
-                    score += 100;
-                }
-                
-                // Similar title words
-                const currentWords = currentVideo.title.toLowerCase().split(/\s+/);
-                const videoWords = video.title.toLowerCase().split(/\s+/);
-                const commonWords = currentWords.filter(w => videoWords.includes(w));
-                score += commonWords.length * 10;
-                
-                // Recent uploads get slight boost
-                const daysSinceUpload = (new Date() - new Date(video.uploadDate)) / (1000 * 60 * 60 * 24);
-                if (daysSinceUpload < 7) score += 5;
-                
-                // Random factor for variety (0-10)
-                score += Math.random() * 10;
-                
-                return { video, score };
+            // Filter out current video
+            const candidates = allVideos.filter(v => {
+                const isDifferent = v.id !== currentVideo.id && v.numericId !== currentVideo.numericId;
+                return isDifferent;
             });
             
-            // Sort by score and take top 6
-            scored.sort((a, b) => b.score - a.score);
-            const related = scored.slice(0, 6).map(s => s.video);
+            console.log('🎯 Candidates after filtering:', candidates.length);
             
-            // Determine what type of recommendations these are
-            const sameCategory = related.filter(v => v.category === currentVideo.category);
-            if (sameCategory.length > 0 && currentVideo.category) {
-                relatedTitle.textContent = `More in ${currentVideo.category}`;
-                relatedSubtitle.textContent = `Related videos from the same category`;
-            } else {
-                relatedTitle.textContent = 'Recommended for You';
-                relatedSubtitle.textContent = 'Videos you might enjoy';
+            if (candidates.length === 0) {
+                console.log('⚠️ No other videos found');
+                relatedTitle.textContent = 'No Recommendations';
+                relatedSubtitle.textContent = 'Add more videos to see recommendations';
+                relatedGrid.innerHTML = '<p style="color: #666; padding: 2rem;">No other videos available</p>';
+                relatedSection.style.display = 'block';
+                return;
             }
             
-            relatedSection.style.display = 'block';
-            relatedGrid.innerHTML = related.map(v => {
+            // Simple shuffle for variety
+            const shuffled = candidates.sort(() => 0.5 - Math.random());
+            const related = shuffled.slice(0, 6);
+            
+            console.log('🎨 Rendering', related.length, 'related videos');
+            
+            relatedTitle.textContent = 'Recommended for You';
+            relatedSubtitle.textContent = 'More videos you might enjoy';
+            
+            relatedGrid.innerHTML = related.map((v, index) => {
                 const vidId = v.numericId || v.id;
-                const categoryTag = v.category ? `<span class="related-category">${escapeHtml(v.category)}</span>` : '';
+                console.log(`🎨 Rendering card ${index + 1}:`, vidId);
                 
                 return `
-                    <a href="video.html?id=${encodeURIComponent(vidId)}" class="related-card" onclick="trackRelatedClick('${v.id}')">
+                    <a href="video.html?id=${encodeURIComponent(vidId)}" class="related-card">
                         <div class="related-thumb">
-                            <img src="${v.thumbnail}" loading="lazy" onerror="this.style.display='none'">
+                            <img src="${v.thumbnail || ''}" 
+                                 alt="${escapeHtml(v.title)}" 
+                                 loading="lazy" 
+                                 onerror="this.style.display='none'"
+                                 onload="console.log('✅ Image loaded for ${vidId}')">
                             <span class="related-type">HD</span>
-                            ${categoryTag}
                             ${v.duration ? `<span class="related-duration">${v.duration}</span>` : ''}
                         </div>
                         <div class="related-info">
@@ -773,50 +688,31 @@
                     </a>
                 `;
             }).join('');
+            
+            // Force show
+            relatedSection.style.display = 'block';
+            relatedSection.style.visibility = 'visible';
+            relatedSection.style.opacity = '1';
+            
+            console.log('✅ Recommendations rendered and shown');
         }
 
-        function trackRelatedClick(videoId) {
-            gtag('event', 'related_video_click', {
-                'event_category': 'navigation',
-                'event_label': videoId,
-                'source_video': currentVideo.id,
-                'source_category': currentVideo.category || 'uncategorized'
+        function startWatchTimeTracking() {
+            watchInterval = setInterval(() => { watchTime += 1; }, 1000);
+        }
+
+        function trackVideoAnalytics() {
+            gtag('event', 'page_view', {
+                'page_title': currentVideo.title,
+                'page_location': window.location.href
             });
         }
 
         function shareVideo() {
             if (!currentVideo) return;
-            
-            const shareData = {
-                title: currentVideo.title,
-                text: `Check out "${currentVideo.title}" on Xplitleaks`,
-                url: window.location.href
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData).then(() => {
-                    gtag('event', 'share', {
-                        'event_category': 'engagement',
-                        'event_label': 'native_share',
-                        'content_type': 'video',
-                        'item_id': currentVideo.id
-                    });
-                }).catch(() => fallbackShare());
-            } else {
-                fallbackShare();
-            }
-        }
-
-        function fallbackShare() {
             navigator.clipboard.writeText(window.location.href).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
-                gtag('event', 'share', {
-                    'event_category': 'engagement',
-                    'event_label': 'copy_link',
-                    'content_type': 'video',
-                    'item_id': currentVideo.id
-                });
                 setTimeout(() => toast.classList.remove('show'), 3000);
             });
         }
@@ -824,10 +720,6 @@
         function showError() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('error').style.display = 'block';
-            gtag('event', 'video_load_error', {
-                'event_category': 'error',
-                'event_label': videoId || 'unknown'
-            });
         }
 
         function escapeHtml(text) {
@@ -847,20 +739,8 @@
             if (days === 1) return 'Yesterday';
             if (days < 7) return days + ' days ago';
             if (days < 30) return Math.floor(days/7) + ' weeks ago';
-            if (days < 365) return Math.floor(days/30) + ' months ago';
-            return Math.floor(days/365) + ' years ago';
+            return Math.floor(days/30) + ' months ago';
         }
-
-        window.addEventListener('beforeunload', () => {
-            stopWatchTimeTracking();
-            if (watchTime > 0) {
-                gtag('event', 'video_session_end', {
-                    'event_category': 'engagement',
-                    'event_label': currentVideo ? currentVideo.id : 'unknown',
-                    'total_watch_time': watchTime
-                });
-            }
-        });
     </script>
 </body>
 </html>
