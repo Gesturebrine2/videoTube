@@ -18,15 +18,14 @@
     <meta name="twitter:description" content="Discover exclusive leaked videos and content">
     <meta name="twitter:image" content="https://xplitleaks.qzz.io/og-image.jpg">
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BK3KJL2B1F"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'GA_MEASUREMENT_ID', {
-            'send_page_view': true,
-            'anonymize_ip': true
-        });
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BK3KJL2B1F');
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -73,7 +72,6 @@
             padding: 2rem 1.5rem;
         }
 
-        /* Search Bar */
         .search-section {
             margin-bottom: 2rem;
         }
@@ -121,7 +119,6 @@
             font-size: 0.875rem;
         }
 
-        /* Categories */
         .categories {
             display: flex;
             gap: 0.75rem;
@@ -155,7 +152,6 @@
             font-weight: 600;
         }
 
-        /* Stats Bar */
         .stats-bar {
             display: flex;
             justify-content: center;
@@ -187,7 +183,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Loading State */
         .loading {
             text-align: center;
             padding: 4rem 2rem;
@@ -231,7 +226,6 @@
             box-shadow: 0 10px 30px rgba(0, 179, 255, 0.3);
         }
 
-        /* Video Grid */
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -286,7 +280,6 @@
             transform: scale(1.05);
         }
 
-        /* Skeleton Loading */
         .skeleton {
             position: absolute;
             top: 0;
@@ -416,7 +409,6 @@
             gap: 0.5rem;
         }
 
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -466,7 +458,6 @@
             margin-top: 1rem;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 6rem 2rem;
@@ -490,7 +481,6 @@
             color: #00b3ff;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 3rem 2rem;
@@ -585,16 +575,15 @@
 
     <footer class="footer">
         <div class="footer-links">
-            <a href="#" onclick="showAbout()">About</a>
-            <a href="#" onclick="showDMCA()">DMCA</a>
-            <a href="#" onclick="showContact()">Contact</a>
+            <a href="#" onclick="alert('Xplitleaks - Exclusive content platform')">About</a>
+            <a href="#" onclick="alert('DMCA Contact: dmca@xplitleaks.qzz.io')">DMCA</a>
+            <a href="#" onclick="alert('Contact us at: contact@xplitleaks.qzz.io')">Contact</a>
         </div>
         <p>© 2024 Xplitleaks • 18+ Only • All rights reserved</p>
     </footer>
 
     <script>
         const ITEMS_PER_PAGE = 12;
-        const GA_MEASUREMENT_ID = 'G-BK3KJL2B1F';
         
         let allVideos = [];
         let filteredVideos = [];
@@ -604,17 +593,10 @@
         let categories = new Set();
 
         document.addEventListener('DOMContentLoaded', () => {
-            const gaScript = document.querySelector('script[src*="googletagmanager"]');
-            if (gaScript) {
-                gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-            }
-            gtag('config', GA_MEASUREMENT_ID);
-            
             const urlParams = new URLSearchParams(window.location.search);
             const pageParam = parseInt(urlParams.get('page')) || 1;
             currentPage = pageParam;
             
-            // Setup search
             const searchInput = document.getElementById('searchInput');
             searchInput.addEventListener('input', debounce(handleSearch, 300));
             
@@ -651,13 +633,11 @@
                 const response = await fetch('./videos.json?v=' + Date.now());
                 allVideos = await response.json();
                 
-                // Extract categories
                 allVideos.forEach(v => {
                     if (v.category) categories.add(v.category.toLowerCase());
                 });
                 renderCategories();
                 
-                // Initialize filtered videos
                 filteredVideos = [...allVideos];
                 
                 loadingEl.style.display = 'none';
@@ -695,30 +675,17 @@
             currentCategory = category;
             currentPage = 1;
             
-            // Update active state
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.category === category);
             });
             
             filterVideos();
-            
-            gtag('event', 'category_select', {
-                'event_category': 'navigation',
-                'event_label': category
-            });
         }
 
         function handleSearch(e) {
             searchQuery = e.target.value.toLowerCase().trim();
             currentPage = 1;
             filterVideos();
-            
-            if (searchQuery) {
-                gtag('event', 'search', {
-                    'event_category': 'engagement',
-                    'event_label': searchQuery
-                });
-            }
         }
 
         function filterVideos() {
@@ -733,7 +700,6 @@
                 return matchesCategory && matchesSearch;
             });
             
-            // Update search stats
             const statsEl = document.getElementById('searchStats');
             if (searchQuery) {
                 statsEl.textContent = `Found ${filteredVideos.length} result${filteredVideos.length !== 1 ? 's' : ''} for "${searchQuery}"`;
@@ -776,7 +742,6 @@
             document.getElementById('emptyState').style.display = 'none';
             gridEl.style.display = 'grid';
             
-            // Calculate pagination
             const totalPages = Math.ceil(filteredVideos.length / ITEMS_PER_PAGE);
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
@@ -792,7 +757,7 @@
                 const categoryTag = video.category ? `<span class="category-tag">${escapeHtml(video.category)}</span>` : '';
                 
                 return `
-                    <a href="${videoUrl}" class="video-card" onclick="trackVideoClick('${video.id}', '${video.title}')">
+                    <a href="${videoUrl}" class="video-card">
                         <div class="thumbnail">
                             <div class="skeleton"></div>
                             <img src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="handleImageError(this)">
@@ -905,15 +870,6 @@
             renderVideos();
         }
 
-        function trackVideoClick(videoId, videoTitle) {
-            gtag('event', 'video_click', {
-                'event_category': 'engagement',
-                'event_label': videoId,
-                'video_title': videoTitle,
-                'page_number': currentPage
-            });
-        }
-
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
@@ -933,10 +889,6 @@
             if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
             return `${Math.floor(diffDays / 30)}mo ago`;
         }
-
-        function showAbout() { alert('Xplitleaks - Exclusive content platform'); }
-        function showDMCA() { alert('DMCA Contact: dmca@xplitleaks.qzz.io'); }
-        function showContact() { alert('Contact us at: contact@xplitleaks.qzz.io'); }
 
         window.addEventListener('popstate', () => {
             const urlParams = new URLSearchParams(window.location.search);
