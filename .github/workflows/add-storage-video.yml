@@ -15,6 +15,9 @@ on:
       thumbnail_filename:
         description: 'Thumbnail filename (optional, e.g., video.jpg) - NO folder path'
         required: false
+      custom_id:
+        description: 'Custom ID (optional - leave empty for auto-generated numeric ID)'
+        required: false
 
 jobs:
   add-video:
@@ -30,11 +33,13 @@ jobs:
         run: |
           cat > add-video.js << 'EOF'
           const fs = require('fs');
+          const crypto = require('crypto');
           
           let videoFile = process.env.VIDEO_FILENAME.trim();
           const title = process.env.VIDEO_TITLE.trim();
           const duration = process.env.VIDEO_DURATION.trim();
           let thumbFile = process.env.THUMB_FILENAME?.trim() || '';
+          const customId = process.env.CUSTOM_ID?.trim() || '';
           const cdnHost = process.env.CDN_HOST.trim();
           
           // Auto-add .mp4 if missing
@@ -44,7 +49,7 @@ jobs:
           
           // Build full paths with your folder structure
           const videoPath = `Xplit_vids/${videoFile}`;
-          const videoId = videoFile.replace(/\.[^/.]+$/, "");
+          const baseFileName = videoFile.replace(/\.[^/.]+$/, "");
           
           // Thumbnail path
           let thumbnailPath;
@@ -56,7 +61,7 @@ jobs:
             thumbnailPath = `Xplit_vids/thumbnails/${thumbFile}`;
           } else {
             // Default thumbnail same name as video
-            thumbnailPath = `Xplit_vids/thumbnails/${videoId}.jpg`;
+            thumbnailPath = `Xplit_vids/thumbnails/${baseFileName}.jpg`;
           }
           
           // Build full URLs
@@ -73,27 +78,57 @@ jobs:
             }
           }
           
-          // Check for duplicates
-          if (videos.find(v => v.id === videoId)) {
-            console.error('❌ Video already exists!');
+          // Generate numeric ID
+          let numericId;
+          if (customId) {
+            // Use custom ID if provided
+            numericId = customId;
+            // Check for duplicates
+            if (videos.find(v => v.numericId === numericId || v.id === numericId)) {
+              console.error('❌ Custom ID already exists!');
+              process.exit(1);
+            }
+          } else {
+            // Auto-generate sequential numeric ID
+            const existingIds = videos
+              .map(v => parseInt(v.numericId))
+              .filter(n => !isNaN(n));
+            const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+            numericId = String(maxId + 1).padStart(6, '0'); // Format: 000001, 000002, etc.
+          }
+          
+          // Create URL-friendly ID from title (for backwards compatibility)
+          const urlFriendlyId = title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 50);
+          
+          // Check for duplicate video files
+          if (videos.find(v => v.videoUrl === videoUrl)) {
+            console.error('❌ Video file already exists in library!');
             process.exit(1);
           }
           
           const newVideo = {
-            id: videoId,
+            id: urlFriendlyId, // Keep for backwards compatibility
+            numericId: numericId, // New clean numeric ID for URLs
             title: title,
             videoUrl: videoUrl,
             thumbnail: thumbnailUrl,
             duration: duration,
             uploadDate: new Date().toISOString().split('T')[0],
-            type: 'storage'
+            type: 'storage',
+            fileSize: null, // Can be updated manually if needed
+            addedAt: new Date().toISOString()
           };
           
           videos.unshift(newVideo);
           fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
           
-          console.log('✅ Video added!');
-          console.log('ID:', videoId);
+          console.log('✅ Video added successfully!');
+          console.log('Numeric ID:', numericId);
+          console.log('URL:', `https://xplitleaks.qzz.io/video.html?id=${numericId}`);
           console.log('Video:', videoUrl);
           console.log('Thumbnail:', thumbnailUrl);
           EOF
@@ -104,6 +139,7 @@ jobs:
           VIDEO_TITLE: ${{ github.event.inputs.video_title }}
           VIDEO_DURATION: ${{ github.event.inputs.video_duration }}
           THUMB_FILENAME: ${{ github.event.inputs.thumbnail_filename }}
+          CUSTOM_ID: ${{ github.event.inputs.custom_id }}
           CDN_HOST: ${{ secrets.BUNNY_STORAGE_HOST }}
       
       - name: Commit and push changes
@@ -111,5 +147,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add videos.json
-          git commit -m "Add video: ${{ github.event.inputs.video_title }}" || exit 0
+          git commit -m "Add video: ${{ github.event.inputs.video_title }} [ID: auto-generated]" || exit 0
           git push
