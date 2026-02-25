@@ -16,10 +16,10 @@ on:
         description: 'Thumbnail filename (optional) - NO folder path'
         required: false
       category:
-        description: 'Category (e.g., amateur, professional, homemade, etc.)'
+        description: 'Category (e.g., teen, mature, interracial, anal, lesbian, amateur, homemade, bbc, etc.)'
         required: false
       custom_id:
-        description: 'Custom ID (optional - leave empty for auto-generated)'
+        description: 'Custom ID (optional - leave empty for auto-generated numeric ID)'
         required: false
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
         run: |
           cat > add-video.js << 'EOF'
           const fs = require('fs');
-          
+
           let videoFile = process.env.VIDEO_FILENAME.trim();
           const title = process.env.VIDEO_TITLE.trim();
           const duration = process.env.VIDEO_DURATION.trim();
@@ -44,15 +44,15 @@ jobs:
           const category = process.env.CATEGORY?.trim() || '';
           const customId = process.env.CUSTOM_ID?.trim() || '';
           const cdnHost = process.env.CDN_HOST.trim();
-          
+
           // Auto-add .mp4 if missing
           if (!videoFile.toLowerCase().endsWith('.mp4')) {
             videoFile += '.mp4';
           }
-          
+
           const videoPath = `Xplit_vids/${videoFile}`;
           const baseFileName = videoFile.replace(/\.[^/.]+$/, "");
-          
+
           // Thumbnail path
           let thumbnailPath;
           if (thumbFile) {
@@ -63,20 +63,21 @@ jobs:
           } else {
             thumbnailPath = `Xplit_vids/thumbnails/${baseFileName}.jpg`;
           }
-          
+
           const videoUrl = `https://${cdnHost}/${videoPath}`;
           const thumbnailUrl = `https://${cdnHost}/${thumbnailPath}`;
-          
+
           let videos = [];
           if (fs.existsSync('videos.json')) {
             try {
               videos = JSON.parse(fs.readFileSync('videos.json', 'utf8'));
               if (!Array.isArray(videos)) videos = [];
             } catch (e) {
+              console.log('Error reading videos.json, starting fresh');
               videos = [];
             }
           }
-          
+
           // Generate numeric ID
           let numericId;
           if (customId) {
@@ -90,14 +91,25 @@ jobs:
             const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
             numericId = String(maxId + 1).padStart(6, '0');
           }
-          
-          const urlFriendlyId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 50);
-          
+
+          // Create URL-friendly ID from title (fallback)
+          const urlFriendlyId = title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 50) || `video-${numericId}`;
+
+          // Check for duplicate video files
           if (videos.find(v => v.videoUrl === videoUrl)) {
             console.error('❌ Video file already exists in library!');
             process.exit(1);
           }
-          
+
+          // Normalize category (lowercase, no special chars)
+          const normalizedCategory = category 
+            ? category.toLowerCase().replace(/[^a-z0-9]/g, '') 
+            : '';
+
           const newVideo = {
             id: urlFriendlyId,
             numericId: numericId,
@@ -107,17 +119,30 @@ jobs:
             duration: duration,
             uploadDate: new Date().toISOString().split('T')[0],
             type: 'storage',
-            category: category || 'uncategorized',
+            category: normalizedCategory || 'uncategorized',
             addedAt: new Date().toISOString()
           };
-          
+
           videos.unshift(newVideo);
           fs.writeFileSync('videos.json', JSON.stringify(videos, null, 2));
-          
+
           console.log('✅ Video added successfully!');
-          console.log('Numeric ID:', numericId);
-          console.log('Category:', category || 'uncategorized');
-          console.log('URL:', `https://xplitleaks.qzz.io/video.html?id=${numericId}`);
+          console.log('');
+          console.log('📊 Details:');
+          console.log('  Numeric ID:', numericId);
+          console.log('  Title:', title);
+          console.log('  Category:', normalizedCategory || 'uncategorized');
+          console.log('  Duration:', duration);
+          console.log('');
+          console.log('🔗 URLs:');
+          console.log('  Video Page:', `https://xplitleaks.qzz.io/video.html?id=${numericId}`);
+          console.log('  Video:', videoUrl);
+          console.log('  Thumbnail:', thumbnailUrl);
+          console.log('');
+          console.log('💡 Tips:');
+          console.log('  - Category is used for smart recommendations');
+          console.log('  - Videos with same category will be recommended together');
+          console.log('  - Upload thumbnail to:', `Xplit_vids/thumbnails/${baseFileName}.jpg`);
           EOF
           
           node add-video.js
@@ -135,5 +160,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add videos.json
-          git commit -m "Add video: ${{ github.event.inputs.video_title }} [${{ github.event.inputs.category || 'uncategorized' }}]" || exit 0
+          git commit -m "Add video: ${{ github.event.inputs.video_title }} [${{ github.event.inputs.category || 'uncategorized' }}] [ID: ${{ github.event.inputs.custom_id || 'auto' }}]" || exit 0
           git push
