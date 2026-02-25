@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Xplitleaks</title>
     <meta name="description" content="Watch exclusive content on Xplitleaks">
     
@@ -45,10 +45,11 @@
             background: #0a0a0f;
             color: #fff;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .header {
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -57,7 +58,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(10, 10, 15, 0.9);
+            background: rgba(10, 10, 15, 0.95);
         }
 
         .back-btn {
@@ -68,6 +69,8 @@
             align-items: center;
             gap: 0.5rem;
             transition: color 0.2s;
+            padding: 0.5rem;
+            margin: -0.5rem;
         }
 
         .back-btn:hover {
@@ -76,7 +79,7 @@
 
         .logo {
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             background: linear-gradient(135deg, #00b3ff 0%, #0088ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -91,6 +94,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
+            font-size: 0.875rem;
         }
 
         .share-btn:hover {
@@ -101,106 +105,223 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 0;
         }
 
+        /* Player Wrapper - Full width on mobile */
         .player-wrapper {
             background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
+            width: 100%;
             position: relative;
             aspect-ratio: 16 / 9;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
         }
 
+        @media (min-width: 768px) {
+            .player-wrapper {
+                border-radius: 16px;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        /* Plyr Customization - Mobile Optimized */
         .plyr {
             --plyr-color-main: #00b3ff;
             --plyr-video-background: #000;
-            --plyr-control-radius: 8px;
-            --plyr-control-spacing: 10px;
+            --plyr-control-radius: 6px;
+            --plyr-control-spacing: 8px;
             --plyr-video-control-background-hover: rgba(0, 179, 255, 0.2);
             --plyr-range-fill-background: #00b3ff;
             --plyr-range-thumb-background: #00b3ff;
             --plyr-range-thumb-shadow: 0 0 10px rgba(0, 179, 255, 0.5);
             --plyr-tooltip-background: rgba(0, 0, 0, 0.9);
             --plyr-tooltip-color: #fff;
-            --plyr-font-size-time: 13px;
-            --plyr-font-size-menu: 14px;
+            --plyr-font-size-time: 12px;
+            --plyr-font-size-menu: 13px;
+            --plyr-control-icon-size: 16px;
             height: 100%;
-            border-radius: 16px;
+            width: 100%;
         }
 
+        @media (min-width: 768px) {
+            .plyr {
+                --plyr-font-size-time: 13px;
+                --plyr-font-size-menu: 14px;
+                --plyr-control-icon-size: 18px;
+                border-radius: 16px;
+            }
+        }
+
+        /* Large play button */
         .plyr__control--overlaid {
-            background: rgba(0, 179, 255, 0.9);
-            padding: 20px;
+            background: rgba(0, 179, 255, 0.95);
+            padding: clamp(16px, 5vw, 24px);
             border-radius: 50%;
-            box-shadow: 0 0 30px rgba(0, 179, 255, 0.5);
+            box-shadow: 0 0 30px rgba(0, 179, 255, 0.6);
             transition: all 0.3s ease;
         }
 
         .plyr__control--overlaid:hover {
             background: #00b3ff;
             transform: scale(1.1);
-            box-shadow: 0 0 40px rgba(0, 179, 255, 0.7);
+            box-shadow: 0 0 40px rgba(0, 179, 255, 0.8);
         }
 
         .plyr__control--overlaid svg {
-            width: 24px;
-            height: 24px;
+            width: clamp(20px, 6vw, 28px);
+            height: clamp(20px, 6vw, 28px);
             left: 2px;
             position: relative;
         }
 
+        /* Controls bar - Always show progress on mobile */
         .plyr--video .plyr__controls {
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 20px;
-            padding-top: 60px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 10px;
+            padding-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
+        @media (min-width: 768px) {
+            .plyr--video .plyr__controls {
+                padding: 15px;
+                padding-top: 50px;
+                gap: 8px;
+            }
+        }
+
+        /* Progress bar - Always visible and larger on mobile */
+        .plyr__progress {
+            flex: 1 1 100%;
+            margin: 0 0 8px 0;
+            order: -1;
+        }
+
+        .plyr__progress input[type="range"] {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        @media (min-width: 768px) {
+            .plyr__progress input[type="range"] {
+                height: 4px;
+            }
+        }
+
+        .plyr__progress__buffer {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 3px;
+        }
+
+        /* Time display */
+        .plyr__time {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            .plyr__time {
+                font-size: 12px;
+            }
+        }
+
+        /* Control buttons */
+        .plyr__control {
+            padding: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .plyr__control {
+                padding: 10px;
+            }
+        }
+
+        .plyr__control svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .plyr__control svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* Menu */
         .plyr__menu__container {
-            background: rgba(20, 20, 30, 0.95);
+            background: rgba(20, 20, 30, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        /* Tooltip for seek preview */
+        .plyr__tooltip {
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Video Info - Mobile optimized spacing */
         .video-info {
-            padding: 1.5rem;
+            padding: 1rem;
             background: linear-gradient(135deg, rgba(20, 20, 30, 0.8) 0%, rgba(10, 10, 15, 0.8) 100%);
-            border-radius: 16px;
+            margin: 0.5rem 1rem;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .video-info {
+                padding: 1.5rem;
+                margin: 1rem 1.5rem;
+                border-radius: 16px;
+            }
         }
 
         .video-title {
-            font-size: 1.5rem;
+            font-size: 1.125rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
             line-height: 1.3;
-            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #fff;
+        }
+
+        @media (min-width: 768px) {
+            .video-title {
+                font-size: 1.5rem;
+                background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
         }
 
         .video-meta {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             color: #888;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             flex-wrap: wrap;
         }
 
         .video-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
-            padding: 0.375rem 0.875rem;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
             background: rgba(0, 179, 255, 0.15);
             border: 1px solid rgba(0, 179, 255, 0.3);
-            border-radius: 20px;
-            font-size: 0.75rem;
+            border-radius: 16px;
+            font-size: 0.6875rem;
             font-weight: 600;
             color: #00b3ff;
             text-transform: uppercase;
@@ -210,52 +331,66 @@
         .video-stats {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.25rem;
         }
 
-        /* RELATED VIDEOS - FORCE VISIBLE */
+        /* Related Videos */
         .related {
-            margin-top: 2rem;
-            display: block !important; /* Force show */
-            visibility: visible !important;
-            opacity: 1 !important;
+            margin-top: 1rem;
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .related {
+                margin-top: 2rem;
+                padding: 0 1.5rem 3rem 1.5rem;
+            }
         }
 
         .related-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .related-header {
+                margin-bottom: 1.5rem;
+            }
         }
 
         .related h2 {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 600;
             color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .related h2 {
+                font-size: 1.25rem;
+            }
         }
 
         .related-subtitle {
             color: #666;
             font-size: 0.875rem;
-            margin-top: 0.25rem;
         }
 
         .related-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
         }
 
-        @media (max-width: 640px) {
+        @media (min-width: 640px) {
             .related-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
                 gap: 1rem;
             }
-            
-            .video-title {
-                font-size: 1.125rem;
+        }
+
+        @media (min-width: 1024px) {
+            .related-grid {
+                gap: 1.5rem;
             }
         }
 
@@ -263,11 +398,11 @@
             text-decoration: none;
             color: inherit;
             background: rgba(20, 20, 30, 0.5);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            display: block; /* Ensure visible */
+            display: block;
         }
 
         .related-card:hover {
@@ -297,13 +432,13 @@
 
         .related-type {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 6px;
+            left: 6px;
             background: rgba(0, 179, 255, 0.9);
             color: #000;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.625rem;
+            font-size: 0.5625rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -311,22 +446,28 @@
 
         .related-duration {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
+            bottom: 6px;
+            right: 6px;
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
             font-weight: 500;
         }
 
         .related-info {
-            padding: 1rem;
+            padding: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .related-info {
+                padding: 1rem;
+            }
         }
 
         .related-title {
-            font-size: 0.9375rem;
+            font-size: 0.8125rem;
             font-weight: 500;
             line-height: 1.4;
             display: -webkit-box;
@@ -334,24 +475,31 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             color: #fff;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .related-title {
+                font-size: 0.9375rem;
+                margin-bottom: 0.5rem;
+            }
         }
 
         .related-meta {
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             color: #666;
         }
 
         /* Loading & Error */
         .loading {
             text-align: center;
-            padding: 4rem;
+            padding: 4rem 2rem;
             color: #666;
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border: 3px solid rgba(0, 179, 255, 0.2);
             border-top-color: #00b3ff;
             border-radius: 50%;
@@ -365,7 +513,7 @@
 
         .error {
             text-align: center;
-            padding: 4rem;
+            padding: 4rem 2rem;
             color: #888;
         }
 
@@ -378,12 +526,12 @@
         /* Toast */
         .toast {
             position: fixed;
-            bottom: 2rem;
+            bottom: 1rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: rgba(20, 20, 30, 0.95);
+            background: rgba(20, 20, 30, 0.98);
             color: #fff;
-            padding: 1rem 2rem;
+            padding: 0.875rem 1.5rem;
             border-radius: 12px;
             border: 1px solid rgba(0, 179, 255, 0.3);
             backdrop-filter: blur(10px);
@@ -395,6 +543,7 @@
             align-items: center;
             gap: 0.75rem;
             font-weight: 500;
+            font-size: 0.875rem;
         }
 
         .toast.show {
@@ -406,36 +555,28 @@
             color: #00b3ff;
         }
 
-        /* Debug info */
-        .debug-info {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid red;
-            color: red;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.875rem;
+        /* No recommendations */
+        .no-related {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            background: rgba(20, 20, 30, 0.3);
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            grid-column: 1 / -1;
         }
     </style>
 </head>
 <body>
     <header class="header">
         <a href="index.html" class="back-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             Back
         </a>
         <span class="logo">Xplitleaks</span>
-        <button class="share-btn" onclick="shareVideo()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                <polyline points="16 6 12 2 8 6"/>
-                <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-            Share
-        </button>
+        <button class="share-btn" onclick="shareVideo()">Share</button>
     </header>
 
     <main class="container">
@@ -457,7 +598,7 @@
                 <div class="video-meta">
                     <span class="video-badge">HD</span>
                     <span class="video-stats">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
                         </svg>
@@ -468,26 +609,21 @@
                 </div>
             </div>
 
-            <!-- RELATED SECTION - ALWAYS IN DOM -->
             <div class="related" id="relatedSection">
                 <div class="related-header">
-                    <div>
-                        <h2 id="relatedTitle">More Videos</h2>
-                        <div class="related-subtitle" id="relatedSubtitle">Loading recommendations...</div>
-                    </div>
+                    <h2 id="relatedTitle">Recommended for You</h2>
+                    <div class="related-subtitle" id="relatedSubtitle">Loading...</div>
                 </div>
-                <div class="related-grid" id="relatedGrid">
-                    <!-- Content injected here -->
-                </div>
+                <div class="related-grid" id="relatedGrid"></div>
             </div>
         </div>
     </main>
 
     <div id="toast" class="toast">
-        <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="toast-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 6L9 17l-5-5"/>
         </svg>
-        <span>Link copied to clipboard!</span>
+        <span>Link copied!</span>
     </div>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
@@ -503,11 +639,7 @@
         let watchTime = 0;
         let watchInterval = null;
 
-        console.log('🔍 Video ID from URL:', videoId);
-
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 DOM loaded');
-            
             const gaScript = document.querySelector('script[src*="googletagmanager"]');
             if (gaScript) {
                 gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -515,74 +647,49 @@
             gtag('config', GA_MEASUREMENT_ID);
             
             if (!videoId) {
-                console.error('❌ No video ID provided');
                 showError();
                 return;
-            }
-            
-            // Force show related section initially
-            const relatedSection = document.getElementById('relatedSection');
-            if (relatedSection) {
-                relatedSection.style.display = 'block';
-                console.log('✅ Related section found and shown');
-            } else {
-                console.error('❌ Related section not found in DOM');
             }
             
             loadVideo();
         });
 
         async function loadVideo() {
-            console.log('🚀 Loading video...');
-            
             try {
-                console.log('📡 Fetching videos.json...');
                 const response = await fetch('./videos.json?v=' + Date.now());
-                console.log('📡 Response status:', response.status);
-                
                 allVideos = await response.json();
-                console.log('📊 Total videos loaded:', allVideos.length);
-                console.log('📊 First few videos:', allVideos.slice(0, 3).map(v => ({id: v.id, numericId: v.numericId, title: v.title.substring(0, 30)})));
-
-                // Try to find video by numericId first, then by id
-                currentVideo = allVideos.find(v => v.numericId === videoId) || 
-                              allVideos.find(v => v.id === videoId);
                 
-                console.log('🎯 Current video found:', currentVideo ? 'YES' : 'NO');
-                if (currentVideo) {
-                    console.log('🎯 Video details:', {
-                        id: currentVideo.id,
-                        numericId: currentVideo.numericId,
-                        title: currentVideo.title
-                    });
-                }
+                console.log('Loaded videos:', allVideos.length);
+                console.log('Looking for ID:', videoId);
+                
+                // Try multiple matching strategies
+                currentVideo = allVideos.find(v => v.numericId === videoId) || 
+                              allVideos.find(v => v.id === videoId) ||
+                              allVideos.find(v => encodeURIComponent(v.id) === videoId) ||
+                              allVideos.find(v => v.id.replace(/[^a-zA-Z0-9]/g, '-') === videoId);
+                
+                console.log('Found video:', currentVideo);
 
                 if (!currentVideo) {
-                    console.error('❌ Video not found in library');
                     showError();
                     return;
                 }
 
                 renderVideo();
-                initPremiumPlayer();
-                
-                console.log('🎨 Rendering recommendations...');
+                initPlayer();
                 renderRecommendations();
-                
-                trackVideoAnalytics();
+                trackAnalytics();
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
-                console.log('✅ Content shown');
 
             } catch (err) {
-                console.error('❌ Error in loadVideo:', err);
+                console.error('Error:', err);
                 showError();
             }
         }
 
         function renderVideo() {
-            console.log('📝 Rendering video info...');
             document.getElementById('videoTitle').textContent = currentVideo.title;
             document.getElementById('videoDuration').textContent = currentVideo.duration || '--:--';
             document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
@@ -593,28 +700,46 @@
             document.querySelector('meta[property="og:image"]').content = currentVideo.thumbnail || '';
         }
 
-        function initPremiumPlayer() {
-            console.log('🎬 Initializing player...');
+        function initPlayer() {
             const container = document.getElementById('playerContainer');
-            const videoUrl = currentVideo.videoUrl;
             
             container.innerHTML = `
                 <video id="plyrPlayer" playsinline controls poster="${currentVideo.thumbnail || ''}">
-                    <source src="${videoUrl}" type="video/mp4" />
+                    <source src="${currentVideo.videoUrl}" type="video/mp4" />
                 </video>
             `;
             
             player = new Plyr('#plyrPlayer', {
                 title: currentVideo.title,
                 controls: [
-                    'play-large', 'play', 'progress', 'current-time',
-                    'duration', 'mute', 'volume', 'captions',
-                    'settings', 'pip', 'airplay', 'fullscreen'
+                    'play-large',
+                    'play',
+                    'progress',
+                    'current-time',
+                    'duration',
+                    'mute',
+                    'volume',
+                    'captions',
+                    'settings',
+                    'pip',
+                    'airplay',
+                    'fullscreen'
                 ],
                 settings: ['captions', 'quality', 'speed', 'loop'],
+                speed: {
+                    selected: 1,
+                    options: [0.5, 0.75, 1, 1.25, 1.5, 2]
+                },
                 keyboard: { focused: true, global: true },
                 tooltips: { controls: true, seek: true },
-                ratio: '16:9'
+                displayDuration: true,
+                invertTime: false,
+                toggleInvert: true,
+                ratio: '16:9',
+                clickToPlay: true,
+                hideControls: false, // Don't hide controls on mobile
+                resetOnEnd: false,
+                storage: { enabled: true, key: 'plyr_preferences' }
             });
 
             player.on('play', () => {
@@ -624,60 +749,52 @@
                 });
                 startWatchTimeTracking();
             });
+
+            player.on('pause', () => {
+                stopWatchTimeTracking();
+            });
+
+            player.on('ended', () => {
+                stopWatchTimeTracking();
+            });
         }
 
         function renderRecommendations() {
-            console.log('🔥 renderRecommendations() called');
-            console.log('📊 allVideos length:', allVideos.length);
-            
-            const relatedSection = document.getElementById('relatedSection');
             const relatedGrid = document.getElementById('relatedGrid');
-            const relatedTitle = document.getElementById('relatedTitle');
             const relatedSubtitle = document.getElementById('relatedSubtitle');
             
-            if (!relatedSection || !relatedGrid) {
-                console.error('❌ Related elements not found:', {relatedSection, relatedGrid});
-                return;
-            }
-            
-            // Filter out current video
-            const candidates = allVideos.filter(v => {
-                const isDifferent = v.id !== currentVideo.id && v.numericId !== currentVideo.numericId;
-                return isDifferent;
+            // Get all videos except current
+            const others = allVideos.filter(v => {
+                const currentId = currentVideo.numericId || currentVideo.id;
+                const otherId = v.numericId || v.id;
+                return otherId !== currentId;
             });
             
-            console.log('🎯 Candidates after filtering:', candidates.length);
+            console.log('Other videos:', others.length);
             
-            if (candidates.length === 0) {
-                console.log('⚠️ No other videos found');
-                relatedTitle.textContent = 'No Recommendations';
-                relatedSubtitle.textContent = 'Add more videos to see recommendations';
-                relatedGrid.innerHTML = '<p style="color: #666; padding: 2rem;">No other videos available</p>';
-                relatedSection.style.display = 'block';
+            if (others.length === 0) {
+                relatedSubtitle.textContent = 'No other videos available';
+                relatedGrid.innerHTML = '<div class="no-related">No recommendations available</div>';
                 return;
             }
             
-            // Simple shuffle for variety
-            const shuffled = candidates.sort(() => 0.5 - Math.random());
-            const related = shuffled.slice(0, 6);
+            // Shuffle and take 6
+            const shuffled = others.sort(() => 0.5 - Math.random());
+            const recommendations = shuffled.slice(0, 6);
             
-            console.log('🎨 Rendering', related.length, 'related videos');
+            relatedSubtitle.textContent = `${others.length} more videos available`;
             
-            relatedTitle.textContent = 'Recommended for You';
-            relatedSubtitle.textContent = 'More videos you might enjoy';
-            
-            relatedGrid.innerHTML = related.map((v, index) => {
+            relatedGrid.innerHTML = recommendations.map(v => {
                 const vidId = v.numericId || v.id;
-                console.log(`🎨 Rendering card ${index + 1}:`, vidId);
+                const cleanId = encodeURIComponent(vidId);
                 
                 return `
-                    <a href="video.html?id=${encodeURIComponent(vidId)}" class="related-card">
+                    <a href="video.html?id=${cleanId}" class="related-card">
                         <div class="related-thumb">
                             <img src="${v.thumbnail || ''}" 
-                                 alt="${escapeHtml(v.title)}" 
+                                 alt="" 
                                  loading="lazy" 
-                                 onerror="this.style.display='none'"
-                                 onload="console.log('✅ Image loaded for ${vidId}')">
+                                 onerror="this.style.opacity='0.5'; this.style.background='#1a1a24';">
                             <span class="related-type">HD</span>
                             ${v.duration ? `<span class="related-duration">${v.duration}</span>` : ''}
                         </div>
@@ -688,20 +805,20 @@
                     </a>
                 `;
             }).join('');
-            
-            // Force show
-            relatedSection.style.display = 'block';
-            relatedSection.style.visibility = 'visible';
-            relatedSection.style.opacity = '1';
-            
-            console.log('✅ Recommendations rendered and shown');
         }
 
         function startWatchTimeTracking() {
             watchInterval = setInterval(() => { watchTime += 1; }, 1000);
         }
 
-        function trackVideoAnalytics() {
+        function stopWatchTimeTracking() {
+            if (watchInterval) {
+                clearInterval(watchInterval);
+                watchInterval = null;
+            }
+        }
+
+        function trackAnalytics() {
             gtag('event', 'page_view', {
                 'page_title': currentVideo.title,
                 'page_location': window.location.href
@@ -710,10 +827,11 @@
 
         function shareVideo() {
             if (!currentVideo) return;
+            
             navigator.clipboard.writeText(window.location.href).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
+                setTimeout(() => toast.classList.remove('show'), 2500);
             });
         }
 
@@ -737,9 +855,9 @@
             
             if (days === 0) return 'Today';
             if (days === 1) return 'Yesterday';
-            if (days < 7) return days + ' days ago';
-            if (days < 30) return Math.floor(days/7) + ' weeks ago';
-            return Math.floor(days/30) + ' months ago';
+            if (days < 7) return days + 'd ago';
+            if (days < 30) return Math.floor(days/7) + 'w ago';
+            return Math.floor(days/30) + 'mo ago';
         }
     </script>
 </body>
