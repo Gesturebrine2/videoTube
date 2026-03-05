@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xplitleaks Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff0050;
+            --secondary: #00f2ea;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --card: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --border: #333333;
+            --success: #00d084;
+            --warning: #ffab00;
+            --danger: #ff0050;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--dark);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .auth-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .auth-status.connected {
+            color: var(--success);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1.25rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        input[type="password"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 0, 80, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--dark);
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(255, 0, 80, 0.05);
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: var(--dark);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: var(--card);
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card), var(--dark));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-option {
+            flex: 1;
+            padding: 1rem;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .type-option:hover, .type-option.active {
+            border-color: var(--primary);
+            background: rgba(255, 0, 80, 0.1);
+        }
+
+        .type-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(0, 208, 132, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(255, 0, 80, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background: rgba(0, 242, 234, 0.1);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .type-selector {
+                flex-direction: column;
+            }
+
+            .nav-tabs {
+                width: 100%;
+            }
+
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .preview-container {
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 300px;
+        }
+
+        .preview-container video,
+        .preview-container img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            background: var(--dark);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-short {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-video {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .inline-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .inline-form input {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--dark);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .api-status.connected {
+            color: var(--success);
+        }
+
+        .api-status.disconnected {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-database"></i>
+            <span>Xplitleaks Admin</span>
+        </div>
+        
+        <div class="auth-section">
+            <div class="api-status" id="apiStatus">
+                <i class="fas fa-circle"></i>
+                <span>Checking API...</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </div>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button class="nav-tab" data-section="upload">
+                <i class="fas fa-cloud-upload-alt"></i> Upload
+            </button>
+            <button class="nav-tab" data-section="videos">
+                <i class="fas fa-video"></i> Videos
+            </button>
+            <button class="nav-tab" data-section="shorts">
+                <i class="fas fa-mobile-alt"></i> Shorts
+            </button>
+            <button class="nav-tab" data-section="tags">
+                <i class="fas fa-tags"></i> Tags
+            </button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalVideos">0</div>
+                    <div class="stat-label">Total Videos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalShorts">0</div>
+                    <div class="stat-label">Total Shorts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTags">0</div>
+                    <div class="stat-label">Total Tags</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-clock"></i>
+                    Recent Uploads
+                </h2>
+                <div id="recentUploads" class="video-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner loading"></i>
+                        <p>Loading recent uploads...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    Quick Info
+                </h2>
+                <div style="color: var(--text-muted); line-height: 1.8;">
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
+                       <strong>BunnyCDN Storage:</strong> Videos hosted on your BunnyCDN storage zone</p>
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
+                       <strong>Bunny Database:</strong> Metadata stored in BunnyDB (videos, shorts, tags)</p>
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
+                       <strong>Edge Script:</strong> API layer handles all requests securely</p>
+                    <p><i class="fas fa-lightbulb" style="color: var(--warning);"></i> 
+                       <strong>Tip:</strong> Configure your API endpoint in Settings before uploading</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section id="upload" class="section">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload New Content
+                </h2>
+
+                <div class="type-selector">
+                    <div class="type-option active" data-type="video">
+                        <i class="fas fa-video"></i>
+                        <div>Regular Video</div>
+                        <small style="color: var(--text-muted);">Long-form content (horizontal)</small>
+                    </div>
+                    <div class="type-option" data-type="short">
+                        <i class="fas fa-mobile-alt"></i>
+                        <div>Short Video</div>
+                        <small style="color: var(--text-muted);">Vertical/Shorts format (9:16)</small>
+                    </div>
+                </div>
+
+                <form id="uploadForm">
+                    <input type="hidden" id="contentType" value="video">
+
+                    <div class="form-group">
+                        <label for="videoTitle">Title *</label>
+                        <input type="text" id="videoTitle" required placeholder="Enter video title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoCategory">Category</label>
+                        <select id="videoCategory">
+                            <option value="">Select Category</option>
+                            <option value="amateur">Amateur</option>
+                            <option value="teen">Teen</option>
+                            <option value="mature">Mature</option>
+                            <option value="interracial">Interracial</option>
+                            <option value="anal">Anal</option>
+                            <option value="lesbian">Lesbian</option>
+                            <option value="homemade">Homemade</option>
+                            <option value="bbc">BBC</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoTags">Tags (comma separated)</label>
+                        <input type="text" id="videoTags" placeholder="tag1, tag2, tag3">
+                        <div class="tags-container" id="uploadTagsPreview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Video File *</label>
+                        <div class="upload-area" id="videoUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop video file here or click to browse</p>
+                            <small style="color: var(--text-muted);">MP4, MKV, WebM (Max 2GB)</small>
+                            <input type="file" id="videoFile" accept="video/*" style="display: none;" required>
+                        </div>
+                        <div class="progress-bar" id="videoProgress">
+                            <div class="progress-fill" id="videoProgressFill"></div>
+                        </div>
+                        <div id="videoPreview" class="preview-container hidden"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thumbnail (optional)</label>
+                        <div class="upload-area" id="thumbUploadArea">
+                            <i class="fas fa-image"></i>
+                            <p>Drag & drop thumbnail or click to browse</p>
+                            <small style="color: var(--text-muted);">JPG, PNG, WebP</small>
+                            <input type="file" id="thumbFile" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="thumbPreview" class="preview-container hidden"></div>
+                    </div>
+
+                    <div class="form-group" id="durationGroup">
+                        <label for="videoDuration">Duration</label>
+                        <input type="text" id="videoDuration" placeholder="Auto-detected or enter manually (e.g., 5:30)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoDescription">Description (optional)</label>
+                        <textarea id="videoDescription" placeholder="Enter video description"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-upload"></i>
+                        Upload Content
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Videos Management Section -->
+        <section id="videos" class="section">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-video"></i>
+                    Manage Videos
+                </h2>
+
+                <div class="search-bar">
+                    <input type="text" id="videoSearch" placeholder="Search videos by title, tag, or category...">
+                    <button class="btn btn-primary" onclick="searchVideos()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="filter-tags" id="videoFilters">
+                    <div class="filter-tag active" data-filter="all">All Videos</div>
+                </div>
+
+                <div id="videosList" class="video-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner loading"></i>
+                        <p>Loading videos...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shorts Management Section -->
+        <section id="shorts" class="section">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-mobile-alt"></i>
+                    Manage Short Videos
+                </h2>
+
+                <div class="search-bar">
+                    <input type="text" id="shortSearch" placeholder="Search shorts by title, tag...">
+                    <button class="btn btn-primary" onclick="searchShorts()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="filter-tags" id="shortFilters">
+                    <div class="filter-tag active" data-filter="all">All Shorts</div>
+                </div>
+
+                <div id="shortsList" class="video-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner loading"></i>
+                        <p>Loading shorts...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tags Management Section -->
+        <section id="tags" class="section">
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-tags"></i>
+                    Manage Tags
+                </h2>
+
+                <div class="form-group">
+                    <label>Add New Tag</label>
+                    <div class="inline-form">
+                        <input type="text" id="newTag" placeholder="Enter tag name">
+                        <button class="btn btn-primary" onclick="addNewTag()">
+                            <i class="fas fa-plus"></i> Add Tag
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tagsList" class="tags-container" style="margin-top: 1.5rem;">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner loading"></i>
+                        <p>Loading tags...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="margin-bottom: 0;">
+                    <i class="fas fa-cog"></i> API Settings
+                </h2>
+                <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+            </div>
+            
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="apiEndpoint">Edge Script API Endpoint *</label>
+                    <input type="url" id="apiEndpoint" required placeholder="https://your-edge-script.b-cdn.net/api">
+                    <small style="color: var(--text-muted);">Your BunnyCDN Edge Script URL</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminToken">Admin Token *</label>
+                    <input type="password" id="adminToken" required placeholder="Your secret admin token">
+                    <small style="color: var(--text-muted);">Set this in your Edge Script environment</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="bunnyHost">BunnyCDN Host</label>
+                    <input type="text" id="bunnyHost" placeholder="xplit-leaks-media.b-cdn.net">
+                    <small style="color: var(--text-muted);">Your BunnyCDN hostname</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="storagePath">Storage Path</label>
+                    <input type="text" id="storagePath" value="Xplit_vids">
+                    <small style="color: var(--text-muted);">Base storage folder</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </form>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <h3 style="margin-bottom: 1rem; color: var(--secondary);">Setup Instructions</h3>
+                <ol style="color: var(--text-muted); line-height: 2; padding-left: 1.5rem;">
+                    <li>Deploy Edge Script to BunnyCDN</li>
+                    <li>Set ADMIN_TOKEN environment variable</li>
+                    <li>Configure Bunny Database connection</li>
+                    <li>Enter Edge Script URL above</li>
+                    <li>Save and test connection</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="card-title" style="margin-bottom: 0;">
+                    <i class="fas fa-edit"></i> Edit Content
+                </h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editId">
+                <input type="hidden" id="editType">
+
+                <div class="form-group">
+                    <label for="editTitle">Title *</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory">
+                        <option value="">Select Category</option>
+                        <option value="amateur">Amateur</option>
+                        <option value="teen">Teen</option>
+                        <option value="mature">Mature</option>
+                        <option value="interracial">Interracial</option>
+                        <option value="anal">Anal</option>
+                        <option value="lesbian">Lesbian</option>
+                        <option value="homemade">Homemade</option>
+                        <option value="bbc">BBC</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editTags">Tags (comma separated)</label>
+                    <input type="text" id="editTags">
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            apiEndpoint: localStorage.getItem('apiEndpoint') || '',
+            adminToken: localStorage.getItem('adminToken') || '',
+            bunnyHost: localStorage.getItem('bunnyHost') || 'xplit-leaks-media.b-cdn.net',
+            storagePath: localStorage.getItem('storagePath') || 'Xplit_vids',
+            shortsPath: 'Xplit_vids/shorts',
+            thumbnailPath: 'Xplit_vids/thumbnails',
+            shortsThumbPath: 'Xplit_vids/shorts/thumbnails'
+        };
+
+        // ==================== STATE ====================
+        let videos = [];
+        let shorts = [];
+        let tags = [];
+        let currentEditingId = null;
+        let currentEditingType = null;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeNavigation();
+            initializeTypeSelector();
+            initializeFileUploads();
+            initializeSettings();
+            checkAPIConnection();
+        });
+
+        // ==================== NAVIGATION ====================
+        function initializeNavigation() {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const section = tab.dataset.section;
+                    
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(section).classList.add('active');
+                    
+                    if (section === 'videos') loadVideosList();
+                    if (section === 'shorts') loadShortsList();
+                    if (section === 'tags') loadTagsList();
+                    if (section === 'dashboard') updateStats();
+                });
+            });
+        }
+
+        // ==================== TYPE SELECTOR ====================
+        function initializeTypeSelector() {
+            document.querySelectorAll('.type-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.type-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    const type = option.dataset.type;
+                    document.getElementById('contentType').value = type;
+                    
+                    if (type === 'short') {
+                        document.getElementById('durationGroup').classList.add('hidden');
+                    } else {
+                        document.getElementById('durationGroup').classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        // ==================== FILE UPLOADS ====================
+        function initializeFileUploads() {
+            const videoArea = document.getElementById('videoUploadArea');
+            const thumbArea = document.getElementById('thumbUploadArea');
+            const videoInput = document.getElementById('videoFile');
+            const thumbInput = document.getElementById('thumbFile');
+
+            // Video upload
+            videoArea.addEventListener('click', () => videoInput.click());
+            videoArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                videoArea.classList.add('dragover');
+            });
+            videoArea.addEventListener('dragleave', () => videoArea.classList.remove('dragover'));
+            videoArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                videoArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    videoInput.files = e.dataTransfer.files;
+                    handleVideoFile(e.dataTransfer.files[0]);
+                }
+            });
+            videoInput.addEventListener('change', (e) => {
+                if (e.target.files.length) handleVideoFile(e.target.files[0]);
+            });
+
+            // Thumbnail upload
+            thumbArea.addEventListener('click', () => thumbInput.click());
+            thumbArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                thumbArea.classList.add('dragover');
+            });
+            thumbArea.addEventListener('dragleave', () => thumbArea.classList.remove('dragover'));
+            thumbArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                thumbArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    thumbInput.files = e.dataTransfer.files;
+                    handleThumbFile(e.dataTransfer.files[0]);
+                }
+            });
+            thumbInput.addEventListener('change', (e) => {
+                if (e.target.files.length) handleThumbFile(e.target.files[0]);
+            });
+
+            // Tags input
+            document.getElementById('videoTags').addEventListener('input', (e) => {
+                updateTagsPreview(e.target.value);
+            });
+        }
+
+        function handleVideoFile(file) {
+            if (!file) return;
+            
+            const preview = document.getElementById('videoPreview');
+            const url = URL.createObjectURL(file);
+            
+            if (file.type.startsWith('video/')) {
+                preview.innerHTML = `<video controls src="${url}"></video>`;
+                preview.classList.remove('hidden');
+                
+                const video = preview.querySelector('video');
+                video.addEventListener('loadedmetadata', () => {
+                    const duration = formatDuration(video.duration);
+                    document.getElementById('videoDuration').value = duration;
+                });
+            }
+        }
+
+        function handleThumbFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            
+            const preview = document.getElementById('thumbPreview');
+            const url = URL.createObjectURL(file);
+            
+            preview.innerHTML = `<img src="${url}" alt="Thumbnail preview">`;
+            preview.classList.remove('hidden');
+        }
+
+        function updateTagsPreview(tagsText) {
+            const container = document.getElementById('uploadTagsPreview');
+            const tagsArray = tagsText.split(',').map(t => t.trim()).filter(t => t);
+            
+            container.innerHTML = tagsArray.map(tag => `
+                <span class="tag">${tag}</span>
+            `).join('');
+        }
+
+        // ==================== SETTINGS ====================
+        function initializeSettings() {
+            document.getElementById('apiEndpoint').value = CONFIG.apiEndpoint;
+            document.getElementById('adminToken').value = CONFIG.adminToken;
+            document.getElementById('bunnyHost').value = CONFIG.bunnyHost;
+            document.getElementById('storagePath').value = CONFIG.storagePath;
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            CONFIG.apiEndpoint = document.getElementById('apiEndpoint').value.trim();
+            CONFIG.adminToken = document.getElementById('adminToken').value.trim();
+            CONFIG.bunnyHost = document.getElementById('bunnyHost').value.trim();
+            CONFIG.storagePath = document.getElementById('storagePath').value.trim();
+            
+            localStorage.setItem('apiEndpoint', CONFIG.apiEndpoint);
+            localStorage.setItem('adminToken', CONFIG.adminToken);
+            localStorage.setItem('bunnyHost', CONFIG.bunnyHost);
+            localStorage.setItem('storagePath', CONFIG.storagePath);
+            
+            showAlert('Settings saved successfully!', 'success');
+            closeSettingsModal();
+            checkAPIConnection();
+        });
+
+        // ==================== API CONNECTION ====================
+        async function checkAPIConnection() {
+            const statusEl = document.getElementById('apiStatus');
+            
+            if (!CONFIG.apiEndpoint || !CONFIG.adminToken) {
+                statusEl.className = 'api-status disconnected';
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Configure API in Settings</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.adminToken}`,
+                    }
+                });
+
+                if (response.ok) {
+                    statusEl.className = 'api-status connected';
+                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> <span>API Connected</span>';
+                    updateStats();
+                } else {
+                    throw new Error('Authentication failed');
+                }
+            } catch (error) {
+                statusEl.className = 'api-status disconnected';
+                statusEl.innerHTML = '<i class="fas fa-times-circle"></i> <span>API Connection Failed</span>';
+            }
+        }
+
+        // ==================== API CALLS ====================
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${CONFIG.adminToken}`,
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            const response = await fetch(`${CONFIG.apiEndpoint}${endpoint}`, options);
+            
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ error: 'Request failed' }));
+                throw new Error(error.error || `HTTP ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // ==================== STATS ====================
+        async function updateStats() {
+            try {
+                const stats = await apiCall('/stats');
+                
+                document.getElementById('totalVideos').textContent = stats.totalVideos || 0;
+                document.getElementById('totalShorts').textContent = stats.totalShorts || 0;
+                document.getElementById('totalTags').textContent = stats.totalTags || 0;
+                document.getElementById('totalViews').textContent = formatNumber(stats.totalViews || 0);
+                
+                updateRecentUploads();
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        async function updateRecentUploads() {
+            const container = document.getElementById('recentUploads');
+            
+            try {
+                const [videosData, shortsData] = await Promise.all([
+                    apiCall('/videos?limit=3'),
+                    apiCall('/shorts?limit=3')
+                ]);
+
+                const recent = [...(videosData || []), ...(shortsData || [])]
+                    .sort((a, b) => new Date(b.addedAt || b.uploadDate) - new Date(a.addedAt || a.uploadDate))
+                    .slice(0, 6);
+
+                if (recent.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-video"></i>
+                            <p>No uploads yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = recent.map(video => `
+                    <div class="video-card">
+                        <img src="${video.thumbnail || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'}" 
+                             alt="${video.title}" 
+                             class="video-thumbnail" 
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-meta">
+                                <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
+                                <span class="badge ${video.type === 'short' || video.duration === '0:00' ? 'badge-short' : 'badge-video'}">
+                                    ${video.type === 'short' ? 'Short' : 'Video'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load recent uploads</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== UPLOAD FORM ====================
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('contentType').value;
+            const title = document.getElementById('videoTitle').value.trim();
+            const category = document.getElementById('videoCategory').value;
+            const tagsInput = document.getElementById('videoTags').value;
+            const description = document.getElementById('videoDescription').value.trim();
+            const duration = document.getElementById('videoDuration').value.trim() || '0:00';
+            
+            const videoFile = document.getElementById('videoFile').files[0];
+            const thumbFile = document.getElementById('thumbFile').files[0];
+            
+            if (!videoFile) {
+                showAlert('Please select a video file', 'error');
+                return;
+            }
+
+            if (!CONFIG.apiEndpoint || !CONFIG.adminToken) {
+                showAlert('Please configure API settings first', 'error');
+                openSettingsModal();
+                return;
+            }
+            
+            try {
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Uploading...';
+                
+                showAlert('Starting upload... This may take a while for large files.', 'info');
+                
+                // Step 1: Upload video to BunnyCDN Storage
+                const timestamp = Date.now();
+                const videoExt = videoFile.name.split('.').pop();
+                const safeTitle = title.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
+                const videoFilename = `${timestamp}_${safeTitle}.${videoExt}`;
+                
+                const videoPath = type === 'short' ? CONFIG.shortsPath : CONFIG.storagePath;
+                const videoUrl = await uploadToBunnyStorage(videoFile, videoPath, videoFilename);
+                
+                // Step 2: Upload thumbnail if provided
+                let thumbnailUrl = '';
+                if (thumbFile) {
+                    const thumbExt = thumbFile.name.split('.').pop();
+                    const thumbFilename = `${timestamp}_thumb.${thumbExt}`;
+                    const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
+                    thumbnailUrl = await uploadToBunnyStorage(thumbFile, thumbPath, thumbFilename);
+                } else {
+                    // Default thumbnail path
+                    const thumbFilename = `${timestamp}_thumb.jpg`;
+                    const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
+                    thumbnailUrl = `https://${CONFIG.bunnyHost}/${thumbPath}/${thumbFilename}`;
+                }
+                
+                // Step 3: Parse tags
+                const videoTags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
+                
+                // Step 4: Save metadata to Bunny Database via API
+                const endpoint = type === 'short' ? '/api/upload/short' : '/api/upload/video';
+                const metadata = {
+                    title,
+                    videoUrl,
+                    thumbnail: thumbnailUrl,
+                    duration,
+                    category: category || 'uncategorized',
+                    tags: videoTags,
+                    description: type === 'short' ? undefined : description
+                };
+
+                const result = await apiCall(endpoint, 'POST', metadata);
+                
+                showAlert(`Successfully uploaded ${type === 'short' ? 'short video' : 'video'}! ID: ${result.numericId}`, 'success');
+                
+                // Reset form
+                document.getElementById('uploadForm').reset();
+                document.getElementById('videoPreview').classList.add('hidden');
+                document.getElementById('thumbPreview').classList.add('hidden');
+                document.getElementById('uploadTagsPreview').innerHTML = '';
+                
+                // Update stats
+                updateStats();
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('Upload failed: ' + error.message, 'error');
+            } finally {
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Content';
+            }
+        });
+
+        // ==================== BUNNYCDN STORAGE UPLOAD ====================
+        async function uploadToBunnyStorage(file, path, filename) {
+            // Note: This requires your Edge Script to handle file uploads
+            // Or you can use direct BunnyCDN Storage API (requires API key)
+            
+            // Option 1: Via Edge Script (recommended)
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', path);
+            formData.append('filename', filename);
+
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                const progressFill = document.getElementById('videoProgressFill');
+                const progressBar = document.getElementById('videoProgress');
+                
+                progressBar.style.display = 'block';
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        progressFill.style.width = percent + '%';
+                    }
+                });
+
+                xhr.open('POST', `${CONFIG.apiEndpoint}/api/upload/file`);
+                xhr.setRequestHeader('Authorization', `Bearer ${CONFIG.adminToken}`);
+                
+                xhr.onload = () => {
+                    progressBar.style.display = 'none';
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        resolve(response.url);
+                    } else {
+                        reject(new Error('Upload failed: ' + xhr.statusText));
+                    }
+                };
+
+                xhr.onerror = () => {
+                    progressBar.style.display = 'none';
+                    reject(new Error('Network error'));
+                };
+
+                xhr.send(formData);
+            });
+        }
+
+        // ==================== VIDEOS LIST ====================
+        async function loadVideosList(filter = 'all') {
+            const container = document.getElementById('videosList');
+            
+            try {
+                let url = '/api/videos?limit=100';
+                if (filter !== 'all') {
+                    url += `&tag=${encodeURIComponent(filter)}`;
+                }
+
+                const data = await apiCall(url);
+                videos = data || [];
+
+                if (videos.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-video"></i>
+                            <p>No videos found</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = videos.map(video => createVideoCard(video, 'video')).join('');
+                
+                // Update filters
+                updateFilters('video');
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load videos</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadShortsList(filter = 'all') {
+            const container = document.getElementById('shortsList');
+            
+            try {
+                let url = '/api/shorts?limit=100';
+                if (filter !== 'all') {
+                    url += `&tag=${encodeURIComponent(filter)}`;
+                }
+
+                const data = await apiCall(url);
+                shorts = data || [];
+
+                if (shorts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-mobile-alt"></i>
+                            <p>No shorts found</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = shorts.map(video => createVideoCard(video, 'short')).join('');
+                
+                // Update filters
+                updateFilters('short');
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load shorts</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createVideoCard(video, type) {
+            const tags = JSON.parse(video.tags || '[]');
+            return `
+                <div class="video-card">
+                    <img src="${video.thumbnail || ''}" 
+                         alt="${video.title}" 
+                         class="video-thumbnail" 
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-meta">
+                            <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
+                            <span><i class="fas fa-calendar"></i> ${video.uploadDate || 'N/A'}</span>
+                            <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
+                            <span class="badge ${type === 'short' ? 'badge-short' : 'badge-video'}">${type}</span>
+                        </div>
+                        <div class="tags-container" style="margin-bottom: 0.75rem;">
+                            ${(tags || []).slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="video-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="openEditModal('${video.numericId || video.id}', '${type}')" style="flex: 1;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteVideo('${video.numericId || video.id}', '${type}')" style="flex: 1;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== SEARCH ====================
+        async function searchVideos() {
+            const query = document.getElementById('videoSearch').value.trim();
+            const container = document.getElementById('videosList');
+            
+            try {
+                const data = await apiCall(`/api/videos?search=${encodeURIComponent(query)}&limit=100`);
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-search"></i>
+                            <p>No videos found matching "${query}"</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.map(video => createVideoCard(video, 'video')).join('');
+            } catch (error) {
+                showAlert('Search failed: ' + error.message, 'error');
+            }
+        }
+
+        async function searchShorts() {
+            const query = document.getElementById('shortSearch').value.trim();
+            const container = document.getElementById('shortsList');
+            
+            try {
+                const data = await apiCall(`/api/shorts?search=${encodeURIComponent(query)}&limit=100`);
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-search"></i>
+                            <p>No shorts found matching "${query}"</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.map(video => createVideoCard(video, 'short')).join('');
+            } catch (error) {
+                showAlert('Search failed: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== FILTERS ====================
+        function updateFilters(type) {
+            const filterContainer = type === 'video' ? 
+                document.getElementById('videoFilters') : 
+                document.getElementById('shortFilters');
+
+            const allTags = [...new Set([...(type === 'video' ? videos : shorts).flatMap(v => 
+                JSON.parse(v.tags || '[]')
+            )])].sort();
+
+            filterContainer.innerHTML = `
+                <div class="filter-tag active" data-filter="all">All ${type === 'video' ? 'Videos' : 'Shorts'}</div>
+                ${allTags.map(tag => `<div class="filter-tag" data-filter="${tag}">${tag}</div>`).join('')}
+            `;
+
+            filterContainer.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    filterContainer.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+                    
+                    if (type === 'video') {
+                        loadVideosList(tag.dataset.filter);
+                    } else {
+                        loadShortsList(tag.dataset.filter);
+                    }
+                });
+            });
+        }
+
+        // ==================== EDIT/DELETE ====================
+        function openEditModal(id, type) {
+            currentEditingId = id;
+            currentEditingType = type;
+            
+            const list = type === 'video' ? videos : shorts;
+            const video = list.find(v => (v.numericId || v.id) === id);
+            
+            if (!video) return;
+            
+            document.getElementById('editId').value = id;
+            document.getElementById('editType').value = type;
+            document.getElementById('editTitle').value = video.title;
+            document.getElementById('editCategory').value = video.category || '';
+            document.getElementById('editTags').value = (JSON.parse(video.tags || '[]') || []).join(', ');
+            document.getElementById('editDescription').value = video.description || '';
+            
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('editId').value;
+            const type = document.getElementById('editType').value;
+            
+            try {
+                // Note: You'll need to add an update endpoint to your Edge Script
+                showAlert('Edit functionality requires API update endpoint', 'info');
+                closeEditModal();
+            } catch (error) {
+                showAlert('Update failed: ' + error.message, 'error');
+            }
+        });
+
+        async function deleteVideo(id, type) {
+            if (!confirm('Are you sure you want to delete this content? This cannot be undone.')) return;
+            
+            try {
+                const endpoint = type === 'video' ? '/api/video/delete' : '/api/short/delete';
+                await apiCall(endpoint, 'DELETE', { id });
+                
+                showAlert('Content deleted successfully', 'success');
+                updateStats();
+                
+                if (type === 'video') {
+                    loadVideosList();
+                } else {
+                    loadShortsList();
+                }
+            } catch (error) {
+                showAlert('Delete failed: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== TAGS ====================
+        async function loadTagsList() {
+            const container = document.getElementById('tagsList');
+            
+            try {
+                const data = await apiCall('/api/tags');
+                tags = data || [];
+
+                if (tags.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-tags"></i>
+                            <p>No tags yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = tags.map(tag => `
+                    <span class="tag">
+                        ${tag.name} (${tag.usageCount || 0})
+                        <button onclick="deleteTag('${tag.name}')"><i class="fas fa-times"></i></button>
+                    </span>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load tags</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function addNewTag() {
+            const input = document.getElementById('newTag');
+            const name = input.value.trim().toLowerCase();
+            
+            if (!name) return;
+            
+            try {
+                await apiCall('/api/tags/add', 'POST', { name });
+                showAlert('Tag added successfully', 'success');
+                input.value = '';
+                loadTagsList();
+            } catch (error) {
+                showAlert('Failed to add tag: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteTag(name) {
+            if (!confirm(`Delete tag "${name}"?`)) return;
+            
+            try {
+                // Note: You'll need to add a delete tag endpoint
+                showAlert('Tag delete requires API endpoint', 'info');
+            } catch (error) {
+                showAlert('Failed to delete tag: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== UTILITIES ====================
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function formatDuration(seconds) {
+            if (typeof seconds === 'string' && seconds.includes(':')) return seconds;
+            
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            alert.style.display = 'block';
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Close modals on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('uploadForm').dispatchEvent(new Event('submit'));
+            }
+            if (e.key === 'Escape') {
+                closeSettingsModal();
+                closeEditModal();
+            }
+        });
+    </script>
+</body>
+</html>
