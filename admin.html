@@ -2,14 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xplitleaks Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Shorts - Xplitleaks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -23,1740 +27,1353 @@
             --border: #333333;
             --success: #00d084;
             --warning: #ffab00;
-            --danger: #ff0050;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--darker);
             color: var(--text);
-            min-height: 100vh;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            overscroll-behavior: none;
         }
 
-        /* Header */
-        .header {
-            background: var(--dark);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+        /* ==================== SHORTS CONTAINER ==================== */
+        .shorts-container {
+            height: 100vh;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .auth-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .auth-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .auth-status.connected {
-            color: var(--success);
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-tab {
-            padding: 0.5rem 1.25rem;
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .nav-tab:hover, .nav-tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .section {
+        .shorts-container::-webkit-scrollbar {
             display: none;
-            animation: fadeIn 0.3s;
         }
 
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
+        /* ==================== SHORT VIDEO CARD ==================== */
+        .short-video {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            background: var(--dark);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            color: var(--secondary);
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="url"],
-        input[type="password"],
-        input[type="file"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--dark);
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 0, 80, 0.4);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-block {
-            width: 100%;
             justify-content: center;
         }
 
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: var(--dark);
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: var(--primary);
-            background: rgba(255, 0, 80, 0.05);
-        }
-
-        .upload-area i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .tag {
-            background: var(--dark);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tag button {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .video-card {
-            background: var(--dark);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .video-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .video-thumbnail {
+        .video-player {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
-            background: var(--card);
+            background: var(--darker);
+        }
+
+        /* ==================== OVERLAY UI ==================== */
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 1rem 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            pointer-events: none;
+            z-index: 5;
         }
 
         .video-info {
-            padding: 1rem;
+            pointer-events: auto;
+            margin-bottom: 1rem;
+            max-width: 70%;
         }
 
         .video-title {
+            font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            white-space: nowrap;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .video-meta {
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 0.75rem;
             flex-wrap: wrap;
         }
 
-        .video-actions {
-            display: flex;
-            gap: 0.5rem;
+        .video-category {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--card), var(--dark));
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
+        .video-tag {
             color: var(--secondary);
-            margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .type-selector {
+        /* ==================== ACTION BUTTONS (RIGHT SIDE) ==================== */
+        .action-buttons {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 100px;
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            flex-direction: column;
+            gap: 1.25rem;
+            pointer-events: auto;
+            z-index: 10;
+            align-items: center;
         }
 
-        .type-option {
-            flex: 1;
-            padding: 1rem;
-            background: var(--dark);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            text-align: center;
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            background: none;
+            border: none;
+            color: white;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .action-btn .icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+        }
+
+        .action-btn:hover .icon-wrapper {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.1);
+        }
+
+        .action-btn:active .icon-wrapper {
+            transform: scale(0.95);
+        }
+
+        /* Like Button Animations */
+        .action-btn.liked .icon-wrapper {
+            background: var(--primary);
+            color: white;
+            border-color: rgba(255,255,255,0.3);
+            animation: likePulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes likePulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            50% { transform: scale(0.95); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .action-btn.liked i {
+            animation: heartBeat 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(0.9); }
+            75% { transform: scale(1.1); }
+        }
+
+        /* Share Button Animation */
+        .action-btn.shared .icon-wrapper {
+            background: var(--success);
+            animation: sharePop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes sharePop {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(15deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        /* Count Animation */
+        .action-btn .count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
             transition: all 0.3s;
         }
 
-        .type-option:hover, .type-option.active {
-            border-color: var(--primary);
-            background: rgba(255, 0, 80, 0.1);
-        }
-
-        .type-option i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .action-btn .count.updated {
+            animation: countPop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             color: var(--primary);
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: var(--dark);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 1rem;
-            display: none;
+        @keyframes countPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: var(--primary); }
+            100% { transform: scale(1); }
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert-success {
-            background: rgba(0, 208, 132, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .alert-error {
-            background: rgba(255, 0, 80, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .alert-info {
-            background: rgba(0, 242, 234, 0.1);
-            border: 1px solid var(--secondary);
-            color: var(--secondary);
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .search-bar input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filter-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-tag {
-            padding: 0.5rem 1rem;
-            background: var(--dark);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .filter-tag:hover, .filter-tag.active {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .video-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .type-selector {
-                flex-direction: column;
-            }
-
-            .nav-tabs {
-                width: 100%;
-            }
-
-            .nav-tab {
-                flex: 1;
-                text-align: center;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            pointer-events: none;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            animation: particleFloat 1s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
+
+        /* Heart Burst Effect */
+        .heart-burst {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--primary);
+            pointer-events: none;
+            animation: heartBurst 0.8s ease-out forwards;
+        }
+
+        @keyframes heartBurst {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+            }
+        }
+
+        /* ==================== TOP NAVIGATION ==================== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            pointer-events: none;
+        }
+
+        .top-nav > * {
+            pointer-events: auto;
+        }
+
+        .back-btn,
+        .search-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-btn:hover,
+        .search-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .back-btn:active,
+        .search-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ==================== LOADING STATES ==================== */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--darker);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .hidden {
-            display: none !important;
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 1rem;
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
-        .preview-container {
-            margin-top: 1rem;
-            border-radius: 8px;
-            overflow: hidden;
-            max-height: 300px;
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        .preview-container video,
-        .preview-container img {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            background: var(--dark);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge-short {
-            background: var(--primary);
-            color: white;
-        }
-
-        .badge-video {
-            background: var(--secondary);
-            color: var(--dark);
-        }
-
-        .modal {
-            display: none;
+        .error-container {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background: var(--darker);
+            display: none;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+            text-align: center;
         }
 
-        .modal.active {
+        .error-container.active {
             display: flex;
         }
 
-        .modal-content {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+        .error-icon {
+            font-size: 4rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+            animation: shake 0.5s ease-in-out;
         }
 
-        .modal-header {
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 0, 80, 0.4);
+        }
+
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ==================== PROGRESS BAR ==================== */
+        .video-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            z-index: 20;
+        }
+
+        .video-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(255, 0, 80, 0.5);
+        }
+
+        /* ==================== PLAY/PAUSE INDICATOR ==================== */
+        .play-pause-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 15;
+        }
+
+        .play-pause-indicator.visible {
+            opacity: 1;
+            animation: indicatorPulse 0.5s ease-out;
+        }
+
+        @keyframes indicatorPulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* ==================== SHARE MODAL ==================== */
+        .share-modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+            z-index: 2000;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+        }
+
+        .share-modal.active {
+            bottom: 0;
+        }
+
+        .share-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
 
-        .modal-close {
+        .share-modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .share-modal-close {
             background: none;
             border: none;
             color: var(--text-muted);
             font-size: 1.5rem;
             cursor: pointer;
+            transition: all 0.3s;
+            padding: 0.5rem;
         }
 
-        .settings-grid {
+        .share-modal-close:hover {
+            color: var(--text);
+            transform: rotate(90deg);
+        }
+
+        .share-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
         }
 
-        .inline-form {
+        .share-option {
             display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .inline-form input {
-            flex: 1;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .api-status {
-            display: inline-flex;
+            flex-direction: column;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
             background: var(--dark);
+            padding: 1.25rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .share-option:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 5px 20px rgba(255, 0, 80, 0.3);
+        }
+
+        .share-option:active {
+            transform: translateY(-2px);
+        }
+
+        .share-option i {
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .share-option:hover i {
+            transform: scale(1.1);
+        }
+
+        .share-option span {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .share-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .share-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ==================== TOAST NOTIFICATION ==================== */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--card);
+            color: var(--text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(0, 208, 132, 0.15);
+        }
+
+        /* ==================== MOBILE OPTIMIZATIONS ==================== */
+        @media (max-width: 768px) {
+            .video-title {
+                font-size: 1rem;
+            }
+
+            .action-btn .icon-wrapper {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+
+            .action-btn .count {
+                font-size: 0.75rem;
+            }
+
+            .share-options {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.75rem;
+            }
+
+            .share-option {
+                padding: 1rem 0.75rem;
+            }
+        }
+
+        /* ==================== SKELETON LOADING ==================== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--dark) 25%, var(--card) 50%, var(--dark) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
             border-radius: 8px;
-            font-size: 0.85rem;
         }
 
-        .api-status.connected {
-            color: var(--success);
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
-        .api-status.disconnected {
-            color: var(--danger);
+        /* ==================== DOUBLE TAP LIKE ==================== */
+        .double-tap-heart {
+            position: absolute;
+            font-size: 6rem;
+            color: var(--primary);
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 25;
+        }
+
+        .double-tap-heart.animate {
+            animation: doubleTapLike 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes doubleTapLike {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0) rotate(-15deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1) rotate(15deg);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="logo">
-            <i class="fas fa-database"></i>
-            <span>Xplitleaks Admin</span>
-        </div>
-        
-        <div class="auth-section">
-            <div class="api-status" id="apiStatus">
-                <i class="fas fa-circle"></i>
-                <span>Checking API...</span>
-            </div>
-            <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">
-                <i class="fas fa-cog"></i> Settings
-            </button>
-        </div>
-
-        <nav class="nav-tabs">
-            <button class="nav-tab active" data-section="dashboard">
-                <i class="fas fa-chart-line"></i> Dashboard
-            </button>
-            <button class="nav-tab" data-section="upload">
-                <i class="fas fa-cloud-upload-alt"></i> Upload
-            </button>
-            <button class="nav-tab" data-section="videos">
-                <i class="fas fa-video"></i> Videos
-            </button>
-            <button class="nav-tab" data-section="shorts">
-                <i class="fas fa-mobile-alt"></i> Shorts
-            </button>
-            <button class="nav-tab" data-section="tags">
-                <i class="fas fa-tags"></i> Tags
-            </button>
-        </nav>
-    </header>
-
-    <div class="container">
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
-
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="section active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalVideos">0</div>
-                    <div class="stat-label">Total Videos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalShorts">0</div>
-                    <div class="stat-label">Total Shorts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalTags">0</div>
-                    <div class="stat-label">Total Tags</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-clock"></i>
-                    Recent Uploads
-                </h2>
-                <div id="recentUploads" class="video-grid">
-                    <div class="empty-state">
-                        <i class="fas fa-spinner loading"></i>
-                        <p>Loading recent uploads...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-info-circle"></i>
-                    Quick Info
-                </h2>
-                <div style="color: var(--text-muted); line-height: 1.8;">
-                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                       <strong>BunnyCDN Storage:</strong> Videos hosted on your BunnyCDN storage zone</p>
-                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                       <strong>Bunny Database:</strong> Metadata stored in BunnyDB (videos, shorts, tags)</p>
-                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                       <strong>Edge Script:</strong> API layer handles all requests securely</p>
-                    <p><i class="fas fa-lightbulb" style="color: var(--warning);"></i> 
-                       <strong>Tip:</strong> Configure your API endpoint in Settings before uploading</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Upload Section -->
-        <section id="upload" class="section">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    Upload New Content
-                </h2>
-
-                <div class="type-selector">
-                    <div class="type-option active" data-type="video">
-                        <i class="fas fa-video"></i>
-                        <div>Regular Video</div>
-                        <small style="color: var(--text-muted);">Long-form content (horizontal)</small>
-                    </div>
-                    <div class="type-option" data-type="short">
-                        <i class="fas fa-mobile-alt"></i>
-                        <div>Short Video</div>
-                        <small style="color: var(--text-muted);">Vertical/Shorts format (9:16)</small>
-                    </div>
-                </div>
-
-                <form id="uploadForm">
-                    <input type="hidden" id="contentType" value="video">
-
-                    <div class="form-group">
-                        <label for="videoTitle">Title *</label>
-                        <input type="text" id="videoTitle" required placeholder="Enter video title">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="videoCategory">Category</label>
-                        <select id="videoCategory">
-                            <option value="">Select Category</option>
-                            <option value="amateur">Amateur</option>
-                            <option value="teen">Teen</option>
-                            <option value="mature">Mature</option>
-                            <option value="interracial">Interracial</option>
-                            <option value="anal">Anal</option>
-                            <option value="lesbian">Lesbian</option>
-                            <option value="homemade">Homemade</option>
-                            <option value="bbc">BBC</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="videoTags">Tags (comma separated)</label>
-                        <input type="text" id="videoTags" placeholder="tag1, tag2, tag3">
-                        <div class="tags-container" id="uploadTagsPreview"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Video File *</label>
-                        <div class="upload-area" id="videoUploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Drag & drop video file here or click to browse</p>
-                            <small style="color: var(--text-muted);">MP4, MKV, WebM (Max 2GB)</small>
-                            <input type="file" id="videoFile" accept="video/*" style="display: none;" required>
-                        </div>
-                        <div class="progress-bar" id="videoProgress">
-                            <div class="progress-fill" id="videoProgressFill"></div>
-                        </div>
-                        <div id="videoPreview" class="preview-container hidden"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Thumbnail (optional)</label>
-                        <div class="upload-area" id="thumbUploadArea">
-                            <i class="fas fa-image"></i>
-                            <p>Drag & drop thumbnail or click to browse</p>
-                            <small style="color: var(--text-muted);">JPG, PNG, WebP</small>
-                            <input type="file" id="thumbFile" accept="image/*" style="display: none;">
-                        </div>
-                        <div id="thumbPreview" class="preview-container hidden"></div>
-                    </div>
-
-                    <div class="form-group" id="durationGroup">
-                        <label for="videoDuration">Duration</label>
-                        <input type="text" id="videoDuration" placeholder="Auto-detected or enter manually (e.g., 5:30)">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="videoDescription">Description (optional)</label>
-                        <textarea id="videoDescription" placeholder="Enter video description"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fas fa-upload"></i>
-                        Upload Content
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- Videos Management Section -->
-        <section id="videos" class="section">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-video"></i>
-                    Manage Videos
-                </h2>
-
-                <div class="search-bar">
-                    <input type="text" id="videoSearch" placeholder="Search videos by title, tag, or category...">
-                    <button class="btn btn-primary" onclick="searchVideos()">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-
-                <div class="filter-tags" id="videoFilters">
-                    <div class="filter-tag active" data-filter="all">All Videos</div>
-                </div>
-
-                <div id="videosList" class="video-grid">
-                    <div class="empty-state">
-                        <i class="fas fa-spinner loading"></i>
-                        <p>Loading videos...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Shorts Management Section -->
-        <section id="shorts" class="section">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-mobile-alt"></i>
-                    Manage Short Videos
-                </h2>
-
-                <div class="search-bar">
-                    <input type="text" id="shortSearch" placeholder="Search shorts by title, tag...">
-                    <button class="btn btn-primary" onclick="searchShorts()">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-
-                <div class="filter-tags" id="shortFilters">
-                    <div class="filter-tag active" data-filter="all">All Shorts</div>
-                </div>
-
-                <div id="shortsList" class="video-grid">
-                    <div class="empty-state">
-                        <i class="fas fa-spinner loading"></i>
-                        <p>Loading shorts...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tags Management Section -->
-        <section id="tags" class="section">
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fas fa-tags"></i>
-                    Manage Tags
-                </h2>
-
-                <div class="form-group">
-                    <label>Add New Tag</label>
-                    <div class="inline-form">
-                        <input type="text" id="newTag" placeholder="Enter tag name">
-                        <button class="btn btn-primary" onclick="addNewTag()">
-                            <i class="fas fa-plus"></i> Add Tag
-                        </button>
-                    </div>
-                </div>
-
-                <div id="tagsList" class="tags-container" style="margin-top: 1.5rem;">
-                    <div class="empty-state">
-                        <i class="fas fa-spinner loading"></i>
-                        <p>Loading tags...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- ==================== LOADING SCREEN ==================== -->
+    <div class="loading-container" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading shorts...</div>
     </div>
 
-    <!-- Settings Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="card-title" style="margin-bottom: 0;">
-                    <i class="fas fa-cog"></i> API Settings
-                </h2>
-                <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+    <!-- ==================== ERROR SCREEN ==================== -->
+    <div class="error-container" id="errorScreen">
+        <i class="fas fa-exclamation-triangle error-icon"></i>
+        <div class="error-title">Failed to load shorts</div>
+        <div class="error-message" id="errorMessage">Please check your connection and try again</div>
+        <button class="retry-btn" onclick="loadShorts()">
+            <i class="fas fa-redo"></i> Retry
+        </button>
+    </div>
+
+    <!-- ==================== TOP NAVIGATION ==================== -->
+    <nav class="top-nav">
+        <button class="back-btn" onclick="goBack()" aria-label="Go back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="search-btn" onclick="openSearch()" aria-label="Search">
+            <i class="fas fa-search"></i>
+        </button>
+    </nav>
+
+    <!-- ==================== SHORTS CONTAINER ==================== -->
+    <div class="shorts-container" id="shortsContainer">
+        <!-- Shorts will be loaded here dynamically -->
+    </div>
+
+    <!-- ==================== SHARE MODAL ==================== -->
+    <div class="share-overlay" id="shareOverlay" onclick="closeShareModal()"></div>
+    <div class="share-modal" id="shareModal">
+        <div class="share-modal-header">
+            <div class="share-modal-title">Share this short</div>
+            <button class="share-modal-close" onclick="closeShareModal()">&times;</button>
+        </div>
+        <div class="share-options">
+            <div class="share-option" onclick="copyLink()">
+                <i class="fas fa-link"></i>
+                <span>Copy Link</span>
             </div>
-            
-            <form id="settingsForm">
-                <div class="form-group">
-                    <label for="apiEndpoint">Edge Script API Endpoint *</label>
-                    <input type="url" id="apiEndpoint" required placeholder="https://your-edge-script.b-cdn.net/api">
-                    <small style="color: var(--text-muted);">Your BunnyCDN Edge Script URL</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="adminToken">Admin Token *</label>
-                    <input type="password" id="adminToken" required placeholder="Your secret admin token">
-                    <small style="color: var(--text-muted);">Set this in your Edge Script environment</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="bunnyHost">BunnyCDN Host</label>
-                    <input type="text" id="bunnyHost" placeholder="xplit-leaks-media.b-cdn.net">
-                    <small style="color: var(--text-muted);">Your BunnyCDN hostname</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="storagePath">Storage Path</label>
-                    <input type="text" id="storagePath" value="Xplit_vids">
-                    <small style="color: var(--text-muted);">Base storage folder</small>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
-            </form>
-
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                <h3 style="margin-bottom: 1rem; color: var(--secondary);">Setup Instructions</h3>
-                <ol style="color: var(--text-muted); line-height: 2; padding-left: 1.5rem;">
-                    <li>Deploy Edge Script to BunnyCDN</li>
-                    <li>Set ADMIN_TOKEN environment variable</li>
-                    <li>Configure Bunny Database connection</li>
-                    <li>Enter Edge Script URL above</li>
-                    <li>Save and test connection</li>
-                </ol>
+            <div class="share-option" onclick="shareToWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </div>
+            <div class="share-option" onclick="shareToTwitter()">
+                <i class="fab fa-twitter"></i>
+                <span>Twitter</span>
+            </div>
+            <div class="share-option" onclick="shareMore()">
+                <i class="fas fa-share-alt"></i>
+                <span>More</span>
             </div>
         </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="card-title" style="margin-bottom: 0;">
-                    <i class="fas fa-edit"></i> Edit Content
-                </h2>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
-            </div>
-            
-            <form id="editForm">
-                <input type="hidden" id="editId">
-                <input type="hidden" id="editType">
-
-                <div class="form-group">
-                    <label for="editTitle">Title *</label>
-                    <input type="text" id="editTitle" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="editCategory">Category</label>
-                    <select id="editCategory">
-                        <option value="">Select Category</option>
-                        <option value="amateur">Amateur</option>
-                        <option value="teen">Teen</option>
-                        <option value="mature">Mature</option>
-                        <option value="interracial">Interracial</option>
-                        <option value="anal">Anal</option>
-                        <option value="lesbian">Lesbian</option>
-                        <option value="homemade">Homemade</option>
-                        <option value="bbc">BBC</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="editTags">Tags (comma separated)</label>
-                    <input type="text" id="editTags">
-                </div>
-
-                <div class="form-group">
-                    <label for="editDescription">Description</label>
-                    <textarea id="editDescription"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </form>
-        </div>
-    </div>
+    <!-- ==================== TOAST NOTIFICATION ==================== -->
+    <div class="toast" id="toast"></div>
 
     <script>
         // ==================== CONFIGURATION ====================
         const CONFIG = {
-            apiEndpoint: localStorage.getItem('apiEndpoint') || '',
-            adminToken: localStorage.getItem('adminToken') || '',
-            bunnyHost: localStorage.getItem('bunnyHost') || 'xplit-leaks-media.b-cdn.net',
-            storagePath: localStorage.getItem('storagePath') || 'Xplit_vids',
-            shortsPath: 'Xplit_vids/shorts',
-            thumbnailPath: 'Xplit_vids/thumbnails',
-            shortsThumbPath: 'Xplit_vids/shorts/thumbnails'
+            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
+            cdnHost: 'xplit-leaks-media.b-cdn.net',
+            storagePath: 'Xplit_vids/shorts'
         };
 
         // ==================== STATE ====================
-        let videos = [];
         let shorts = [];
-        let tags = [];
-        let currentEditingId = null;
-        let currentEditingType = null;
+        let currentIndex = 0;
+        let isLoading = false;
+        let currentShort = null;
+        let sessionId = localStorage.getItem('sessionId') || generateSessionId();
+        let viewQueue = [];
+        let viewTrackTimer = null;
+        let lastTapTime = 0;
+        let lastTapIndex = -1;
+
+        // Save session ID
+        localStorage.setItem('sessionId', sessionId);
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
-            initializeNavigation();
-            initializeTypeSelector();
-            initializeFileUploads();
-            initializeSettings();
-            checkAPIConnection();
+            loadShorts();
+            setupScrollListener();
+            setupKeyboardShortcuts();
+            setupPreventZoom();
         });
 
-        // ==================== NAVIGATION ====================
-        function initializeNavigation() {
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const section = tab.dataset.section;
-                    
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    
-                    tab.classList.add('active');
-                    document.getElementById(section).classList.add('active');
-                    
-                    if (section === 'videos') loadVideosList();
-                    if (section === 'shorts') loadShortsList();
-                    if (section === 'tags') loadTagsList();
-                    if (section === 'dashboard') updateStats();
-                });
-            });
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
 
-        // ==================== TYPE SELECTOR ====================
-        function initializeTypeSelector() {
-            document.querySelectorAll('.type-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.type-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    
-                    const type = option.dataset.type;
-                    document.getElementById('contentType').value = type;
-                    
-                    if (type === 'short') {
-                        document.getElementById('durationGroup').classList.add('hidden');
-                    } else {
-                        document.getElementById('durationGroup').classList.remove('hidden');
-                    }
-                });
-            });
-        }
-
-        // ==================== FILE UPLOADS ====================
-        function initializeFileUploads() {
-            const videoArea = document.getElementById('videoUploadArea');
-            const thumbArea = document.getElementById('thumbUploadArea');
-            const videoInput = document.getElementById('videoFile');
-            const thumbInput = document.getElementById('thumbFile');
-
-            // Video upload
-            videoArea.addEventListener('click', () => videoInput.click());
-            videoArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                videoArea.classList.add('dragover');
-            });
-            videoArea.addEventListener('dragleave', () => videoArea.classList.remove('dragover'));
-            videoArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                videoArea.classList.remove('dragover');
-                if (e.dataTransfer.files.length) {
-                    videoInput.files = e.dataTransfer.files;
-                    handleVideoFile(e.dataTransfer.files[0]);
-                }
-            });
-            videoInput.addEventListener('change', (e) => {
-                if (e.target.files.length) handleVideoFile(e.target.files[0]);
-            });
-
-            // Thumbnail upload
-            thumbArea.addEventListener('click', () => thumbInput.click());
-            thumbArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                thumbArea.classList.add('dragover');
-            });
-            thumbArea.addEventListener('dragleave', () => thumbArea.classList.remove('dragover'));
-            thumbArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                thumbArea.classList.remove('dragover');
-                if (e.dataTransfer.files.length) {
-                    thumbInput.files = e.dataTransfer.files;
-                    handleThumbFile(e.dataTransfer.files[0]);
-                }
-            });
-            thumbInput.addEventListener('change', (e) => {
-                if (e.target.files.length) handleThumbFile(e.target.files[0]);
-            });
-
-            // Tags input
-            document.getElementById('videoTags').addEventListener('input', (e) => {
-                updateTagsPreview(e.target.value);
-            });
-        }
-
-        function handleVideoFile(file) {
-            if (!file) return;
-            
-            const preview = document.getElementById('videoPreview');
-            const url = URL.createObjectURL(file);
-            
-            if (file.type.startsWith('video/')) {
-                preview.innerHTML = `<video controls src="${url}"></video>`;
-                preview.classList.remove('hidden');
-                
-                const video = preview.querySelector('video');
-                video.addEventListener('loadedmetadata', () => {
-                    const duration = formatDuration(video.duration);
-                    document.getElementById('videoDuration').value = duration;
-                });
-            }
-        }
-
-        function handleThumbFile(file) {
-            if (!file || !file.type.startsWith('image/')) return;
-            
-            const preview = document.getElementById('thumbPreview');
-            const url = URL.createObjectURL(file);
-            
-            preview.innerHTML = `<img src="${url}" alt="Thumbnail preview">`;
-            preview.classList.remove('hidden');
-        }
-
-        function updateTagsPreview(tagsText) {
-            const container = document.getElementById('uploadTagsPreview');
-            const tagsArray = tagsText.split(',').map(t => t.trim()).filter(t => t);
-            
-            container.innerHTML = tagsArray.map(tag => `
-                <span class="tag">${tag}</span>
-            `).join('');
-        }
-
-        // ==================== SETTINGS ====================
-        function initializeSettings() {
-            document.getElementById('apiEndpoint').value = CONFIG.apiEndpoint;
-            document.getElementById('adminToken').value = CONFIG.adminToken;
-            document.getElementById('bunnyHost').value = CONFIG.bunnyHost;
-            document.getElementById('storagePath').value = CONFIG.storagePath;
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        document.getElementById('settingsForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            CONFIG.apiEndpoint = document.getElementById('apiEndpoint').value.trim();
-            CONFIG.adminToken = document.getElementById('adminToken').value.trim();
-            CONFIG.bunnyHost = document.getElementById('bunnyHost').value.trim();
-            CONFIG.storagePath = document.getElementById('storagePath').value.trim();
-            
-            localStorage.setItem('apiEndpoint', CONFIG.apiEndpoint);
-            localStorage.setItem('adminToken', CONFIG.adminToken);
-            localStorage.setItem('bunnyHost', CONFIG.bunnyHost);
-            localStorage.setItem('storagePath', CONFIG.storagePath);
-            
-            showAlert('Settings saved successfully!', 'success');
-            closeSettingsModal();
-            checkAPIConnection();
-        });
-
-        // ==================== API CONNECTION ====================
-        async function checkAPIConnection() {
-            const statusEl = document.getElementById('apiStatus');
-            
-            if (!CONFIG.apiEndpoint || !CONFIG.adminToken) {
-                statusEl.className = 'api-status disconnected';
-                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Configure API in Settings</span>';
-                return;
-            }
+        // ==================== LOAD SHORTS ====================
+        async function loadShorts() {
+            showLoading();
+            hideError();
 
             try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/stats`, {
-                    headers: {
-                        'Authorization': `Bearer ${CONFIG.adminToken}`,
-                    }
-                });
-
-                if (response.ok) {
-                    statusEl.className = 'api-status connected';
-                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> <span>API Connected</span>';
-                    updateStats();
-                } else {
-                    throw new Error('Authentication failed');
-                }
-            } catch (error) {
-                statusEl.className = 'api-status disconnected';
-                statusEl.innerHTML = '<i class="fas fa-times-circle"></i> <span>API Connection Failed</span>';
-            }
-        }
-
-        // ==================== API CALLS ====================
-        async function apiCall(endpoint, method = 'GET', body = null) {
-            const options = {
-                method,
-                headers: {
-                    'Authorization': `Bearer ${CONFIG.adminToken}`,
-                    'Content-Type': 'application/json',
-                }
-            };
-
-            if (body) {
-                options.body = JSON.stringify(body);
-            }
-
-            const response = await fetch(`${CONFIG.apiEndpoint}${endpoint}`, options);
-            
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({ error: 'Request failed' }));
-                throw new Error(error.error || `HTTP ${response.status}`);
-            }
-
-            return response.json();
-        }
-
-        // ==================== STATS ====================
-        async function updateStats() {
-            try {
-                const stats = await apiCall('/stats');
+                // Fetch recommended shorts (uses our recommendation algorithm)
+                const response = await fetch(`${CONFIG.apiEndpoint}/shorts/recommend?limit=20&sessionId=${sessionId}`);
                 
-                document.getElementById('totalVideos').textContent = stats.totalVideos || 0;
-                document.getElementById('totalShorts').textContent = stats.totalShorts || 0;
-                document.getElementById('totalTags').textContent = stats.totalTags || 0;
-                document.getElementById('totalViews').textContent = formatNumber(stats.totalViews || 0);
-                
-                updateRecentUploads();
-            } catch (error) {
-                console.error('Failed to load stats:', error);
-            }
-        }
-
-        async function updateRecentUploads() {
-            const container = document.getElementById('recentUploads');
-            
-            try {
-                const [videosData, shortsData] = await Promise.all([
-                    apiCall('/videos?limit=3'),
-                    apiCall('/shorts?limit=3')
-                ]);
-
-                const recent = [...(videosData || []), ...(shortsData || [])]
-                    .sort((a, b) => new Date(b.addedAt || b.uploadDate) - new Date(a.addedAt || a.uploadDate))
-                    .slice(0, 6);
-
-                if (recent.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-video"></i>
-                            <p>No uploads yet</p>
-                        </div>
-                    `;
-                    return;
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
-                container.innerHTML = recent.map(video => `
-                    <div class="video-card">
-                        <img src="${video.thumbnail || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'}" 
-                             alt="${video.title}" 
-                             class="video-thumbnail" 
-                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
-                        <div class="video-info">
-                            <div class="video-title">${video.title}</div>
-                            <div class="video-meta">
-                                <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
-                                <span class="badge ${video.type === 'short' || video.duration === '0:00' ? 'badge-short' : 'badge-video'}">
-                                    ${video.type === 'short' ? 'Short' : 'Video'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Failed to load recent uploads</p>
-                    </div>
-                `;
-            }
-        }
-
-        // ==================== UPLOAD FORM ====================
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const type = document.getElementById('contentType').value;
-            const title = document.getElementById('videoTitle').value.trim();
-            const category = document.getElementById('videoCategory').value;
-            const tagsInput = document.getElementById('videoTags').value;
-            const description = document.getElementById('videoDescription').value.trim();
-            const duration = document.getElementById('videoDuration').value.trim() || '0:00';
-            
-            const videoFile = document.getElementById('videoFile').files[0];
-            const thumbFile = document.getElementById('thumbFile').files[0];
-            
-            if (!videoFile) {
-                showAlert('Please select a video file', 'error');
-                return;
-            }
-
-            if (!CONFIG.apiEndpoint || !CONFIG.adminToken) {
-                showAlert('Please configure API settings first', 'error');
-                openSettingsModal();
-                return;
-            }
-            
-            try {
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Uploading...';
-                
-                showAlert('Starting upload... This may take a while for large files.', 'info');
-                
-                // Step 1: Upload video to BunnyCDN Storage
-                const timestamp = Date.now();
-                const videoExt = videoFile.name.split('.').pop();
-                const safeTitle = title.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-                const videoFilename = `${timestamp}_${safeTitle}.${videoExt}`;
-                
-                const videoPath = type === 'short' ? CONFIG.shortsPath : CONFIG.storagePath;
-                const videoUrl = await uploadToBunnyStorage(videoFile, videoPath, videoFilename);
-                
-                // Step 2: Upload thumbnail if provided
-                let thumbnailUrl = '';
-                if (thumbFile) {
-                    const thumbExt = thumbFile.name.split('.').pop();
-                    const thumbFilename = `${timestamp}_thumb.${thumbExt}`;
-                    const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
-                    thumbnailUrl = await uploadToBunnyStorage(thumbFile, thumbPath, thumbFilename);
-                } else {
-                    // Default thumbnail path
-                    const thumbFilename = `${timestamp}_thumb.jpg`;
-                    const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
-                    thumbnailUrl = `https://${CONFIG.bunnyHost}/${thumbPath}/${thumbFilename}`;
-                }
-                
-                // Step 3: Parse tags
-                const videoTags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
-                
-                // Step 4: Save metadata to Bunny Database via API
-                const endpoint = type === 'short' ? '/api/upload/short' : '/api/upload/video';
-                const metadata = {
-                    title,
-                    videoUrl,
-                    thumbnail: thumbnailUrl,
-                    duration,
-                    category: category || 'uncategorized',
-                    tags: videoTags,
-                    description: type === 'short' ? undefined : description
-                };
-
-                const result = await apiCall(endpoint, 'POST', metadata);
-                
-                showAlert(`Successfully uploaded ${type === 'short' ? 'short video' : 'video'}! ID: ${result.numericId}`, 'success');
-                
-                // Reset form
-                document.getElementById('uploadForm').reset();
-                document.getElementById('videoPreview').classList.add('hidden');
-                document.getElementById('thumbPreview').classList.add('hidden');
-                document.getElementById('uploadTagsPreview').innerHTML = '';
-                
-                // Update stats
-                updateStats();
-                
-            } catch (error) {
-                console.error('Upload error:', error);
-                showAlert('Upload failed: ' + error.message, 'error');
-            } finally {
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Content';
-            }
-        });
-
-        // ==================== BUNNYCDN STORAGE UPLOAD ====================
-        async function uploadToBunnyStorage(file, path, filename) {
-            // Note: This requires your Edge Script to handle file uploads
-            // Or you can use direct BunnyCDN Storage API (requires API key)
-            
-            // Option 1: Via Edge Script (recommended)
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('path', path);
-            formData.append('filename', filename);
-
-            return new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                const progressFill = document.getElementById('videoProgressFill');
-                const progressBar = document.getElementById('videoProgress');
-                
-                progressBar.style.display = 'block';
-                
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percent = (e.loaded / e.total) * 100;
-                        progressFill.style.width = percent + '%';
-                    }
-                });
-
-                xhr.open('POST', `${CONFIG.apiEndpoint}/api/upload/file`);
-                xhr.setRequestHeader('Authorization', `Bearer ${CONFIG.adminToken}`);
-                
-                xhr.onload = () => {
-                    progressBar.style.display = 'none';
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response.url);
-                    } else {
-                        reject(new Error('Upload failed: ' + xhr.statusText));
-                    }
-                };
-
-                xhr.onerror = () => {
-                    progressBar.style.display = 'none';
-                    reject(new Error('Network error'));
-                };
-
-                xhr.send(formData);
-            });
-        }
-
-        // ==================== VIDEOS LIST ====================
-        async function loadVideosList(filter = 'all') {
-            const container = document.getElementById('videosList');
-            
-            try {
-                let url = '/api/videos?limit=100';
-                if (filter !== 'all') {
-                    url += `&tag=${encodeURIComponent(filter)}`;
-                }
-
-                const data = await apiCall(url);
-                videos = data || [];
-
-                if (videos.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-video"></i>
-                            <p>No videos found</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = videos.map(video => createVideoCard(video, 'video')).join('');
-                
-                // Update filters
-                updateFilters('video');
-            } catch (error) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Failed to load videos</p>
-                    </div>
-                `;
-            }
-        }
-
-        async function loadShortsList(filter = 'all') {
-            const container = document.getElementById('shortsList');
-            
-            try {
-                let url = '/api/shorts?limit=100';
-                if (filter !== 'all') {
-                    url += `&tag=${encodeURIComponent(filter)}`;
-                }
-
-                const data = await apiCall(url);
-                shorts = data || [];
+                const data = await response.json();
+                shorts = data;
 
                 if (shorts.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-mobile-alt"></i>
-                            <p>No shorts found</p>
-                        </div>
-                    `;
+                    showError('No shorts available yet');
                     return;
                 }
 
-                container.innerHTML = shorts.map(video => createVideoCard(video, 'short')).join('');
-                
-                // Update filters
-                updateFilters('short');
+                renderShorts();
+                hideLoading();
+
+                // Track view for first short (if meaningful)
+                if (shorts[0]) {
+                    // Don't track immediately, wait for watch time
+                }
+
             } catch (error) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Failed to load shorts</p>
-                    </div>
-                `;
+                console.error('Load shorts error:', error);
+                showError('Failed to load shorts: ' + error.message);
             }
         }
 
-        function createVideoCard(video, type) {
-            const tags = JSON.parse(video.tags || '[]');
-            return `
-                <div class="video-card">
-                    <img src="${video.thumbnail || ''}" 
-                         alt="${video.title}" 
-                         class="video-thumbnail" 
-                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22300%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+        // ==================== RENDER SHORTS ====================
+        function renderShorts() {
+            const container = document.getElementById('shortsContainer');
+            container.innerHTML = '';
+
+            shorts.forEach((short, index) => {
+                const shortEl = createShortElement(short, index);
+                container.appendChild(shortEl);
+            });
+        }
+
+        function createShortElement(short, index) {
+            const div = document.createElement('div');
+            div.className = 'short-video';
+            div.dataset.index = index;
+            div.dataset.id = short.numericId;
+
+            const tags = JSON.parse(short.tags || '[]');
+
+            div.innerHTML = `
+                <video 
+                    class="video-player" 
+                    src="${short.videoUrl}" 
+                    poster="${short.thumbnail || ''}" 
+                    loop 
+                    playsinline 
+                    preload="metadata"
+                    data-index="${index}"
+                    muted
+                ></video>
+                
+                <div class="video-progress">
+                    <div class="video-progress-bar" data-index="${index}"></div>
+                </div>
+
+                <i class="fas fa-play play-pause-indicator" data-index="${index}"></i>
+                
+                <div class="double-tap-heart" data-index="${index}">
+                    <i class="fas fa-heart"></i>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn like-btn" data-index="${index}" onclick="handleLike(${index}, event)" aria-label="Like">
+                        <div class="icon-wrapper">
+                            <i class="${isLiked(short.numericId) ? 'fas' : 'far'} fa-heart"></i>
+                        </div>
+                        <span class="count" data-like-count="${short.likes || 0}">${formatNumber(short.likes || 0)}</span>
+                    </button>
+
+                    <button class="action-btn comment-btn" data-index="${index}" onclick="openComments(${index})" aria-label="Comment">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <span class="count">${formatNumber(short.comments || 0)}</span>
+                    </button>
+
+                    <button class="action-btn share-btn" data-index="${index}" onclick="handleShare(${index}, event)" aria-label="Share">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-share"></i>
+                        </div>
+                        <span class="count">${formatNumber(short.shares || 0)}</span>
+                    </button>
+                </div>
+
+                <div class="video-overlay">
                     <div class="video-info">
-                        <div class="video-title">${video.title}</div>
+                        <div class="video-title">${short.title}</div>
                         <div class="video-meta">
-                            <span><i class="fas fa-clock"></i> ${video.duration || 'N/A'}</span>
-                            <span><i class="fas fa-calendar"></i> ${video.uploadDate || 'N/A'}</span>
-                            <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
-                            <span class="badge ${type === 'short' ? 'badge-short' : 'badge-video'}">${type}</span>
-                        </div>
-                        <div class="tags-container" style="margin-bottom: 0.75rem;">
-                            ${(tags || []).slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                        </div>
-                        <div class="video-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="openEditModal('${video.numericId || video.id}', '${type}')" style="flex: 1;">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteVideo('${video.numericId || video.id}', '${type}')" style="flex: 1;">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
+                            ${short.category ? `<span class="video-category">${short.category}</span>` : ''}
+                            <span><i class="fas fa-clock"></i> ${short.duration || '0:00'}</span>
+                            ${tags.length > 0 ? `<span class="video-tag">#${tags[0]}</span>` : ''}
                         </div>
                     </div>
                 </div>
             `;
+
+            // Setup video player
+            const video = div.querySelector('video');
+            setupVideoPlayer(video, index, short);
+
+            // Setup double-tap to like
+            div.addEventListener('click', (e) => handleDoubleTap(e, index, div));
+
+            return div;
         }
 
-        // ==================== SEARCH ====================
-        async function searchVideos() {
-            const query = document.getElementById('videoSearch').value.trim();
-            const container = document.getElementById('videosList');
-            
-            try {
-                const data = await apiCall(`/api/videos?search=${encodeURIComponent(query)}&limit=100`);
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-search"></i>
-                            <p>No videos found matching "${query}"</p>
-                        </div>
-                    `;
-                    return;
-                }
+        // ==================== VIDEO PLAYER ====================
+        function setupVideoPlayer(video, index, short) {
+            const shortEl = video.parentElement;
+            let isPlaying = false;
 
-                container.innerHTML = data.map(video => createVideoCard(video, 'video')).join('');
-            } catch (error) {
-                showAlert('Search failed: ' + error.message, 'error');
-            }
-        }
-
-        async function searchShorts() {
-            const query = document.getElementById('shortSearch').value.trim();
-            const container = document.getElementById('shortsList');
-            
-            try {
-                const data = await apiCall(`/api/shorts?search=${encodeURIComponent(query)}&limit=100`);
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1/-1;">
-                            <i class="fas fa-search"></i>
-                            <p>No shorts found matching "${query}"</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = data.map(video => createVideoCard(video, 'short')).join('');
-            } catch (error) {
-                showAlert('Search failed: ' + error.message, 'error');
-            }
-        }
-
-        // ==================== FILTERS ====================
-        function updateFilters(type) {
-            const filterContainer = type === 'video' ? 
-                document.getElementById('videoFilters') : 
-                document.getElementById('shortFilters');
-
-            const allTags = [...new Set([...(type === 'video' ? videos : shorts).flatMap(v => 
-                JSON.parse(v.tags || '[]')
-            )])].sort();
-
-            filterContainer.innerHTML = `
-                <div class="filter-tag active" data-filter="all">All ${type === 'video' ? 'Videos' : 'Shorts'}</div>
-                ${allTags.map(tag => `<div class="filter-tag" data-filter="${tag}">${tag}</div>`).join('')}
-            `;
-
-            filterContainer.querySelectorAll('.filter-tag').forEach(tag => {
-                tag.addEventListener('click', () => {
-                    filterContainer.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-                    tag.classList.add('active');
-                    
-                    if (type === 'video') {
-                        loadVideosList(tag.dataset.filter);
+            // Play when in view (Intersection Observer)
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        currentIndex = index;
+                        currentShort = short;
+                        
+                        // Auto-play with sound on (user interaction required first)
+                        video.play().then(() => {
+                            isPlaying = true;
+                            updatePlayPauseIcon(index, true);
+                        }).catch(() => {
+                            // Auto-play failed (no user interaction yet)
+                            video.muted = true;
+                            video.play().catch(() => {});
+                        });
+                        
+                        // Start tracking view
+                        startViewTracking(short.numericId, video);
                     } else {
-                        loadShortsList(tag.dataset.filter);
+                        video.pause();
+                        isPlaying = false;
+                        updatePlayPauseIcon(index, false);
+                        // Reset video to start
+                        video.currentTime = 0;
                     }
                 });
+            }, { threshold: 0.7 });
+
+            observer.observe(shortEl);
+
+            // Click to play/pause (not on buttons)
+            shortEl.addEventListener('click', (e) => {
+                // Don't trigger if clicking on action buttons or overlay
+                if (e.target.closest('.action-buttons') || 
+                    e.target.closest('.video-overlay') ||
+                    e.target.closest('.top-nav')) {
+                    return;
+                }
+
+                togglePlayPause(video, index);
+            });
+
+            // Update progress bar
+            video.addEventListener('timeupdate', () => {
+                const progressBar = document.querySelector(`.video-progress-bar[data-index="${index}"]`);
+                if (progressBar && video.duration) {
+                    const progress = (video.currentTime / video.duration) * 100;
+                    progressBar.style.width = `${progress}%`;
+                }
+            });
+
+            // Track completion
+            video.addEventListener('ended', () => {
+                queueViewTrack(short.numericId, 1, video.duration, true);
+                updatePlayPauseIcon(index, false);
+            });
+
+            // Show controls on interaction
+            let controlsTimeout;
+            shortEl.addEventListener('mousemove', () => {
+                shortEl.style.cursor = 'pointer';
+                clearTimeout(controlsTimeout);
+                controlsTimeout = setTimeout(() => {
+                    shortEl.style.cursor = 'default';
+                }, 2000);
             });
         }
 
-        // ==================== EDIT/DELETE ====================
-        function openEditModal(id, type) {
-            currentEditingId = id;
-            currentEditingType = type;
-            
-            const list = type === 'video' ? videos : shorts;
-            const video = list.find(v => (v.numericId || v.id) === id);
-            
-            if (!video) return;
-            
-            document.getElementById('editId').value = id;
-            document.getElementById('editType').value = type;
-            document.getElementById('editTitle').value = video.title;
-            document.getElementById('editCategory').value = video.category || '';
-            document.getElementById('editTags').value = (JSON.parse(video.tags || '[]') || []).join(', ');
-            document.getElementById('editDescription').value = video.description || '';
-            
-            document.getElementById('editModal').classList.add('active');
-        }
+        function togglePlayPause(video, index) {
+            const shortEl = video.parentElement;
+            const indicator = shortEl.querySelector('.play-pause-indicator');
 
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-        }
-
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const id = document.getElementById('editId').value;
-            const type = document.getElementById('editType').value;
-            
-            try {
-                // Note: You'll need to add an update endpoint to your Edge Script
-                showAlert('Edit functionality requires API update endpoint', 'info');
-                closeEditModal();
-            } catch (error) {
-                showAlert('Update failed: ' + error.message, 'error');
+            if (video.paused) {
+                video.play();
+                indicator.className = 'play-pause-indicator visible fas fa-play';
+                queueViewTrack(currentShort?.numericId, video.currentTime / video.duration, video.currentTime);
+            } else {
+                video.pause();
+                indicator.className = 'play-pause-indicator visible fas fa-pause';
             }
-        });
 
-        async function deleteVideo(id, type) {
-            if (!confirm('Are you sure you want to delete this content? This cannot be undone.')) return;
+            setTimeout(() => {
+                indicator.classList.remove('visible');
+            }, 500);
+        }
+
+        function updatePlayPauseIcon(index, isPlaying) {
+            const indicator = document.querySelector(`.play-pause-indicator[data-index="${index}"]`);
+            if (indicator) {
+                indicator.className = `play-pause-indicator fas ${isPlaying ? 'fa-play' : 'fa-pause'}`;
+            }
+        }
+
+        // ==================== DOUBLE TAP TO LIKE ====================
+        function handleDoubleTap(e, index, shortEl) {
+            // Ignore if clicking on buttons
+            if (e.target.closest('.action-buttons') || 
+                e.target.closest('.video-overlay') ||
+                e.target.closest('.top-nav')) {
+                return;
+            }
+
+            const now = Date.now();
+            const heartEl = shortEl.querySelector('.double-tap-heart');
+
+            // Check if double tap (within 300ms)
+            if (now - lastTapTime < 300 && index === lastTapIndex) {
+                // Double tap detected!
+                if (!isLiked(shorts[index].numericId)) {
+                    handleLike(index, e);
+                }
+
+                // Show heart animation
+                const rect = shortEl.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                heartEl.style.left = `${x}px`;
+                heartEl.style.top = `${y}px`;
+                heartEl.classList.add('animate');
+
+                setTimeout(() => {
+                    heartEl.classList.remove('animate');
+                }, 800);
+
+                lastTapTime = 0;
+                lastTapIndex = -1;
+            } else {
+                lastTapTime = now;
+                lastTapIndex = index;
+            }
+        }
+
+        // ==================== LIKE HANDLER (REAL-TIME) ====================
+        async function handleLike(index, event) {
+            if (event) event.stopPropagation();
             
+            const short = shorts[index];
+            const btn = document.querySelector(`.like-btn[data-index="${index}"]`);
+            const icon = btn.querySelector('i');
+            const countEl = btn.querySelector('.count');
+
+            if (!short.numericId) return;
+
+            const wasLiked = isLiked(short.numericId);
+
             try {
-                const endpoint = type === 'video' ? '/api/video/delete' : '/api/short/delete';
-                await apiCall(endpoint, 'DELETE', { id });
-                
-                showAlert('Content deleted successfully', 'success');
-                updateStats();
-                
-                if (type === 'video') {
-                    loadVideosList();
-                } else {
-                    loadShortsList();
+                const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': sessionId
+                    },
+                    body: JSON.stringify({ shortId: short.numericId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.action === 'liked') {
+                        // Update UI
+                        btn.classList.add('liked');
+                        icon.className = 'fas fa-heart';
+                        short.likes = (short.likes || 0) + 1;
+                        markAsLiked(short.numericId);
+                        
+                        // Create particle effects
+                        createLikeParticles(btn);
+                        createHeartBurst(btn);
+                        
+                        // Animate count
+                        animateCount(countEl, short.likes);
+                        
+                        showToast('Liked! ❤️', 'success');
+                    } else {
+                        // Unlike
+                        btn.classList.remove('liked');
+                        icon.className = 'far fa-heart';
+                        short.likes = Math.max((short.likes || 0) - 1, 0);
+                        markAsUnliked(short.numericId);
+                        
+                        // Animate count
+                        animateCount(countEl, short.likes);
+                    }
                 }
             } catch (error) {
-                showAlert('Delete failed: ' + error.message, 'error');
+                console.error('Like error:', error);
+                // Revert UI on error
+                if (wasLiked) {
+                    btn.classList.add('liked');
+                    icon.className = 'fas fa-heart';
+                } else {
+                    btn.classList.remove('liked');
+                    icon.className = 'far fa-heart';
+                }
             }
         }
 
-        // ==================== TAGS ====================
-        async function loadTagsList() {
-            const container = document.getElementById('tagsList');
+        // ==================== SHARE HANDLER (REAL-TIME) ====================
+        async function handleShare(index, event) {
+            if (event) event.stopPropagation();
             
-            try {
-                const data = await apiCall('/api/tags');
-                tags = data || [];
+            const short = shorts[index];
+            const btn = document.querySelector(`.share-btn[data-index="${index}"]`);
+            const countEl = btn.querySelector('.count');
 
-                if (tags.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-tags"></i>
-                            <p>No tags yet</p>
-                        </div>
-                    `;
+            if (!short.numericId) return;
+
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/short/share`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': sessionId
+                    },
+                    body: JSON.stringify({ shortId: short.numericId })
+                });
+
+                if (response.ok) {
+                    // Update UI
+                    btn.classList.add('shared');
+                    short.shares = (short.shares || 0) + 1;
+                    
+                    // Animate count
+                    animateCount(countEl, short.shares);
+                    
+                    // Remove shared class after animation
+                    setTimeout(() => {
+                        btn.classList.remove('shared');
+                    }, 500);
+                    
+                    // Open share modal
+                    openShareModal(index);
+                    
+                    showToast('Share counted! ↗️', 'success');
+                }
+            } catch (error) {
+                console.error('Share error:', error);
+                // Still open modal even if tracking fails
+                openShareModal(index);
+            }
+        }
+
+        // ==================== HYBRID VIEW TRACKING ====================
+        function startViewTracking(shortId, video) {
+            const trackInterval = setInterval(() => {
+                if (video.paused || video.ended) {
+                    clearInterval(trackInterval);
                     return;
                 }
 
-                container.innerHTML = tags.map(tag => `
-                    <span class="tag">
-                        ${tag.name} (${tag.usageCount || 0})
-                        <button onclick="deleteTag('${tag.name}')"><i class="fas fa-times"></i></button>
-                    </span>
-                `).join('');
-            } catch (error) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Failed to load tags</p>
-                    </div>
-                `;
+                const watchDuration = video.currentTime / video.duration;
+                const watchTime = video.currentTime;
+
+                // Queue for batch tracking (hybrid method)
+                // Only track if meaningful (>50% or >15s)
+                if (watchDuration >= 0.5 || watchTime >= 15) {
+                    queueViewTrack(shortId, watchDuration, watchTime);
+                }
+            }, 5000); // Check every 5 seconds
+
+            // Clear on video end
+            video.addEventListener('ended', () => clearInterval(trackInterval));
+        }
+
+        function queueViewTrack(shortId, watchDuration, watchTime, isComplete = false) {
+            // Add to queue
+            viewQueue.push({ 
+                shortId, 
+                watchDuration, 
+                watchTime, 
+                isComplete,
+                timestamp: Date.now() 
+            });
+            
+            // Send batch every 30 seconds
+            if (!viewTrackTimer) {
+                viewTrackTimer = setInterval(sendBatchViews, 30000);
             }
         }
 
-        async function addNewTag() {
-            const input = document.getElementById('newTag');
-            const name = input.value.trim().toLowerCase();
-            
-            if (!name) return;
+        async function sendBatchViews() {
+            if (viewQueue.length === 0) {
+                clearInterval(viewTrackTimer);
+                viewTrackTimer = null;
+                return;
+            }
             
             try {
-                await apiCall('/api/tags/add', 'POST', { name });
-                showAlert('Tag added successfully', 'success');
-                input.value = '';
-                loadTagsList();
+                const views = [...viewQueue];
+                viewQueue = [];
+                
+                await fetch(`${CONFIG.apiEndpoint}/short/view/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': sessionId
+                    },
+                    body: JSON.stringify({ views })
+                });
             } catch (error) {
-                showAlert('Failed to add tag: ' + error.message, 'error');
+                console.error('Batch view error:', error);
+                // Keep items in queue for retry on next interval
             }
         }
 
-        async function deleteTag(name) {
-            if (!confirm(`Delete tag "${name}"?`)) return;
+        // ==================== PARTICLE EFFECTS ====================
+        function createLikeParticles(btn) {
+            const rect = btn.getBoundingClientRect();
+            const colors = ['#ff0050', '#00f2ea', '#ffffff', '#ffab00'];
             
-            try {
-                // Note: You'll need to add a delete tag endpoint
-                showAlert('Tag delete requires API endpoint', 'info');
-            } catch (error) {
-                showAlert('Failed to delete tag: ' + error.message, 'error');
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = `${Math.random() * 8 + 4}px`;
+                particle.style.height = particle.style.width;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = `${rect.left + rect.width / 2}px`;
+                particle.style.top = `${rect.top + rect.height / 2}px`;
+                particle.style.setProperty('--tx', `${(Math.random() - 0.5) * 100}px`);
+                particle.style.setProperty('--ty', `${(Math.random() - 0.5) * 100}px`;
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 1000);
             }
         }
 
-        // ==================== UTILITIES ====================
+        function createHeartBurst(btn) {
+            const rect = btn.getBoundingClientRect();
+            
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-burst';
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                heart.style.left = `${rect.left + rect.width / 2}px`;
+                heart.style.top = `${rect.top + rect.height / 2}px`;
+                heart.style.setProperty('--tx', `${(Math.random() - 0.5) * 150}px`);
+                heart.style.setProperty('--ty', `${(Math.random() - 0.5) * 150}px`;
+                heart.style.fontSize = `${Math.random() * 1 + 0.5}rem`;
+                heart.style.animationDelay = `${i * 0.1}s`;
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 800);
+            }
+        }
+
+        function animateCount(element, newCount) {
+            element.textContent = formatNumber(newCount);
+            element.classList.add('updated');
+            setTimeout(() => {
+                element.classList.remove('updated');
+            }, 400);
+        }
+
+        // ==================== LIKE STATE MANAGEMENT ====================
+        function isLiked(shortId) {
+            const liked = localStorage.getItem('likedShorts');
+            return liked ? JSON.parse(liked).includes(shortId) : false;
+        }
+
+        function markAsLiked(shortId) {
+            const liked = JSON.parse(localStorage.getItem('likedShorts') || '[]');
+            if (!liked.includes(shortId)) {
+                liked.push(shortId);
+                localStorage.setItem('likedShorts', JSON.stringify(liked));
+            }
+        }
+
+        function markAsUnliked(shortId) {
+            const liked = JSON.parse(localStorage.getItem('likedShorts') || '[]');
+            const index = liked.indexOf(shortId);
+            if (index > -1) {
+                liked.splice(index, 1);
+                localStorage.setItem('likedShorts', JSON.stringify(liked));
+            }
+        }
+
+        // ==================== SHARE MODAL ====================
+        function openShareModal(index) {
+            currentShort = shorts[index];
+            document.getElementById('shareOverlay').classList.add('active');
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareOverlay').classList.remove('active');
+            document.getElementById('shareModal').classList.remove('active');
+        }
+
+        function copyLink() {
+            if (!currentShort) return;
+            const url = `${window.location.origin}/shorts.html?id=${currentShort.numericId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied! 📋', 'success');
+                closeShareModal();
+            });
+        }
+
+        function shareToWhatsApp() {
+            if (!currentShort) return;
+            const url = encodeURIComponent(`${window.location.origin}/shorts.html?id=${currentShort.numericId}`);
+            const text = encodeURIComponent(`Check out this short: ${currentShort.title}`);
+            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+            closeShareModal();
+        }
+
+        function shareToTwitter() {
+            if (!currentShort) return;
+            const url = encodeURIComponent(`${window.location.origin}/shorts.html?id=${currentShort.numericId}`);
+            const text = encodeURIComponent(`Check out this short: ${currentShort.title}`);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+            closeShareModal();
+        }
+
+        function shareMore() {
+            if (!currentShort) return;
+            const url = `${window.location.origin}/shorts.html?id=${currentShort.numericId}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: currentShort.title,
+                    url: url
+                }).catch(() => {});
+            } else {
+                copyLink();
+            }
+            closeShareModal();
+        }
+
+        function openComments(index) {
+            showToast('Comments coming soon! 💬', 'success');
+        }
+
+        // ==================== NAVIGATION ====================
+        function goBack() {
+            if (document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function openSearch() {
+            showToast('Search coming soon! 🔍', 'success');
+        }
+
+        // ==================== UI HELPERS ====================
+        function showLoading() {
+            document.getElementById('loadingScreen').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorScreen').classList.add('active');
+            hideLoading();
+        }
+
+        function hideError() {
+            document.getElementById('errorScreen').classList.remove('active');
+        }
+
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
         function formatNumber(num) {
             if (num >= 1000000) {
                 return (num / 1000000).toFixed(1) + 'M';
@@ -1766,50 +1383,117 @@
             return num.toString();
         }
 
-        function formatDuration(seconds) {
-            if (typeof seconds === 'string' && seconds.includes(':')) return seconds;
-            
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
+        // ==================== SCROLL LISTENER ====================
+        function setupScrollListener() {
+            const container = document.getElementById('shortsContainer');
+            let ticking = false;
 
-        function showAlert(message, type) {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                ${message}
-            `;
-            alert.style.display = 'block';
-            
-            container.innerHTML = '';
-            container.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 5000);
-        }
-
-        // Close modals on outside click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
+            container.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateCurrentIndex();
+                        loadMoreIfNeeded();
+                        ticking = false;
+                    });
+                    ticking = true;
                 }
             });
-        });
+        }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                document.getElementById('uploadForm').dispatchEvent(new Event('submit'));
+        function updateCurrentIndex() {
+            const container = document.getElementById('shortsContainer');
+            const scrollTop = container.scrollTop;
+            const windowHeight = window.innerHeight;
+            const newIndex = Math.round(scrollTop / windowHeight);
+
+            if (newIndex !== currentIndex && shorts[newIndex]) {
+                currentIndex = newIndex;
+                currentShort = shorts[currentIndex];
             }
-            if (e.key === 'Escape') {
-                closeSettingsModal();
-                closeEditModal();
+        }
+
+        function loadMoreIfNeeded() {
+            const container = document.getElementById('shortsContainer');
+            const scrollPosition = container.scrollTop + container.clientHeight;
+            const scrollHeight = container.scrollHeight;
+
+            // Load more when within 2 videos of the end
+            if (scrollHeight - scrollPosition < windowHeight * 2 && !isLoading) {
+                loadMoreShorts();
+            }
+        }
+
+        async function loadMoreShorts() {
+            if (isLoading) return;
+            isLoading = true;
+
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/shorts/recommend?limit=10&sessionId=${sessionId}`);
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    data.forEach(short => {
+                        if (!shorts.find(s => s.numericId === short.numericId)) {
+                            shorts.push(short);
+                            const shortEl = createShortElement(short, shorts.length - 1);
+                            document.getElementById('shortsContainer').appendChild(shortEl);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Load more error:', error);
+            }
+
+            isLoading = false;
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'j' || e.key === 'J') {
+                    e.preventDefault();
+                    document.getElementById('shortsContainer').scrollBy({ 
+                        top: window.innerHeight, 
+                        behavior: 'smooth' 
+                    });
+                }
+                if (e.key === 'ArrowUp' || e.key === 'k' || e.key === 'K') {
+                    e.preventDefault();
+                    document.getElementById('shortsContainer').scrollBy({ 
+                        top: -window.innerHeight, 
+                        behavior: 'smooth' 
+                    });
+                }
+                if (e.key === 'l' || e.key === 'L') {
+                    handleLike(currentIndex);
+                }
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    const video = document.querySelector(`.video-player[data-index="${currentIndex}"]`);
+                    if (video) {
+                        togglePlayPause(video, currentIndex);
+                    }
+                }
+            });
+        }
+
+        // ==================== PREVENT ZOOM ON DOUBLE TAP ====================
+        function setupPreventZoom() {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, { passive: false });
+        }
+
+        // ==================== CLEANUP ====================
+        window.addEventListener('beforeunload', () => {
+            // Send any remaining queued views
+            if (viewQueue.length > 0) {
+                sendBatchViews();
             }
         });
     </script>
