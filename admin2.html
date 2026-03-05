@@ -7,7 +7,6 @@
     <title>Xplitleaks Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ==================== RESET & BASE ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -61,12 +60,13 @@
             border-radius: 16px;
             padding: 2.5rem;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .auth-logo {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -101,17 +101,18 @@
             color: var(--text);
             border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
 
         .auth-form input:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 0, 80, 0.1);
         }
 
         .auth-form .btn {
             width: 100%;
-            padding: 0.875rem;
+            padding: 1rem;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
@@ -142,6 +143,13 @@
             margin-bottom: 1rem;
             font-size: 0.9rem;
             display: none;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         /* ==================== HEADER ==================== */
@@ -200,10 +208,12 @@
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
+            width: 100%;
+            margin-top: 1rem;
         }
 
         .nav-tab {
-            padding: 0.5rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--text-muted);
@@ -211,6 +221,7 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .nav-tab:hover, .nav-tab.active {
@@ -285,6 +296,7 @@
             margin-bottom: 0.5rem;
             color: var(--text-muted);
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         input[type="text"],
@@ -301,12 +313,13 @@
             color: var(--text);
             border-radius: 8px;
             font-size: 0.95rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
 
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 0, 80, 0.1);
         }
 
         textarea {
@@ -433,12 +446,13 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s;
+            transition: all 0.3s;
         }
 
         .video-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(255, 0, 80, 0.2);
         }
 
         .video-thumbnail {
@@ -488,6 +502,12 @@
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 242, 234, 0.2);
         }
 
         .stat-value {
@@ -511,7 +531,7 @@
 
         .type-option {
             flex: 1;
-            padding: 1rem;
+            padding: 1.25rem;
             background: var(--dark);
             border: 2px solid var(--border);
             border-radius: 8px;
@@ -549,12 +569,30 @@
             transition: width 0.3s;
         }
 
-        /* ==================== ALERTS ==================== */
+        /* ==================== ALERTS & NOTIFICATIONS ==================== */
         .alert {
-            padding: 1rem;
+            padding: 1rem 1.5rem;
             border-radius: 8px;
             margin-bottom: 1rem;
             display: none;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: flex;
         }
 
         .alert-success {
@@ -570,9 +608,9 @@
         }
 
         .alert-info {
-            background: rgba(0, 242, 234, 0.1);
-            border: 1px solid var(--secondary);
-            color: var(--secondary);
+            background: rgba(0, 180, 216, 0.1);
+            border: 1px solid var(--info);
+            color: var(--info);
         }
 
         .alert-warning {
@@ -581,39 +619,64 @@
             color: var(--warning);
         }
 
-        /* ==================== SEARCH & FILTERS ==================== */
-        .search-bar {
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .search-bar input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filter-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-tag {
-            padding: 0.5rem 1rem;
-            background: var(--dark);
+        .toast {
+            padding: 1rem 1.5rem;
+            background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideInRight 0.3s;
         }
 
-        .filter-tag:hover, .filter-tag.active {
-            background: var(--primary);
-            border-color: var(--primary);
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--info);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
         }
 
         /* ==================== MODAL ==================== */
@@ -639,10 +702,22 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 2rem;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
+            animation: modalPop 0.3s;
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .modal-header {
@@ -658,6 +733,12 @@
             color: var(--text-muted);
             font-size: 1.5rem;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
         }
 
         /* ==================== BADGES ==================== */
@@ -723,6 +804,7 @@
             border-radius: 8px;
             overflow: hidden;
             max-height: 300px;
+            border: 1px solid var(--border);
         }
 
         .preview-container video,
@@ -733,41 +815,39 @@
             background: var(--dark);
         }
 
-        /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
+        /* ==================== SEARCH & FILTERS ==================== */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
 
-            .container {
-                padding: 1rem;
-            }
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
 
-            .video-grid {
-                grid-template-columns: 1fr;
-            }
+        .filter-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
 
-            .type-selector {
-                flex-direction: column;
-            }
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
 
-            .nav-tabs {
-                width: 100%;
-            }
-
-            .nav-tab {
-                flex: 1;
-                text-align: center;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
-            }
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         /* ==================== SETTINGS PANEL ==================== */
@@ -805,6 +885,53 @@
         .engagement-item i {
             color: var(--primary);
         }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .type-selector {
+                flex-direction: column;
+            }
+
+            .nav-tabs {
+                width: 100%;
+            }
+
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .toast-container {
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -823,15 +950,15 @@
                     <label for="adminToken">Admin Token</label>
                     <input type="password" id="adminToken" required placeholder="Enter your admin token">
                     <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
-                        <i class="fas fa-info-circle"></i> Set in BunnyCDN Edge Script environment variables
+                        <i class="fas fa-info-circle"></i> Set in Cloudflare Worker environment variables
                     </small>
                 </div>
                 
                 <div class="form-group">
                     <label for="apiEndpoint">API Endpoint</label>
-                    <input type="url" id="apiEndpoint" required placeholder="https://your-edge-script.b-cdn.net/api">
+                    <input type="url" id="apiEndpoint" required placeholder="https://xplitleaks-api.dylancoral.workers.dev/api">
                     <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
-                        <i class="fas fa-info-circle"></i> Your BunnyCDN Edge Script URL
+                        <i class="fas fa-info-circle"></i> Your Cloudflare Worker API URL
                     </small>
                 </div>
 
@@ -847,6 +974,9 @@
             </div>
         </div>
     </div>
+
+    <!-- ==================== TOAST CONTAINER ==================== -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- ==================== MAIN APP ==================== -->
     <div id="mainApp" class="hidden">
@@ -934,12 +1064,14 @@
                     </h2>
                     <div style="color: var(--text-muted); line-height: 1.8;">
                         <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                           <strong>BunnyCDN Storage:</strong> Videos hosted on BunnyCDN storage zone</p>
+                           <strong>Cloudflare Worker:</strong> API layer handles all requests</p>
                         <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                           <strong>Bunny Database:</strong> Metadata stored in BunnyDB (videos, shorts, tags, engagement)</p>
+                           <strong>Cloudflare D1:</strong> SQLite database for metadata</p>
                         <p><i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                           <strong>Edge Script:</strong> API layer handles all requests securely</p>
-                        <p><i class="fas fa-lock" style="color: var(--warning);"></i> 
+                           <strong>BunnyCDN Storage:</strong> Video files hosted on BunnyCDN</p>
+                        <p><i class="fas fa-bolt" style="color: var(--warning);"></i> 
+                           <strong>Recommendation Algorithm:</strong> Tag + Category based personalization</p>
+                        <p><i class="fas fa-lock" style="color: var(--success);"></i> 
                            <strong>Security:</strong> Token-based authentication • HTTPS enforced</p>
                     </div>
                 </div>
@@ -1133,15 +1265,15 @@
                     <form id="settingsForm">
                         <div class="settings-grid">
                             <div class="form-group">
-                                <label for="settingsApiEndpoint">Edge Script API Endpoint *</label>
-                                <input type="url" id="settingsApiEndpoint" required placeholder="https://your-edge-script.b-cdn.net/api">
-                                <small style="color: var(--text-muted);">Your BunnyCDN Edge Script URL</small>
+                                <label for="settingsApiEndpoint">Cloudflare Worker API Endpoint *</label>
+                                <input type="url" id="settingsApiEndpoint" required placeholder="https://xplitleaks-api.dylancoral.workers.dev/api">
+                                <small style="color: var(--text-muted);">Your Cloudflare Worker URL</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="settingsAdminToken">Admin Token *</label>
                                 <input type="password" id="settingsAdminToken" required placeholder="Your secret admin token">
-                                <small style="color: var(--text-muted);">Set in Edge Script environment</small>
+                                <small style="color: var(--text-muted);">Set in Worker environment</small>
                             </div>
 
                             <div class="form-group">
@@ -1165,12 +1297,12 @@
                     <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
                         <h3 style="margin-bottom: 1rem; color: var(--secondary);">Production Checklist</h3>
                         <ul style="color: var(--text-muted); line-height: 2; padding-left: 1.5rem;">
-                            <li><i class="fas fa-check" style="color: var(--success);"></i> Edge Script deployed to BunnyCDN</li>
+                            <li><i class="fas fa-check" style="color: var(--success);"></i> Cloudflare Worker deployed</li>
                             <li><i class="fas fa-check" style="color: var(--success);"></i> ADMIN_TOKEN set in environment</li>
-                            <li><i class="fas fa-check" style="color: var(--success);"></i> Bunny Database configured</li>
-                            <li><i class="fas fa-check" style="color: var(--success);"></i> Storage API key configured</li>
+                            <li><i class="fas fa-check" style="color: var(--success);"></i> D1 Database configured</li>
+                            <li><i class="fas fa-check" style="color: var(--success);"></i> BunnyCDN Storage configured</li>
                             <li><i class="fas fa-check" style="color: var(--success);"></i> HTTPS enforced on all endpoints</li>
-                            <li><i class="fas fa-check" style="color: var(--success);"></i> CORS restricted to your domain</li>
+                            <li><i class="fas fa-check" style="color: var(--success);"></i> CORS configured correctly</li>
                         </ul>
                     </div>
                 </div>
@@ -1258,6 +1390,65 @@
             initializeSettings();
         });
 
+        // ==================== NOTIFICATION SYSTEM ====================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} show`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            alert.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        }
+
         // ==================== AUTHENTICATION ====================
         function checkAuth() {
             if (CONFIG.apiEndpoint && CONFIG.adminToken) {
@@ -1302,6 +1493,7 @@
 
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
+                showToast('Login successful!', 'success');
                 checkAPIConnection();
                 
             } catch (error) {
@@ -1325,6 +1517,7 @@
             document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('authForm').reset();
+            showToast('Logged out successfully', 'info');
         }
 
         // ==================== NAVIGATION ====================
@@ -1426,23 +1619,30 @@
             if (file.type.startsWith('video/')) {
                 preview.innerHTML = `<video controls src="${url}"></video>`;
                 preview.classList.remove('hidden');
+                showToast('Video file loaded: ' + file.name, 'success');
                 
                 const video = preview.querySelector('video');
                 video.addEventListener('loadedmetadata', () => {
                     const duration = formatDuration(video.duration);
                     document.getElementById('videoDuration').value = duration;
                 });
+            } else {
+                showToast('Please select a valid video file', 'error');
             }
         }
 
         function handleThumbFile(file) {
-            if (!file || !file.type.startsWith('image/')) return;
+            if (!file || !file.type.startsWith('image/')) {
+                showToast('Please select a valid image file', 'error');
+                return;
+            }
             
             const preview = document.getElementById('thumbPreview');
             const url = URL.createObjectURL(file);
             
             preview.innerHTML = `<img src="${url}" alt="Thumbnail preview">`;
             preview.classList.remove('hidden');
+            showToast('Thumbnail loaded: ' + file.name, 'success');
         }
 
         function updateTagsPreview(tagsText) {
@@ -1475,7 +1675,7 @@
             localStorage.setItem('bunnyHost', CONFIG.bunnyHost);
             localStorage.setItem('storagePath', CONFIG.storagePath);
             
-            showAlert('Settings saved successfully!', 'success');
+            showToast('Settings saved successfully!', 'success');
             checkAPIConnection();
         });
 
@@ -1554,8 +1754,8 @@
             
             try {
                 const [videosData, shortsData] = await Promise.all([
-                    apiCall('/api/videos?limit=3'),
-                    apiCall('/api/shorts?limit=3')
+                    apiCall('/videos?limit=3'),
+                    apiCall('/shorts?limit=3')
                 ]);
 
                 const recent = [...(videosData || []), ...(shortsData || [])]
@@ -1622,7 +1822,7 @@
             const thumbFile = document.getElementById('thumbFile').files[0];
             
             if (!videoFile) {
-                showAlert('Please select a video file', 'error');
+                showToast('Please select a video file', 'error');
                 return;
             }
             
@@ -1631,7 +1831,7 @@
             btn.innerHTML = '<i class="fas fa-spinner loading"></i> Uploading...';
             
             try {
-                showAlert('Starting upload... This may take a while for large files.', 'info');
+                showToast('Starting upload... This may take a while for large files.', 'info');
                 
                 // Step 1: Upload video to BunnyCDN Storage
                 const timestamp = Date.now();
@@ -1640,15 +1840,19 @@
                 const videoFilename = `${timestamp}_${safeTitle}.${videoExt}`;
                 
                 const videoPath = type === 'short' ? CONFIG.shortsPath : CONFIG.storagePath;
+                showToast('Uploading video to BunnyCDN...', 'info');
                 const videoUrl = await uploadToBunnyStorage(videoFile, videoPath, videoFilename);
+                showToast('Video uploaded successfully!', 'success');
                 
                 // Step 2: Upload thumbnail if provided
                 let thumbnailUrl = '';
                 if (thumbFile) {
+                    showToast('Uploading thumbnail...', 'info');
                     const thumbExt = thumbFile.name.split('.').pop();
                     const thumbFilename = `${timestamp}_thumb.${thumbExt}`;
                     const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
                     thumbnailUrl = await uploadToBunnyStorage(thumbFile, thumbPath, thumbFilename);
+                    showToast('Thumbnail uploaded!', 'success');
                 } else {
                     const thumbFilename = `${timestamp}_thumb.jpg`;
                     const thumbPath = type === 'short' ? CONFIG.shortsThumbPath : CONFIG.thumbnailPath;
@@ -1658,8 +1862,9 @@
                 // Step 3: Parse tags
                 const videoTags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
                 
-                // Step 4: Save metadata to Bunny Database via API
-                const endpoint = type === 'short' ? '/api/upload/short' : '/api/upload/video';
+                // Step 4: Save metadata to Database via API
+                showToast('Saving metadata to database...', 'info');
+                const endpoint = type === 'short' ? '/upload/short' : '/upload/video';
                 const metadata = {
                     title,
                     videoUrl,
@@ -1672,7 +1877,7 @@
 
                 const result = await apiCall(endpoint, 'POST', metadata);
                 
-                showAlert(`Successfully uploaded ${type === 'short' ? 'short video' : 'video'}! ID: ${result.numericId}`, 'success');
+                showToast(`✅ Successfully uploaded ${type === 'short' ? 'short video' : 'video'}! ID: ${result.numericId || result.id}`, 'success', 5000);
                 
                 // Reset form
                 document.getElementById('uploadForm').reset();
@@ -1685,7 +1890,7 @@
                 
             } catch (error) {
                 console.error('Upload error:', error);
-                showAlert('Upload failed: ' + error.message, 'error');
+                showToast('❌ Upload failed: ' + error.message, 'error', 5000);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-upload"></i> Upload Content';
@@ -1713,14 +1918,14 @@
                     }
                 });
 
-                xhr.open('POST', `${CONFIG.apiEndpoint}/api/upload/file`);
+                xhr.open('POST', `${CONFIG.apiEndpoint}/upload/file`);
                 xhr.setRequestHeader('Authorization', `Bearer ${CONFIG.adminToken}`);
                 
                 xhr.onload = () => {
                     progressBar.style.display = 'none';
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        resolve(response.url);
+                        resolve(response.url || response.data?.url);
                     } else {
                         reject(new Error('Upload failed: ' + xhr.statusText));
                     }
@@ -1728,7 +1933,7 @@
 
                 xhr.onerror = () => {
                     progressBar.style.display = 'none';
-                    reject(new Error('Network error'));
+                    reject(new Error('Network error during upload'));
                 };
 
                 xhr.send(formData);
@@ -1740,7 +1945,7 @@
             const container = document.getElementById('videosList');
             
             try {
-                let url = '/api/videos?limit=100';
+                let url = '/videos?limit=100';
                 if (filter !== 'all') {
                     url += `&tag=${encodeURIComponent(filter)}`;
                 }
@@ -1774,7 +1979,7 @@
             const container = document.getElementById('shortsList');
             
             try {
-                let url = '/api/shorts?limit=100';
+                let url = '/shorts?limit=100';
                 if (filter !== 'all') {
                     url += `&tag=${encodeURIComponent(filter)}`;
                 }
@@ -1850,7 +2055,7 @@
             const container = document.getElementById('videosList');
             
             try {
-                const data = await apiCall(`/api/videos?search=${encodeURIComponent(query)}&limit=100`);
+                const data = await apiCall(`/videos?search=${encodeURIComponent(query)}&limit=100`);
                 
                 if (!data || data.length === 0) {
                     container.innerHTML = `
@@ -1864,7 +2069,7 @@
 
                 container.innerHTML = data.map(video => createVideoCard(video, 'video')).join('');
             } catch (error) {
-                showAlert('Search failed: ' + error.message, 'error');
+                showToast('Search failed: ' + error.message, 'error');
             }
         }
 
@@ -1873,7 +2078,7 @@
             const container = document.getElementById('shortsList');
             
             try {
-                const data = await apiCall(`/api/shorts?search=${encodeURIComponent(query)}&limit=100`);
+                const data = await apiCall(`/shorts?search=${encodeURIComponent(query)}&limit=100`);
                 
                 if (!data || data.length === 0) {
                     container.innerHTML = `
@@ -1887,7 +2092,7 @@
 
                 container.innerHTML = data.map(video => createVideoCard(video, 'short')).join('');
             } catch (error) {
-                showAlert('Search failed: ' + error.message, 'error');
+                showToast('Search failed: ' + error.message, 'error');
             }
         }
 
@@ -1951,7 +2156,7 @@
             const type = document.getElementById('editType').value;
             
             try {
-                const endpoint = type === 'video' ? '/api/video/update' : '/api/short/update';
+                const endpoint = type === 'video' ? '/video/update' : '/short/update';
                 const data = {
                     id,
                     title: document.getElementById('editTitle').value,
@@ -1961,7 +2166,7 @@
                 };
 
                 await apiCall(endpoint, 'PUT', data);
-                showAlert('Content updated successfully', 'success');
+                showToast('Content updated successfully!', 'success');
                 closeEditModal();
                 
                 if (type === 'video') {
@@ -1970,7 +2175,7 @@
                     loadShortsList();
                 }
             } catch (error) {
-                showAlert('Update failed: ' + error.message, 'error');
+                showToast('Update failed: ' + error.message, 'error');
             }
         });
 
@@ -1978,10 +2183,10 @@
             if (!confirm('Are you sure you want to delete this content? This cannot be undone.')) return;
             
             try {
-                const endpoint = type === 'video' ? '/api/video/delete' : '/api/short/delete';
+                const endpoint = type === 'video' ? '/video/delete' : '/short/delete';
                 await apiCall(endpoint, 'DELETE', { id });
                 
-                showAlert('Content deleted successfully', 'success');
+                showToast('Content deleted successfully!', 'success');
                 updateStats();
                 
                 if (type === 'video') {
@@ -1990,7 +2195,7 @@
                     loadShortsList();
                 }
             } catch (error) {
-                showAlert('Delete failed: ' + error.message, 'error');
+                showToast('Delete failed: ' + error.message, 'error');
             }
         }
 
@@ -1999,7 +2204,7 @@
             const container = document.getElementById('tagsList');
             
             try {
-                const data = await apiCall('/api/tags');
+                const data = await apiCall('/tags');
                 tags = data || [];
 
                 if (tags.length === 0) {
@@ -2035,12 +2240,12 @@
             if (!name) return;
             
             try {
-                await apiCall('/api/tags/add', 'POST', { name });
-                showAlert('Tag added successfully', 'success');
+                await apiCall('/tags/add', 'POST', { name });
+                showToast('Tag added successfully!', 'success');
                 input.value = '';
                 loadTagsList();
             } catch (error) {
-                showAlert('Failed to add tag: ' + error.message, 'error');
+                showToast('Failed to add tag: ' + error.message, 'error');
             }
         }
 
@@ -2048,11 +2253,11 @@
             if (!confirm(`Delete tag "${name}"?`)) return;
             
             try {
-                await apiCall('/api/tags/delete', 'DELETE', { name });
-                showAlert('Tag deleted successfully', 'success');
+                await apiCall('/tags/delete', 'DELETE', { name });
+                showToast('Tag deleted successfully!', 'success');
                 loadTagsList();
             } catch (error) {
-                showAlert('Failed to delete tag: ' + error.message, 'error');
+                showToast('Failed to delete tag: ' + error.message, 'error');
             }
         }
 
@@ -2072,24 +2277,6 @@
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        function showAlert(message, type) {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                ${message}
-            `;
-            alert.style.display = 'block';
-            
-            container.innerHTML = '';
-            container.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 5000);
         }
 
         // Close modals on outside click
