@@ -51,8 +51,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
         .logo {
@@ -86,7 +84,7 @@
 
         /* ==================== MAIN CONTAINER ==================== */
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -94,6 +92,9 @@
         /* ==================== VIDEO PLAYER SECTION ==================== */
         .video-section {
             margin-bottom: 2rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .player-container {
@@ -102,6 +103,17 @@
             overflow: hidden;
             border: 1px solid var(--border);
             margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+        }
+
+        .player-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         /* Plyr Customization */
@@ -109,6 +121,7 @@
             --plyr-color-main: var(--primary);
             --plyr-video-background: var(--darker);
             border-radius: 12px;
+            height: 100%;
         }
 
         .plyr--full-ui input[type=range] {
@@ -252,11 +265,6 @@
         .engagement-btn.shared {
             background: var(--success);
             border-color: var(--success);
-        }
-
-        .engagement-count {
-            color: var(--text-muted);
-            font-size: 0.85rem;
         }
 
         /* ==================== SHORTS CAROUSEL ==================== */
@@ -701,12 +709,18 @@
         }
 
         /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 768px) {
-            .header {
+        @media (max-width: 1024px) {
+            .container {
                 padding: 1rem;
             }
+            
+            .video-section {
+                max-width: 100%;
+            }
+        }
 
-            .container {
+        @media (max-width: 768px) {
+            .header {
                 padding: 1rem;
             }
 
@@ -751,7 +765,7 @@
             }
         }
 
-        /* ==================== HORIZONTAL SCROLL INDICATORS ==================== */
+        /* ==================== SCROLL INDICATORS ==================== */
         .scroll-indicator {
             position: absolute;
             top: 50%;
@@ -882,7 +896,7 @@
             </section>
 
             <!-- Shorts Carousel Section -->
-            <section class="shorts-section">
+            <section class="shorts-section" style="position: relative;">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-mobile-alt"></i>
@@ -893,7 +907,7 @@
                     </a>
                 </div>
 
-                <div class="scroll-indicator left" onclick="scrollShorts('left')">
+                <div class="scroll-indicator left" onclick="scrollShorts('left')" style="display: none;">
                     <i class="fas fa-chevron-left"></i>
                 </div>
 
@@ -904,7 +918,7 @@
                     </div>
                 </div>
 
-                <div class="scroll-indicator right" onclick="scrollShorts('right')">
+                <div class="scroll-indicator right" onclick="scrollShorts('right')" style="display: none;">
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </section>
@@ -981,7 +995,6 @@
         let currentVideo = null;
         let player = null;
         let viewTracked = false;
-        let sessionId = CONFIG.sessionId;
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
@@ -1125,7 +1138,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Session-Id': sessionId
+                        'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({ shortId: currentVideo.numericId || currentVideo.id })
                 });
@@ -1170,7 +1183,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Session-Id': sessionId
+                        'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({
                         shortId: currentVideo.numericId || currentVideo.id,
@@ -1193,7 +1206,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Session-Id': sessionId
+                        'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({ shortId: currentVideo.numericId || currentVideo.id })
                 });
@@ -1302,7 +1315,7 @@
                     <img src="${short.thumbnail || ''}" 
                          alt="${short.title}" 
                          class="short-thumbnail"
-                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
                     
                     <span class="short-duration">${short.duration || '0:00'}</span>
                     
@@ -1367,7 +1380,7 @@
                     <img src="${video.thumbnail || ''}" 
                          alt="${video.title}" 
                          class="video-card-thumbnail"
-                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Thumbnail%3C/text%3E%3C/svg%3E'">
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
                     
                     <span class="video-card-duration">${video.duration || '0:00'}</span>
                     
@@ -1403,7 +1416,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Session-Id': sessionId
+                        'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({
                         videoId: currentVideo.numericId || currentVideo.id,
