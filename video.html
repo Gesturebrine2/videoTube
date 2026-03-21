@@ -38,6 +38,7 @@
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* ==================== HEADER ==================== */
@@ -104,7 +105,7 @@
             border: 1px solid var(--border);
             margin-bottom: 1.5rem;
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             height: 0;
         }
 
@@ -114,9 +115,9 @@
             left: 0;
             width: 100%;
             height: 100%;
+            background: #000;
         }
 
-        /* Plyr Customization */
         .plyr {
             --plyr-color-main: var(--primary);
             --plyr-video-background: var(--darker);
@@ -134,6 +135,22 @@
 
         .plyr--video .plyr__controls {
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+
+        /* Video Error Message */
+        .video-error-message {
+            background: rgba(255, 0, 80, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .video-error-message.show {
+            display: block;
         }
 
         /* ==================== VIDEO INFO ==================== */
@@ -267,9 +284,15 @@
             border-color: var(--success);
         }
 
+        .engagement-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
         /* ==================== SHORTS CAROUSEL ==================== */
         .shorts-section {
             margin: 3rem 0;
+            position: relative;
         }
 
         .section-header {
@@ -300,6 +323,10 @@
 
         .view-all-link:hover {
             color: var(--secondary);
+        }
+
+        .shorts-carousel-wrapper {
+            position: relative;
         }
 
         .shorts-carousel {
@@ -436,6 +463,41 @@
         .short-card:hover .play-overlay {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 0, 80, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+            border: none;
+            color: white;
+        }
+
+        .shorts-carousel-wrapper:hover .scroll-indicator {
+            opacity: 1;
+        }
+
+        .scroll-indicator.left {
+            left: 0;
+        }
+
+        .scroll-indicator.right {
+            right: 0;
+        }
+
+        .scroll-indicator:hover {
+            background: var(--primary);
         }
 
         /* ==================== RECOMMENDED VIDEOS ==================== */
@@ -696,7 +758,7 @@
         }
 
         .toast.info {
-            border-left: 4px solid var(--info);
+            border-left: 4px solid var(--primary);
         }
 
         .toast-close {
@@ -726,10 +788,6 @@
 
             .video-title {
                 font-size: 1.25rem;
-            }
-
-            .shorts-carousel {
-                scroll-snap-type: x mandatory;
             }
 
             .short-card {
@@ -763,40 +821,10 @@
                 min-width: auto;
                 width: 100%;
             }
-        }
 
-        /* ==================== SCROLL INDICATORS ==================== */
-        .scroll-indicator {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 0, 80, 0.8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 10;
-        }
-
-        .shorts-section:hover .scroll-indicator {
-            opacity: 1;
-        }
-
-        .scroll-indicator.left {
-            left: 0;
-        }
-
-        .scroll-indicator.right {
-            right: 0;
-        }
-
-        .scroll-indicator:hover {
-            background: var(--primary);
+            .scroll-indicator {
+                display: none !important;
+            }
         }
 
         .hidden {
@@ -829,7 +857,7 @@
         <div id="errorState" class="error-state hidden">
             <i class="fas fa-exclamation-triangle"></i>
             <h2>Video Not Found</h2>
-            <p>The video you're looking for doesn't exist or has been removed.</p>
+            <p id="errorMessage">The video you're looking for doesn't exist or has been removed.</p>
             <a href="index.html" class="back-btn" style="display: inline-flex;">
                 <i class="fas fa-home"></i>
                 <span>Back to Home</span>
@@ -845,6 +873,8 @@
                         <source src="" type="video/mp4" />
                     </video>
                 </div>
+
+                <div id="videoErrorMessage" class="video-error-message"></div>
 
                 <!-- Video Info -->
                 <div class="video-info">
@@ -896,7 +926,7 @@
             </section>
 
             <!-- Shorts Carousel Section -->
-            <section class="shorts-section" style="position: relative;">
+            <section class="shorts-section">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-mobile-alt"></i>
@@ -907,19 +937,21 @@
                     </a>
                 </div>
 
-                <div class="scroll-indicator left" onclick="scrollShorts('left')" style="display: none;">
-                    <i class="fas fa-chevron-left"></i>
-                </div>
+                <div class="shorts-carousel-wrapper">
+                    <button class="scroll-indicator left" onclick="scrollShorts('left')">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
 
-                <div class="shorts-carousel" id="shortsCarousel">
-                    <div class="loading-state" style="width: 100%;">
-                        <div class="loading-spinner"></div>
-                        <p>Loading shorts...</p>
+                    <div class="shorts-carousel" id="shortsCarousel">
+                        <div class="loading-state" style="width: 100%;">
+                            <div class="loading-spinner"></div>
+                            <p>Loading shorts...</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="scroll-indicator right" onclick="scrollShorts('right')" style="display: none;">
-                    <i class="fas fa-chevron-right"></i>
+                    <button class="scroll-indicator right" onclick="scrollShorts('right')">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </section>
 
@@ -988,7 +1020,6 @@
             sessionId: localStorage.getItem('sessionId') || generateSessionId()
         };
 
-        // Save session ID
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
         // ==================== STATE ====================
@@ -998,6 +1029,7 @@
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, initializing...');
             loadVideo();
         });
 
@@ -1010,19 +1042,34 @@
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('id');
 
+            console.log('Video ID from URL:', videoId);
+            console.log('Full URL:', window.location.href);
+
             if (!videoId) {
-                showError('Video ID is required');
+                showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
                 return;
             }
 
             try {
+                console.log('Fetching video from API:', `${CONFIG.apiEndpoint}/video/${videoId}`);
+                
                 const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
+                console.log('API Response status:', response.status);
                 
                 if (!response.ok) {
-                    throw new Error('Video not found');
+                    const errorText = await response.text();
+                    console.error('API Error:', errorText);
+                    throw new Error(`API returned ${response.status}: ${errorText}`);
                 }
 
                 const data = await response.json();
+                console.log('Video data received:', data);
+                
+                if (!data || !data.videoUrl) {
+                    console.error('Missing video URL in response');
+                    throw new Error('Video URL is missing from API response');
+                }
+
                 currentVideo = data;
 
                 // Update page title
@@ -1054,9 +1101,36 @@
         // ==================== SETUP PLYR PLAYER ====================
         function setupPlayer(video) {
             const videoElement = document.getElementById('player');
-            videoElement.querySelector('source').src = video.videoUrl;
-            videoElement.setAttribute('data-poster', video.thumbnail || '');
+            
+            console.log('Setting up player with URL:', video.videoUrl);
+            
+            // Set video source
+            const source = videoElement.querySelector('source');
+            source.src = video.videoUrl;
+            source.type = 'video/mp4';
+            
+            // Set poster if available
+            if (video.thumbnail) {
+                videoElement.setAttribute('poster', video.thumbnail);
+            }
+            
+            // Load video
             videoElement.load();
+
+            // Error handling
+            videoElement.addEventListener('error', (e) => {
+                console.error('Video element error:', e);
+                showVideoError('Failed to load video file. The file may be corrupted, unavailable, or the URL is incorrect.');
+            });
+
+            // Success handling
+            videoElement.addEventListener('loadeddata', () => {
+                console.log('Video loaded successfully');
+            });
+
+            videoElement.addEventListener('canplay', () => {
+                console.log('Video can play');
+            });
 
             // Initialize Plyr
             player = new Plyr('#player', {
@@ -1067,13 +1141,10 @@
                     'current-time',
                     'mute',
                     'volume',
-                    'captions',
                     'settings',
-                    'pip',
-                    'airplay',
                     'fullscreen'
                 ],
-                settings: ['captions', 'quality', 'speed'],
+                settings: ['quality', 'speed'],
                 speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
                 keyboard: { focused: true, global: true },
                 tooltips: { controls: true, seek: true }
@@ -1081,18 +1152,27 @@
 
             // Track view on video end
             player.on('ended', () => {
+                console.log('Video ended, tracking view');
                 trackView(true);
             });
 
             // Track progress for view tracking
             player.on('timeupdate', () => {
-                if (player.duration > 0) {
+                if (player.duration > 0 && !viewTracked) {
                     const progress = player.currentTime / player.duration;
-                    if (progress >= 0.5 && !viewTracked) {
+                    if (progress >= 0.5) {
+                        console.log('50% watched, tracking view');
                         trackView(false);
                     }
                 }
             });
+        }
+
+        function showVideoError(message) {
+            const errorDiv = document.getElementById('videoErrorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            showToast('Video playback error', 'error');
         }
 
         // ==================== UPDATE VIDEO INFO ====================
@@ -1106,7 +1186,8 @@
             document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
 
             // Update like button state
-            if (isLiked(video.numericId || video.id)) {
+            const videoId = video.numericId || video.id;
+            if (isLiked(videoId)) {
                 document.getElementById('likeBtn').classList.add('liked');
                 document.getElementById('likeBtn').querySelector('i').className = 'fas fa-heart';
             }
@@ -1132,31 +1213,37 @@
             const icon = btn.querySelector('i');
             const countEl = document.getElementById('likeCount');
             const wasLiked = btn.classList.contains('liked');
+            const videoId = currentVideo.numericId || currentVideo.id;
 
             try {
+                console.log('Toggling like for video:', videoId);
+                
                 const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Session-Id': CONFIG.sessionId
                     },
-                    body: JSON.stringify({ shortId: currentVideo.numericId || currentVideo.id })
+                    body: JSON.stringify({ shortId: videoId })
                 });
+
+                console.log('Like API response:', response.status);
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Like action:', data.action);
                     
                     if (data.action === 'liked') {
                         btn.classList.add('liked');
                         icon.className = 'fas fa-heart';
                         currentVideo.likes = (currentVideo.likes || 0) + 1;
-                        markAsLiked(currentVideo.numericId || currentVideo.id);
+                        markAsLiked(videoId);
                         showToast('Liked! ❤️', 'success');
                     } else {
                         btn.classList.remove('liked');
                         icon.className = 'far fa-heart';
                         currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
-                        markAsUnliked(currentVideo.numericId || currentVideo.id);
+                        markAsUnliked(videoId);
                     }
 
                     countEl.textContent = formatNumber(currentVideo.likes);
@@ -1179,6 +1266,12 @@
             if (viewTracked || !currentVideo) return;
 
             try {
+                const videoId = currentVideo.numericId || currentVideo.id;
+                const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
+                const watchTime = player?.currentTime || 0;
+
+                console.log('Tracking view:', { videoId, watchDuration, watchTime, isComplete });
+
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
                     headers: {
@@ -1186,13 +1279,14 @@
                         'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({
-                        shortId: currentVideo.numericId || currentVideo.id,
-                        watchDuration: isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5,
-                        watchTime: player?.currentTime || 0
+                        shortId: videoId,
+                        watchDuration,
+                        watchTime
                     })
                 });
 
                 viewTracked = true;
+                console.log('View tracked successfully');
             } catch (error) {
                 console.error('Track view error:', error);
             }
@@ -1200,6 +1294,7 @@
 
         async function shareVideo() {
             const btn = document.getElementById('shareBtn');
+            const videoId = currentVideo.numericId || currentVideo.id;
             
             try {
                 await fetch(`${CONFIG.apiEndpoint}/short/share`, {
@@ -1208,7 +1303,7 @@
                         'Content-Type': 'application/json',
                         'X-Session-Id': CONFIG.sessionId
                     },
-                    body: JSON.stringify({ shortId: currentVideo.numericId || currentVideo.id })
+                    body: JSON.stringify({ shortId: videoId })
                 });
 
                 btn.classList.add('shared');
@@ -1269,17 +1364,16 @@
             const carousel = document.getElementById('shortsCarousel');
 
             try {
-                // Get tags from current video for related shorts
-                const tags = JSON.parse(video.tags || '[]');
-                const category = video.category;
-
-                // Fetch shorts
+                console.log('Loading related shorts...');
+                
                 const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
                 let shorts = await response.json();
 
-                // Filter for related (same category or tags)
+                console.log('Shorts loaded:', shorts);
+
                 if (shorts && shorts.length > 0) {
-                    // Prioritize same category
+                    // Filter for related (same category or tags)
+                    const category = video.category;
                     let related = shorts.filter(s => s.category === category);
                     
                     // If not enough, add random ones
@@ -1309,7 +1403,6 @@
         }
 
         function createShortCard(short) {
-            const tags = JSON.parse(short.tags || '[]');
             return `
                 <a href="shorts.html?id=${short.numericId}" class="short-card">
                     <img src="${short.thumbnail || ''}" 
@@ -1345,13 +1438,18 @@
             const container = document.getElementById('recommendedVideos');
 
             try {
+                console.log('Loading recommended videos...');
+                
                 const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
                 const videos = await response.json();
 
+                console.log('Recommended videos:', videos);
+
                 if (videos && videos.length > 0) {
                     // Filter out current video
+                    const currentId = currentVideo.numericId || currentVideo.id;
                     const filtered = videos.filter(v => 
-                        (v.numericId || v.id) !== (currentVideo.numericId || currentVideo.id)
+                        (v.numericId || v.id) !== currentId
                     );
 
                     container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
@@ -1410,6 +1508,7 @@
 
             const reason = document.getElementById('reportReason').value;
             const details = document.getElementById('reportDetails').value;
+            const videoId = currentVideo.numericId || currentVideo.id;
 
             try {
                 await fetch(`${CONFIG.apiEndpoint}/report`, {
@@ -1419,7 +1518,7 @@
                         'X-Session-Id': CONFIG.sessionId
                     },
                     body: JSON.stringify({
-                        videoId: currentVideo.numericId || currentVideo.id,
+                        videoId,
                         videoType: 'video',
                         reason: reason + (details ? ': ' + details : '')
                     })
@@ -1435,9 +1534,10 @@
 
         // ==================== ERROR HANDLING ====================
         function showError(message) {
+            console.error('Showing error:', message);
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('errorState').classList.remove('hidden');
-            document.getElementById('errorState').querySelector('p').textContent = message;
+            document.getElementById('errorMessage').textContent = message;
         }
 
         // ==================== TOAST NOTIFICATIONS ====================
