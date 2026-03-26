@@ -36,7 +36,6 @@ min-height: 100vh;
 line-height: 1.6;
 overflow-x: hidden;
 }
-/* ==================== HEADER ==================== */
 .header {
 background: var(--dark);
 border-bottom: 1px solid var(--border);
@@ -74,13 +73,11 @@ background: var(--primary);
 border-color: var(--primary);
 transform: translateX(-5px);
 }
-/* ==================== MAIN CONTAINER ==================== */
 .container {
 max-width: 1200px;
 margin: 0 auto;
 padding: 2rem;
 }
-/* ==================== VIDEO PLAYER SECTION ==================== */
 .video-section {
 margin-bottom: 2rem;
 max-width: 1000px;
@@ -120,7 +117,6 @@ background: rgba(255, 0, 80, 0.8);
 .plyr--video .plyr__controls {
 background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 }
-/* Video Error Message */
 .video-error-message {
 background: rgba(255, 0, 80, 0.1);
 border: 1px solid var(--danger);
@@ -134,7 +130,6 @@ display: none;
 .video-error-message.show {
 display: block;
 }
-/* ==================== VIDEO INFO ==================== */
 .video-info {
 background: var(--card);
 border: 1px solid var(--border);
@@ -203,7 +198,6 @@ transition: all 0.3s;
 border-color: var(--primary);
 color: var(--primary);
 }
-/* ==================== ENGAGEMENT BUTTONS ==================== */
 .engagement-bar {
 display: flex;
 gap: 1rem;
@@ -252,7 +246,6 @@ border-color: var(--success);
 color: var(--text-muted);
 font-size: 0.85rem;
 }
-/* ==================== SHORTS CAROUSEL ==================== */
 .shorts-section {
 margin: 3rem 0;
 position: relative;
@@ -434,7 +427,6 @@ right: 0;
 .scroll-indicator:hover {
 background: var(--primary);
 }
-/* ==================== RECOMMENDED VIDEOS ==================== */
 .recommended-section {
 margin: 3rem 0;
 }
@@ -500,7 +492,6 @@ display: flex;
 align-items: center;
 gap: 0.25rem;
 }
-/* ==================== REPORT MODAL ==================== */
 .modal {
 display: none;
 position: fixed;
@@ -582,7 +573,6 @@ font-size: 0.95rem;
 min-height: 100px;
 resize: vertical;
 }
-/* ==================== LOADING & ERROR STATES ==================== */
 .loading-state {
 text-align: center;
 padding: 4rem 2rem;
@@ -619,7 +609,6 @@ margin-bottom: 0.5rem;
 color: var(--text-muted);
 margin-bottom: 1.5rem;
 }
-/* ==================== TOAST NOTIFICATIONS ==================== */
 .toast-container {
 position: fixed;
 top: 100px;
@@ -668,7 +657,6 @@ color: var(--text-muted);
 cursor: pointer;
 font-size: 1.2rem;
 }
-/* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
 .container {
 padding: 1rem;
@@ -719,9 +707,7 @@ display: none !important;
 </style>
 </head>
 <body>
-<!-- ==================== TOAST CONTAINER ==================== -->
 <div class="toast-container" id="toastContainer"></div>
-<!-- ==================== HEADER ==================== -->
 <header class="header">
 <div class="logo">Xplitleaks</div>
 <a href="index.html" class="back-btn">
@@ -729,14 +715,11 @@ display: none !important;
 <span>Back to Home</span>
 </a>
 </header>
-<!-- ==================== MAIN CONTENT ==================== -->
 <div class="container">
-<!-- Loading State -->
 <div id="loadingState" class="loading-state">
 <div class="loading-spinner"></div>
 <p>Loading video...</p>
 </div>
-<!-- Error State -->
 <div id="errorState" class="error-state hidden">
 <i class="fas fa-exclamation-triangle"></i>
 <h2>Video Not Found</h2>
@@ -746,9 +729,7 @@ display: none !important;
 <span>Back to Home</span>
 </a>
 </div>
-<!-- Video Content -->
 <div id="videoContent" class="hidden">
-<!-- Video Player Section -->
 <section class="video-section">
 <div class="player-container">
 <video id="player" playsinline controls data-poster="">
@@ -756,7 +737,6 @@ display: none !important;
 </video>
 </div>
 <div id="videoErrorMessage" class="video-error-message"></div>
-<!-- Video Info -->
 <div class="video-info">
 <h1 class="video-title" id="videoTitle">Loading...</h1>
 <div class="video-meta">
@@ -797,7 +777,6 @@ display: none !important;
 <div class="tags-container" id="tagsContainer"></div>
 </div>
 </section>
-<!-- Shorts Carousel Section -->
 <section class="shorts-section">
 <div class="section-header">
 <h2 class="section-title">
@@ -823,7 +802,6 @@ View All <i class="fas fa-arrow-right"></i>
 </button>
 </div>
 </section>
-<!-- Recommended Videos Section -->
 <section class="recommended-section">
 <div class="section-header">
 <h2 class="section-title">
@@ -840,7 +818,6 @@ Recommended for You
 </section>
 </div>
 </div>
-<!-- ==================== REPORT MODAL ==================== -->
 <div class="modal" id="reportModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -873,144 +850,156 @@ Submit Report
 </form>
 </div>
 </div>
-<!-- ==================== JAVASCRIPT ==================== -->
 <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 <script>
-// ==================== CONFIGURATION ====================
 const CONFIG = {
 apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
 sessionId: localStorage.getItem('sessionId') || generateSessionId()
 };
 localStorage.setItem('sessionId', CONFIG.sessionId);
-// ==================== STATE ====================
+
 let currentVideo = null;
 let player = null;
 let viewTracked = false;
-// ==================== INITIALIZATION ====================
+
 document.addEventListener('DOMContentLoaded', () => {
 console.log('Page loaded, initializing...');
 loadVideo();
 });
+
 function generateSessionId() {
 return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
 }
-// ==================== LOAD VIDEO ====================
+
 async function loadVideo() {
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('id');
 console.log('Video ID from URL:', videoId);
-console.log('Full URL:', window.location.href);
+
 if (!videoId) {
 showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
 return;
 }
+
 try {
 console.log('Fetching video from API:', `${CONFIG.apiEndpoint}/video/${videoId}`);
 const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
 console.log('API Response status:', response.status);
+
 if (!response.ok) {
 const errorText = await response.text();
 console.error('API Error:', errorText);
 throw new Error(`API returned ${response.status}: ${errorText}`);
 }
+
 const data = await response.json();
 console.log('Video data received:', data);
 
-// FIX: Clean up the data - trim all string values to remove trailing spaces
+// FIX: Trim all URLs and strings to remove trailing spaces
 const cleanedData = {
 ...data,
-videoUrl: data.videoUrl ? data.videoUrl.trim() : '',
-thumbnail: data.thumbnail ? data.thumbnail.trim() : data.thumbnail,
-title: data.title ? data.title.trim() : data.title,
-description: data.description ? data.description.trim() : data.description
+videoUrl: (data.videoUrl || '').trim(),
+thumbnail: (data.thumbnail || '').trim(),
+title: (data.title || '').trim(),
+description: (data.description || '').trim()
 };
+
+console.log('Cleaned videoUrl:', cleanedData.videoUrl);
+console.log('Cleaned thumbnail:', cleanedData.thumbnail);
 
 if (!cleanedData || !cleanedData.videoUrl) {
 console.error('Missing video URL in response');
 throw new Error('Video URL is missing from API response');
 }
+
 currentVideo = cleanedData;
+
 // Update page title
 document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
+
 // Setup player
 setupPlayer(cleanedData);
+
 // Update info
 updateVideoInfo(cleanedData);
+
 // Load related content
 loadRelatedShorts(cleanedData);
 loadRecommendedVideos(cleanedData);
+
 // Track view (after 10 seconds or 50% watched)
 setTimeout(() => trackView(false), 10000);
-// Show content
+
+// Show content - CRITICAL: Hide error state first!
 document.getElementById('loadingState').classList.add('hidden');
+document.getElementById('errorState').classList.add('hidden');
 document.getElementById('videoContent').classList.remove('hidden');
+
+console.log('Video content displayed successfully');
+
 } catch (error) {
 console.error('Load video error:', error);
 showError('Failed to load video: ' + error.message);
 }
 }
-// ==================== SETUP PLYR PLAYER ====================
+
 function setupPlayer(video) {
 const videoElement = document.getElementById('player');
 console.log('Setting up player with URL:', video.videoUrl);
+
+if (!videoElement) {
+console.error('Player element not found!');
+return;
+}
+
 // Set video source
 const source = videoElement.querySelector('source');
+if (source) {
 source.src = video.videoUrl;
 source.type = 'video/mp4';
+}
+
 // Set poster if available
 if (video.thumbnail) {
 videoElement.setAttribute('poster', video.thumbnail);
 }
-// Load video
-videoElement.load();
-// Error handling
+
+// Add error listener BEFORE loading
 videoElement.addEventListener('error', (e) => {
 console.error('Video element error:', e);
-const errorCode = videoElement.error ? videoElement.error.code : 'unknown';
-let errorMsg = 'Failed to load video file. ';
-if (errorCode === 1) {
-errorMsg += 'The video format is not supported.';
-} else if (errorCode === 2) {
-errorMsg += 'Network error occurred while loading.';
-} else if (errorCode === 3) {
-errorMsg += 'Video file is corrupted or unavailable.';
-} else if (errorCode === 4) {
-errorMsg += 'Video format not supported by your browser.';
-} else {
-errorMsg += 'The file may be corrupted, unavailable, or the URL is incorrect.';
-}
-showVideoError(errorMsg);
+console.error('Error code:', videoElement.error?.code);
+showVideoError('Failed to load video file. The file may be unavailable.');
 });
+
 // Success handling
 videoElement.addEventListener('loadeddata', () => {
 console.log('Video loaded successfully');
 });
+
 videoElement.addEventListener('canplay', () => {
 console.log('Video can play');
 });
+
+// Load video
+videoElement.load();
+
 // Initialize Plyr
+try {
 player = new Plyr('#player', {
-controls: [
-'play-large',
-'play',
-'progress',
-'current-time',
-'mute',
-'volume',
-'settings',
-'fullscreen'
-],
+controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
 settings: ['quality', 'speed'],
 speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
 keyboard: { focused: true, global: true },
 tooltips: { controls: true, seek: true }
 });
-// Track view on video end
+
+console.log('Plyr initialized successfully');
+
 player.on('ended', () => {
 console.log('Video ended, tracking view');
 trackView(true);
 });
-// Track progress for view tracking
+
 player.on('timeupdate', () => {
 if (player.duration > 0 && !viewTracked) {
 const progress = player.currentTime / player.duration;
@@ -1020,14 +1009,20 @@ trackView(false);
 }
 }
 });
+
+} catch (plyrError) {
+console.error('Plyr initialization error:', plyrError);
+showVideoError('Video player failed to initialize.');
 }
+}
+
 function showVideoError(message) {
 const errorDiv = document.getElementById('videoErrorMessage');
 errorDiv.textContent = message;
 errorDiv.classList.add('show');
 showToast('Video playback error', 'error');
 }
-// ==================== UPDATE VIDEO INFO ====================
+
 function updateVideoInfo(video) {
 document.getElementById('videoTitle').textContent = video.title;
 document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
@@ -1036,13 +1031,13 @@ document.getElementById('videoDuration').textContent = video.duration || '0:00';
 document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
 document.getElementById('videoDescription').textContent = video.description || '';
 document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
-// Update like button state
+
 const videoId = video.numericId || video.id;
 if (isLiked(videoId)) {
 document.getElementById('likeBtn').classList.add('liked');
 document.getElementById('likeBtn').querySelector('i').className = 'fas fa-heart';
 }
-// Load tags
+
 const tags = JSON.parse(video.tags || '[]');
 const tagsContainer = document.getElementById('tagsContainer');
 if (tags.length > 0) {
@@ -1053,7 +1048,7 @@ tagsContainer.innerHTML = tags.map(tag =>
 tagsContainer.classList.add('hidden');
 }
 }
-// ==================== ENGAGEMENT TRACKING ====================
+
 async function toggleLike() {
 if (!currentVideo) return;
 const btn = document.getElementById('likeBtn');
@@ -1061,8 +1056,8 @@ const icon = btn.querySelector('i');
 const countEl = document.getElementById('likeCount');
 const wasLiked = btn.classList.contains('liked');
 const videoId = currentVideo.numericId || currentVideo.id;
+
 try {
-console.log('Toggling like for video:', videoId);
 const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
 method: 'POST',
 headers: {
@@ -1071,10 +1066,9 @@ headers: {
 },
 body: JSON.stringify({ shortId: videoId })
 });
-console.log('Like API response:', response.status);
+
 if (response.ok) {
 const data = await response.json();
-console.log('Like action:', data.action);
 if (data.action === 'liked') {
 btn.classList.add('liked');
 icon.className = 'fas fa-heart';
@@ -1091,7 +1085,6 @@ countEl.textContent = formatNumber(currentVideo.likes);
 }
 } catch (error) {
 console.error('Like error:', error);
-// Revert on error
 if (wasLiked) {
 btn.classList.add('liked');
 icon.className = 'fas fa-heart';
@@ -1102,13 +1095,14 @@ icon.className = 'far fa-heart';
 showToast('Failed to update like', 'error');
 }
 }
+
 async function trackView(isComplete) {
 if (viewTracked || !currentVideo) return;
 try {
 const videoId = currentVideo.numericId || currentVideo.id;
 const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
 const watchTime = player?.currentTime || 0;
-console.log('Tracking view:', { videoId, watchDuration, watchTime, isComplete });
+
 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
 method: 'POST',
 headers: {
@@ -1127,9 +1121,11 @@ console.log('View tracked successfully');
 console.error('Track view error:', error);
 }
 }
+
 async function shareVideo() {
 const btn = document.getElementById('shareBtn');
 const videoId = currentVideo.numericId || currentVideo.id;
+
 try {
 await fetch(`${CONFIG.apiEndpoint}/short/share`, {
 method: 'POST',
@@ -1139,12 +1135,13 @@ headers: {
 },
 body: JSON.stringify({ shortId: videoId })
 });
+
 btn.classList.add('shared');
 showToast('Share counted! ↗️', 'success');
 setTimeout(() => {
 btn.classList.remove('shared');
 }, 500);
-// Open native share or copy link
+
 if (navigator.share) {
 navigator.share({
 title: currentVideo.title,
@@ -1158,6 +1155,7 @@ console.error('Share error:', error);
 copyLink();
 }
 }
+
 function copyLink() {
 navigator.clipboard.writeText(window.location.href).then(() => {
 showToast('Link copied! 📋', 'success');
@@ -1165,11 +1163,12 @@ showToast('Link copied! 📋', 'success');
 showToast('Failed to copy link', 'error');
 });
 }
-// ==================== LIKE STATE MANAGEMENT ====================
+
 function isLiked(videoId) {
 const liked = localStorage.getItem('likedVideos');
 return liked ? JSON.parse(liked).includes(videoId) : false;
 }
+
 function markAsLiked(videoId) {
 const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
 if (!liked.includes(videoId)) {
@@ -1177,6 +1176,7 @@ liked.push(videoId);
 localStorage.setItem('likedVideos', JSON.stringify(liked));
 }
 }
+
 function markAsUnliked(videoId) {
 const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
 const index = liked.indexOf(videoId);
@@ -1185,19 +1185,16 @@ liked.splice(index, 1);
 localStorage.setItem('likedVideos', JSON.stringify(liked));
 }
 }
-// ==================== LOAD RELATED SHORTS ====================
+
 async function loadRelatedShorts(video) {
 const carousel = document.getElementById('shortsCarousel');
 try {
-console.log('Loading related shorts...');
 const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
 let shorts = await response.json();
-console.log('Shorts loaded:', shorts);
+
 if (shorts && shorts.length > 0) {
-// Filter for related (same category or tags)
 const category = video.category;
 let related = shorts.filter(s => s.category === category);
-// If not enough, add random ones
 if (related.length < 10) {
 const remaining = shorts.filter(s => s.category !== category);
 related = [...related, ...remaining].slice(0, 10);
@@ -1221,6 +1218,7 @@ carousel.innerHTML = `
 `;
 }
 }
+
 function createShortCard(short) {
 return `
 <a href="shorts.html?id=${short.numericId}" class="short-card">
@@ -1242,21 +1240,20 @@ onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg
 </a>
 `;
 }
+
 function scrollShorts(direction) {
 const carousel = document.getElementById('shortsCarousel');
 const scrollAmount = direction === 'left' ? -400 : 400;
 carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 }
-// ==================== LOAD RECOMMENDED VIDEOS ====================
+
 async function loadRecommendedVideos(video) {
 const container = document.getElementById('recommendedVideos');
 try {
-console.log('Loading recommended videos...');
 const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
 const videos = await response.json();
-console.log('Recommended videos:', videos);
+
 if (videos && videos.length > 0) {
-// Filter out current video
 const currentId = currentVideo.numericId || currentVideo.id;
 const filtered = videos.filter(v =>
 (v.numericId || v.id) !== currentId
@@ -1280,6 +1277,7 @@ container.innerHTML = `
 `;
 }
 }
+
 function createVideoCard(video) {
 return `
 <a href="video.html?id=${video.numericId || video.id}" class="video-card">
@@ -1298,19 +1296,22 @@ onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg
 </a>
 `;
 }
-// ==================== REPORT MODAL ====================
+
 function openReportModal() {
 document.getElementById('reportModal').classList.add('active');
 }
+
 function closeReportModal() {
 document.getElementById('reportModal').classList.remove('active');
 document.getElementById('reportForm').reset();
 }
+
 async function submitReport(event) {
 event.preventDefault();
 const reason = document.getElementById('reportReason').value;
 const details = document.getElementById('reportDetails').value;
 const videoId = currentVideo.numericId || currentVideo.id;
+
 try {
 await fetch(`${CONFIG.apiEndpoint}/report`, {
 method: 'POST',
@@ -1331,14 +1332,14 @@ console.error('Submit report error:', error);
 showToast('Failed to submit report', 'error');
 }
 }
-// ==================== ERROR HANDLING ====================
+
 function showError(message) {
 console.error('Showing error:', message);
 document.getElementById('loadingState').classList.add('hidden');
 document.getElementById('errorState').classList.remove('hidden');
 document.getElementById('errorMessage').textContent = message;
 }
-// ==================== TOAST NOTIFICATIONS ====================
+
 function showToast(message, type = 'info') {
 const container = document.getElementById('toastContainer');
 const toast = document.createElement('div');
@@ -1362,7 +1363,7 @@ toast.style.transform = 'translateX(100%)';
 setTimeout(() => toast.remove(), 300);
 }, 3000);
 }
-// ==================== UTILITIES ====================
+
 function formatNumber(num) {
 if (num >= 1000000) {
 return (num / 1000000).toFixed(1) + 'M';
@@ -1371,7 +1372,7 @@ return (num / 1000).toFixed(1) + 'K';
 }
 return num.toString();
 }
-// Close modals on outside click
+
 document.querySelectorAll('.modal').forEach(modal => {
 modal.addEventListener('click', (e) => {
 if (e.target === modal) {
@@ -1379,7 +1380,7 @@ modal.classList.remove('active');
 }
 });
 });
-// Keyboard shortcuts
+
 document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape') {
 closeReportModal();
