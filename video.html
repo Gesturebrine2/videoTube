@@ -6,8 +6,6 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0a0a0a">
 <title id="pageTitle">Loading... - Xplitleaks</title>
-<!-- Plyr CSS -->
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 * {
@@ -105,20 +103,48 @@ body {
     height: 100%;
     background: #000;
 }
-.plyr {
-    --plyr-color-main: var(--primary);
-    --plyr-video-background: var(--darker);
-    border-radius: 12px;
-    height: 100%;
+/* Custom Video Player Controls */
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
-.plyr--full-ui input[type=range] {
+.player-container:hover .video-controls {
+    opacity: 1;
+}
+.control-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    transition: all 0.3s;
+}
+.control-btn:hover {
     color: var(--primary);
 }
-.plyr__control--overlaid {
-    background: rgba(255, 0, 80, 0.8);
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
 }
-.plyr--video .plyr__controls {
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+    width: 0%;
 }
 /* Video Error Message */
 .video-error-message {
@@ -619,7 +645,6 @@ body {
     color: var(--text-muted);
     margin-bottom: 1.5rem;
 }
-/* ==================== TOAST NOTIFICATIONS ==================== */
 .toast-container {
     position: fixed;
     top: 100px;
@@ -751,8 +776,9 @@ body {
         <!-- Video Player Section -->
         <section class="video-section">
             <div class="player-container">
-                <video id="player" playsinline controls data-poster="">
+                <video id="videoPlayer" playsinline controls preload="metadata">
                     <source src="" type="video/mp4" />
+                    Your browser does not support the video tag.
                 </video>
             </div>
             <div id="videoErrorMessage" class="video-error-message"></div>
@@ -874,7 +900,6 @@ body {
     </div>
 </div>
 <!-- ==================== JAVASCRIPT ==================== -->
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 <script>
 // ==================== CONFIGURATION ====================
 const CONFIG = {
@@ -885,12 +910,12 @@ localStorage.setItem('sessionId', CONFIG.sessionId);
 
 // ==================== STATE ====================
 let currentVideo = null;
-let player = null;
+let videoPlayer = null;
 let viewTracked = false;
 
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Page loaded, initializing...');
+    console.log(' Page loaded, initializing...');
     loadVideo();
 });
 
@@ -902,8 +927,8 @@ function generateSessionId() {
 async function loadVideo() {
     const urlParams = new URLSearchParams(window.location.search);
     const videoId = urlParams.get('id');
-    console.log('Video ID from URL:', videoId);
-    console.log('Full URL:', window.location.href);
+    console.log('📹 Video ID from URL:', videoId);
+    console.log('🌐 Full URL:', window.location.href);
     
     if (!videoId) {
         showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
@@ -911,20 +936,20 @@ async function loadVideo() {
     }
     
     try {
-        console.log('Fetching video from API:', `${CONFIG.apiEndpoint}/video/${videoId}`);
+        console.log('📡 Fetching video from API...');
         const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
-        console.log('API Response status:', response.status);
+        console.log('✅ API Response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('API Error:', errorText);
+            console.error('❌ API Error:', errorText);
             throw new Error(`API returned ${response.status}: ${errorText}`);
         }
         
         const data = await response.json();
-        console.log('Video data received:', data);
+        console.log('📦 Video data received:', data);
         
-        // 🔥 FIX 1: Trim URLs to remove trailing spaces from API
+        // 🔥 FIX 1: Trim ALL URLs to remove trailing spaces from API
         const cleanedData = {
             ...data,
             videoUrl: (data.videoUrl || '').trim(),
@@ -933,11 +958,12 @@ async function loadVideo() {
             description: (data.description || '').trim()
         };
         
-        console.log('Cleaned videoUrl:', cleanedData.videoUrl);
-        console.log('Cleaned thumbnail:', cleanedData.thumbnail);
+        console.log('🧹 Cleaned videoUrl:', cleanedData.videoUrl);
+        console.log('🧹 Cleaned thumbnail:', cleanedData.thumbnail);
+        console.log('🧹 videoUrl length:', cleanedData.videoUrl.length);
         
         if (!cleanedData || !cleanedData.videoUrl) {
-            console.error('Missing video URL in response');
+            console.error('❌ Missing video URL in response');
             throw new Error('Video URL is missing from API response');
         }
         
@@ -959,82 +985,81 @@ async function loadVideo() {
         // Track view (after 10 seconds or 50% watched)
         setTimeout(() => trackView(false), 10000);
         
-        // 🔥 FIX 2: Hide errorState BEFORE showing content (THIS WAS MISSING!)
+        // 🔥 FIX 2: Hide errorState BEFORE showing content (THIS WAS THE MAIN BUG!)
+        console.log('👁️ Showing video content...');
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('errorState').classList.add('hidden');
         document.getElementById('videoContent').classList.remove('hidden');
         
-        console.log('✅ Video content displayed');
+        console.log('✅ Video content displayed successfully');
         
     } catch (error) {
-        console.error('Load video error:', error);
+        console.error('💥 Load video error:', error);
+        console.error('💥 Error stack:', error.stack);
         showError('Failed to load video: ' + error.message);
     }
 }
 
-// ==================== SETUP PLYR PLAYER ====================
+// ==================== SETUP NATIVE VIDEO PLAYER ====================
 function setupPlayer(video) {
-    const videoElement = document.getElementById('player');
-    console.log('Setting up player with URL:', video.videoUrl);
+    videoPlayer = document.getElementById('videoPlayer');
+    console.log('🎬 Setting up native video player...');
+    console.log('🔗 Video URL:', video.videoUrl);
+    
+    if (!videoPlayer) {
+        console.error('❌ Video player element not found!');
+        return;
+    }
     
     // Set video source
-    const source = videoElement.querySelector('source');
-    source.src = video.videoUrl;
-    source.type = 'video/mp4';
+    const source = videoPlayer.querySelector('source');
+    if (source) {
+        source.src = video.videoUrl;
+        source.type = 'video/mp4';
+    }
     
     // Set poster if available
     if (video.thumbnail) {
-        videoElement.setAttribute('poster', video.thumbnail);
+        videoPlayer.setAttribute('poster', video.thumbnail);
     }
     
-    // Load video
-    videoElement.load();
-    
     // Error handling
-    videoElement.addEventListener('error', (e) => {
-        console.error('Video element error:', e);
-        showVideoError('Failed to load video file. The file may be corrupted, unavailable, or the URL is incorrect.');
+    videoPlayer.addEventListener('error', (e) => {
+        console.error('❌ Video element error:', e);
+        console.error('❌ Error code:', videoPlayer.error?.code);
+        console.error('❌ Error message:', videoPlayer.error?.message);
+        showVideoError('Failed to load video file. The file may be unavailable.');
     });
     
     // Success handling
-    videoElement.addEventListener('loadeddata', () => {
-        console.log('Video loaded successfully');
+    videoPlayer.addEventListener('loadeddata', () => {
+        console.log('✅ Video loaded successfully');
     });
     
-    videoElement.addEventListener('canplay', () => {
-        console.log('Video can play');
+    videoPlayer.addEventListener('canplay', () => {
+        console.log('✅ Video can play');
     });
     
-    // Initialize Plyr
-    player = new Plyr('#player', {
-        controls: [
-            'play-large',
-            'play',
-            'progress',
-            'current-time',
-            'mute',
-            'volume',
-            'settings',
-            'fullscreen'
-        ],
-        settings: ['quality', 'speed'],
-        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-        keyboard: { focused: true, global: true },
-        tooltips: { controls: true, seek: true }
+    videoPlayer.addEventListener('play', () => {
+        console.log('▶️ Video started playing');
     });
+    
+    // Load video
+    console.log('⏳ Loading video...');
+    videoPlayer.load();
     
     // Track view on video end
-    player.on('ended', () => {
-        console.log('Video ended, tracking view');
+    videoPlayer.addEventListener('ended', () => {
+        console.log('⏹️ Video ended, tracking view');
         trackView(true);
     });
     
     // Track progress for view tracking
-    player.on('timeupdate', () => {
-        if (player.duration > 0 && !viewTracked) {
-            const progress = player.currentTime / player.duration;
+    videoPlayer.addEventListener('timeupdate', () => {
+        if (videoPlayer.duration > 0 && !viewTracked) {
+            const progress = videoPlayer.currentTime / videoPlayer.duration;
             if (progress >= 0.5) {
-                console.log('50% watched, tracking view');
+                console.log('📊 50% watched, tracking view');
                 trackView(false);
             }
         }
@@ -1087,7 +1112,7 @@ async function toggleLike() {
     const videoId = currentVideo.numericId || currentVideo.id;
     
     try {
-        console.log('Toggling like for video:', videoId);
+        console.log('❤️ Toggling like for video:', videoId);
         const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
             method: 'POST',
             headers: {
@@ -1096,11 +1121,11 @@ async function toggleLike() {
             },
             body: JSON.stringify({ shortId: videoId })
         });
-        console.log('Like API response:', response.status);
+        console.log('📡 Like API response:', response.status);
         
         if (response.ok) {
             const data = await response.json();
-            console.log('Like action:', data.action);
+            console.log('📦 Like action:', data.action);
             
             if (data.action === 'liked') {
                 btn.classList.add('liked');
@@ -1117,8 +1142,7 @@ async function toggleLike() {
             countEl.textContent = formatNumber(currentVideo.likes);
         }
     } catch (error) {
-        console.error('Like error:', error);
-        // Revert on error
+        console.error('❌ Like error:', error);
         if (wasLiked) {
             btn.classList.add('liked');
             icon.className = 'fas fa-heart';
@@ -1134,10 +1158,10 @@ async function trackView(isComplete) {
     if (viewTracked || !currentVideo) return;
     try {
         const videoId = currentVideo.numericId || currentVideo.id;
-        const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
-        const watchTime = player?.currentTime || 0;
+        const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
+        const watchTime = videoPlayer?.currentTime || 0;
         
-        console.log('Tracking view:', { videoId, watchDuration, watchTime, isComplete });
+        console.log('📊 Tracking view:', { videoId, watchDuration, watchTime, isComplete });
         
         await fetch(`${CONFIG.apiEndpoint}/short/view`, {
             method: 'POST',
@@ -1153,9 +1177,9 @@ async function trackView(isComplete) {
         });
         
         viewTracked = true;
-        console.log('View tracked successfully');
+        console.log('✅ View tracked successfully');
     } catch (error) {
-        console.error('Track view error:', error);
+        console.error('❌ Track view error:', error);
     }
 }
 
@@ -1180,7 +1204,6 @@ async function shareVideo() {
             btn.classList.remove('shared');
         }, 500);
         
-        // Open native share or copy link
         if (navigator.share) {
             navigator.share({
                 title: currentVideo.title,
@@ -1190,7 +1213,7 @@ async function shareVideo() {
             copyLink();
         }
     } catch (error) {
-        console.error('Share error:', error);
+        console.error('❌ Share error:', error);
         copyLink();
     }
 }
@@ -1230,22 +1253,18 @@ function markAsUnliked(videoId) {
 async function loadRelatedShorts(video) {
     const carousel = document.getElementById('shortsCarousel');
     try {
-        console.log('Loading related shorts...');
+        console.log('📱 Loading related shorts...');
         const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
         let shorts = await response.json();
-        console.log('Shorts loaded:', shorts);
+        console.log('📦 Shorts loaded:', shorts);
         
         if (shorts && shorts.length > 0) {
-            // Filter for related (same category or tags)
             const category = video.category;
             let related = shorts.filter(s => s.category === category);
-            
-            // If not enough, add random ones
             if (related.length < 10) {
                 const remaining = shorts.filter(s => s.category !== category);
                 related = [...related, ...remaining].slice(0, 10);
             }
-            
             carousel.innerHTML = related.map(short => createShortCard(short)).join('');
         } else {
             carousel.innerHTML = `
@@ -1256,7 +1275,7 @@ async function loadRelatedShorts(video) {
             `;
         }
     } catch (error) {
-        console.error('Load shorts error:', error);
+        console.error('❌ Load shorts error:', error);
         carousel.innerHTML = `
             <div class="loading-state" style="width: 100%;">
                 <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
@@ -1298,13 +1317,12 @@ function scrollShorts(direction) {
 async function loadRecommendedVideos(video) {
     const container = document.getElementById('recommendedVideos');
     try {
-        console.log('Loading recommended videos...');
+        console.log('🎬 Loading recommended videos...');
         const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
         const videos = await response.json();
-        console.log('Recommended videos:', videos);
+        console.log('📦 Recommended videos:', videos);
         
         if (videos && videos.length > 0) {
-            // Filter out current video
             const currentId = currentVideo.numericId || currentVideo.id;
             const filtered = videos.filter(v =>
                 (v.numericId || v.id) !== currentId
@@ -1319,7 +1337,7 @@ async function loadRecommendedVideos(video) {
             `;
         }
     } catch (error) {
-        console.error('Load recommendations error:', error);
+        console.error('❌ Load recommendations error:', error);
         container.innerHTML = `
             <div class="loading-state" style="grid-column: 1/-1;">
                 <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
@@ -1381,14 +1399,14 @@ async function submitReport(event) {
         showToast('Report submitted successfully', 'success');
         closeReportModal();
     } catch (error) {
-        console.error('Submit report error:', error);
+        console.error('❌ Submit report error:', error);
         showToast('Failed to submit report', 'error');
     }
 }
 
 // ==================== ERROR HANDLING ====================
 function showError(message) {
-    console.error('Showing error:', message);
+    console.error('❌ Showing error:', message);
     document.getElementById('loadingState').classList.add('hidden');
     document.getElementById('errorState').classList.remove('hidden');
     document.getElementById('errorMessage').textContent = message;
