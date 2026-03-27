@@ -36,8 +36,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Video.js CSS -->
-    <link href="https://vjs.zencdn.net/8.23.8/video-js.css" rel="stylesheet" />
+    <!-- ✅ Video.js CSS - Using reliable CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video-js.min.css" rel="stylesheet" />
     
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -131,7 +131,7 @@
             
             <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
                 
-                <!-- Main Column (Full width on mobile, 3 cols on xl) -->
+                <!-- Main Column -->
                 <div class="xl:col-span-3 space-y-4 md:space-y-6">
                     
                     <!-- Video Player -->
@@ -207,14 +207,13 @@
                             <i class="fas fa-th-large text-primary"></i>
                             Related Videos
                         </h2>
-                        <!-- Grid: 2 cols mobile, 3 cols md, 4 cols xl -->
                         <div id="relatedVideosGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                             <!-- Related videos will be inserted here -->
                         </div>
                     </section>
                 </div>
 
-                <!-- Sidebar Column (Hidden on mobile, visible on xl) -->
+                <!-- Sidebar Column -->
                 <aside class="hidden xl:block xl:col-span-1 space-y-4 md:space-y-6">
                     <!-- Shorts/Up Next -->
                     <div class="bg-card border border-border rounded-xl p-4">
@@ -229,7 +228,7 @@
                 </aside>
             </div>
 
-            <!-- Shorts Carousel (Mobile Only - Compact) -->
+            <!-- Shorts Carousel (Mobile Only) -->
             <section class="xl:hidden mt-6 md:mt-8">
                 <h2 class="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
                     <i class="fas fa-mobile-alt text-primary"></i>
@@ -274,8 +273,16 @@
         </div>
     </div>
 
-    <!-- Video.js Script -->
-    <script src="https://vjs.zencdn.net/8.23.8/video.min.js"></script>
+    <!-- ✅ Video.js Script - Using reliable CDN with fallback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video.min.js"></script>
+    
+    <!-- Fallback if CDN fails -->
+    <script>
+        if (typeof videojs === 'undefined') {
+            console.warn('Video.js failed to load from CDN, falling back to native player');
+            window.USE_NATIVE_PLAYER = true;
+        }
+    </script>
 
     <script>
         const CONFIG = {
@@ -348,69 +355,116 @@
             }
         }
 
+        // ✅ SETUP PLAYER with fallback to native
         function setupPlayer(video) {
-            console.log('🎬 Setting up Video.js player...');
+            console.log('🎬 Setting up player...');
             console.log('🔗 Video URL:', video.videoUrl);
             
-            videoPlayer = videojs('videoPlayer', {
-                autoplay: false,
-                controls: true,
-                preload: 'metadata',
-                fluid: true,
-                responsive: true,
-                playbackRates: [0.5, 1, 1.5, 2],
-                controlBar: {
-                    children: [
-                        'playToggle',
-                        'volumePanel',
-                        'currentTimeDisplay',
-                        'timeDivider',
-                        'durationDisplay',
-                        'progressControl',
-                        'fullscreenToggle',
-                        'playbackRateMenuButton'
-                    ]
-                }
-            }, function() {
-                console.log('✅ Video.js player ready');
+            // Check if Video.js is available
+            if (typeof videojs !== 'undefined' && !window.USE_NATIVE_PLAYER) {
+                // Use Video.js
+                console.log('✅ Using Video.js player');
+                videoPlayer = videojs('videoPlayer', {
+                    autoplay: false,
+                    controls: true,
+                    preload: 'metadata',
+                    fluid: true,
+                    responsive: true,
+                    playbackRates: [0.5, 1, 1.5, 2],
+                    controlBar: {
+                        children: [
+                            'playToggle',
+                            'volumePanel',
+                            'currentTimeDisplay',
+                            'timeDivider',
+                            'durationDisplay',
+                            'progressControl',
+                            'fullscreenToggle',
+                            'playbackRateMenuButton'
+                        ]
+                    }
+                }, function() {
+                    console.log('✅ Video.js player ready');
+                    
+                    this.src({ src: video.videoUrl, type: 'video/mp4' });
+                    
+                    if (video.thumbnail) {
+                        this.poster(video.thumbnail);
+                    }
+                    
+                    this.load();
+                    
+                    this.on('error', () => {
+                        const error = this.error();
+                        console.error('❌ Video.js error:', error);
+                        showVideoError('Failed to load video file.');
+                    });
+                    
+                    this.on('loadeddata', () => {
+                        console.log('✅ Video loaded successfully');
+                    });
+                    
+                    this.on('canplay', () => {
+                        console.log('✅ Video can play');
+                    });
+                    
+                    this.on('ended', () => {
+                        console.log('⏹️ Video ended, tracking view');
+                        trackView(true);
+                    });
+                    
+                    this.on('timeupdate', () => {
+                        if (this.duration() > 0 && !viewTracked) {
+                            const progress = this.currentTime() / this.duration();
+                            if (progress >= 0.5) {
+                                console.log('📊 50% watched, tracking view');
+                                trackView(false);
+                            }
+                        }
+                    });
+                });
+            } else {
+                // Fallback to native HTML5 player
+                console.log('⚠️ Using native HTML5 player (Video.js not available)');
+                const nativePlayer = document.getElementById('videoPlayer');
                 
-                this.src({ src: video.videoUrl, type: 'video/mp4' });
+                const source = nativePlayer.querySelector('source');
+                if (source) {
+                    source.src = video.videoUrl;
+                    source.type = 'video/mp4';
+                }
                 
                 if (video.thumbnail) {
-                    this.poster(video.thumbnail);
+                    nativePlayer.setAttribute('poster', video.thumbnail);
                 }
                 
-                this.load();
-                
-                this.on('error', () => {
-                    const error = this.error();
-                    console.error('❌ Video.js error:', error);
-                    showVideoError('Failed to load video file. The file may be unavailable.');
+                nativePlayer.addEventListener('error', () => {
+                    console.error('❌ Native video error');
+                    showVideoError('Failed to load video file.');
                 });
                 
-                this.on('loadeddata', () => {
+                nativePlayer.addEventListener('loadeddata', () => {
                     console.log('✅ Video loaded successfully');
                 });
                 
-                this.on('canplay', () => {
-                    console.log('✅ Video can play');
-                });
-                
-                this.on('ended', () => {
+                nativePlayer.addEventListener('ended', () => {
                     console.log('⏹️ Video ended, tracking view');
                     trackView(true);
                 });
                 
-                this.on('timeupdate', () => {
-                    if (this.duration() > 0 && !viewTracked) {
-                        const progress = this.currentTime() / this.duration();
+                nativePlayer.addEventListener('timeupdate', () => {
+                    if (nativePlayer.duration > 0 && !viewTracked) {
+                        const progress = nativePlayer.currentTime / nativePlayer.duration;
                         if (progress >= 0.5) {
                             console.log('📊 50% watched, tracking view');
                             trackView(false);
                         }
                     }
                 });
-            });
+                
+                videoPlayer = nativePlayer;
+                nativePlayer.load();
+            }
         }
 
         function showVideoError(message) {
@@ -500,8 +554,20 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime() / videoPlayer?.duration()) || 0.5;
-                const watchTime = videoPlayer?.currentTime() || 0;
+                let watchDuration = 0.5;
+                let watchTime = 0;
+                
+                if (videoPlayer) {
+                    if (typeof videoPlayer.currentTime === 'function') {
+                        // Video.js
+                        watchDuration = isComplete ? 1 : (videoPlayer.currentTime() / videoPlayer.duration()) || 0.5;
+                        watchTime = videoPlayer.currentTime() || 0;
+                    } else {
+                        // Native
+                        watchDuration = isComplete ? 1 : (videoPlayer.currentTime / videoPlayer.duration) || 0.5;
+                        watchTime = videoPlayer.currentTime || 0;
+                    }
+                }
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
@@ -587,12 +653,10 @@
                         related = [...related, ...remaining].slice(0, 10);
                     }
                     
-                    // For carousel (mobile)
                     if (carousel) {
                         carousel.innerHTML = related.slice(0, 8).map(short => createShortCardCompact(short)).join('');
                     }
                     
-                    // For sidebar (desktop)
                     if (sidebar) {
                         sidebar.innerHTML = related.slice(0, 6).map(short => createShortSidebarItem(short)).join('');
                     }
@@ -602,7 +666,6 @@
             }
         }
 
-        // Compact short card for mobile carousel
         function createShortCardCompact(short) {
             return `
                 <a href="shorts.html?id=${short.numericId}" class="flex-none w-[120px] md:w-[140px] bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all group">
@@ -623,7 +686,6 @@
             `;
         }
 
-        // Sidebar short item for desktop
         function createShortSidebarItem(short) {
             return `
                 <a href="shorts.html?id=${short.numericId}" class="flex gap-3 group">
@@ -666,7 +728,6 @@
             }
         }
 
-        // Responsive video card
         function createVideoCardResponsive(video) {
             return `
                 <a href="video.html?id=${video.numericId || video.id}" class="group block">
