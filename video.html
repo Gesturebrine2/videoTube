@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +36,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- ✅ ADDED: Fluid Player CSS -->
+    <link rel="stylesheet" href="https://cdn.fluidplayer.com/docs/3.x.x/fluidplayer.css"/>
+    
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
@@ -59,6 +61,14 @@
             height: 100%;
             object-fit: contain;
             background: #000;
+        }
+        /* ✅ ADDED: Fluid Player responsive fix */
+        .video-aspect .fluid_video_wrapper {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -105,6 +115,7 @@
             <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
                 <div class="video-aspect bg-dark rounded-xl overflow-hidden border border-border mb-6">
+                    <!-- ✅ NO CHANGE NEEDED: Fluid Player uses the same video tag -->
                     <video id="videoPlayer" class="w-full h-full" controls playsinline preload="metadata" poster="">
                         <source src="" type="video/mp4" />
                         Your browser does not support the video tag.
@@ -209,6 +220,9 @@
         </div>
     </div>
 
+    <!-- ✅ ADDED: Fluid Player JS -->
+    <script src="https://cdn.fluidplayer.com/docs/3.x.x/fluidplayer.js"></script>
+
     <script>
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
@@ -217,7 +231,7 @@
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
         let currentVideo = null;
-        let videoPlayer = null;
+        let videoPlayer = null; // This will now hold the Fluid Player instance
         let viewTracked = false;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -280,56 +294,83 @@
             }
         }
 
+        // ✅ REPLACED: setupPlayer function for Fluid Player
         function setupPlayer(video) {
-            videoPlayer = document.getElementById('videoPlayer');
-            console.log('🎬 Setting up native video player...');
+            console.log('🎬 Setting up Fluid Player...');
             console.log('🔗 Video URL:', video.videoUrl);
             
-            if (!videoPlayer) {
+            // Set the video source before initializing Fluid Player
+            const videoElement = document.getElementById('videoPlayer');
+            if (!videoElement) {
                 console.error('❌ Video player element not found!');
                 return;
             }
             
-            const source = videoPlayer.querySelector('source');
+            const source = videoElement.querySelector('source');
             if (source) {
                 source.src = video.videoUrl;
                 source.type = 'video/mp4';
             }
             
             if (video.thumbnail) {
-                videoPlayer.setAttribute('poster', video.thumbnail);
+                videoElement.setAttribute('poster', video.thumbnail);
             }
             
-            videoPlayer.addEventListener('error', (e) => {
-                console.error('❌ Video element error:', e);
-                console.error('❌ Error code:', videoPlayer.error?.code);
-                showVideoError('Failed to load video file. The file may be unavailable.');
+            // ✅ Initialize Fluid Player
+            videoPlayer = fluidPlayer('videoPlayer', {
+                layoutControls: {
+                    controlBar: {
+                        autoHideTimeout: 3,
+                        animated: true,
+                        autoHide: true
+                    },
+                    fillToContainer: true,
+                    primaryColor: '#ff0050', // Matches your primary color
+                    playbackRateEnabled: true,
+                    allowTheatre: false,
+                    autoPlay: false,
+                    mute: false,
+                    playerInitCallback: function() {
+                        console.log('✅ Fluid Player initialized');
+                    }
+                },
+                vastOptions: {
+                    adList: [],
+                    adsEnabled: false
+                }
             });
             
-            videoPlayer.addEventListener('loadeddata', () => {
-                console.log('✅ Video loaded successfully');
-            });
-            
-            videoPlayer.addEventListener('canplay', () => {
-                console.log('✅ Video can play');
-            });
-            
-            videoPlayer.load();
-            
-            videoPlayer.addEventListener('ended', () => {
+            // ✅ Fluid Player event listeners (adapted from native)
+            videoPlayer.on('ended', () => {
                 console.log('⏹️ Video ended, tracking view');
                 trackView(true);
             });
             
-            videoPlayer.addEventListener('timeupdate', () => {
-                if (videoPlayer.duration > 0 && !viewTracked) {
-                    const progress = videoPlayer.currentTime / videoPlayer.duration;
-                    if (progress >= 0.5) {
-                        console.log('📊 50% watched, tracking view');
-                        trackView(false);
+            videoPlayer.on('timeupdate', () => {
+                if (!viewTracked) {
+                    // Fluid Player API: getCurrentTime() and getDuration()
+                    const currentTime = videoPlayer.getCurrentTime();
+                    const duration = videoPlayer.getDuration();
+                    if (duration > 0) {
+                        const progress = currentTime / duration;
+                        if (progress >= 0.5) {
+                            console.log('📊 50% watched, tracking view');
+                            trackView(false);
+                        }
                     }
                 }
             });
+            
+            videoPlayer.on('error', () => {
+                console.error('❌ Fluid Player error');
+                showVideoError('Failed to load video file. The file may be unavailable.');
+            });
+            
+            videoPlayer.on('play', () => {
+                console.log('▶️ Video playing');
+            });
+            
+            // No need to call .load() - Fluid Player handles this
         }
 
         function showVideoError(message) {
@@ -420,8 +461,9 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
-                const watchTime = videoPlayer?.currentTime || 0;
+                // ✅ Use Fluid Player methods for time/duration
+                const watchDuration = isComplete ? 1 : (videoPlayer?.getCurrentTime() / videoPlayer?.getDuration()) || 0.5;
+                const watchTime = videoPlayer?.getCurrentTime() || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
@@ -514,7 +556,6 @@
             }
         }
 
-        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createShortCard(short) {
             return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-[9/16]">
@@ -562,7 +603,6 @@
             }
         }
 
-        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createVideoCard(video) {
             return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-video">
