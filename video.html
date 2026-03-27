@@ -10,7 +10,6 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
@@ -40,347 +39,9 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
         
-        /* Custom HTML5 Video Player - YouTube Style */
-        .video-player-wrapper {
-            position: relative;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            aspect-ratio: 16/9;
-            width: 100%;
-        }
-        
-        .video-player-wrapper video {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: pointer;
-        }
-        
-        /* Center Play Button */
-        .center-play-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 0, 80, 0.95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(255, 0, 80, 0.5);
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .center-play-btn svg {
-            width: 40px;
-            height: 40px;
-            fill: white;
-            margin-left: 4px;
-        }
-        
-        .center-play-btn.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        
-        .center-play-btn.hide {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-        
-        /* Seek Indicators */
-        .seek-indicator {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px 30px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .seek-indicator.show {
-            opacity: 1;
-        }
-        
-        .seek-indicator.left {
-            left: 30%;
-        }
-        
-        .seek-indicator.right {
-            right: 30%;
-        }
-        
-        .seek-indicator svg {
-            width: 40px;
-            height: 40px;
-            fill: white;
-        }
-        
-        .seek-indicator span {
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
-        /* Controls Container */
-        .controls-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.7), transparent);
-            padding: 10px 12px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 20;
-        }
-        
-        .controls-container.show,
-        .video-player-wrapper:hover .controls-container {
-            opacity: 1;
-        }
-        
-        .video-player-wrapper.paused .controls-container {
-            opacity: 1;
-        }
-        
-        /* Progress Bar */
-        .progress-area {
-            width: 100%;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            margin-bottom: 8px;
-        }
-        
-        .progress-bar {
-            position: relative;
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            transition: height 0.1s ease;
-        }
-        
-        .progress-area:hover .progress-bar {
-            height: 6px;
-        }
-        
-        .progress-filled {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #ff0050, #ff2a6d);
-            border-radius: 2px;
-            width: 0%;
-            pointer-events: none;
-        }
-        
-        .progress-handle {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 12px;
-            height: 12px;
-            background: #ff0050;
-            border-radius: 50%;
-            transition: transform 0.1s ease;
-            box-shadow: 0 0 10px rgba(255, 0, 80, 0.8);
-        }
-        
-        .progress-area:hover .progress-handle {
-            transform: translate(-50%, -50%) scale(1);
-        }
-        
-        /* Main Controls */
-        .main-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .controls-left,
-        .controls-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* Control Buttons */
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-        
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(1.1);
-        }
-        
-        .control-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-        
-        /* Volume Container */
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .volume-slider {
-            width: 0;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            cursor: pointer;
-            transition: width 0.2s ease;
-            overflow: hidden;
-        }
-        
-        .volume-container:hover .volume-slider,
-        .volume-slider:focus {
-            width: 80px;
-        }
-        
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            background: #ff0050;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(255, 0, 80, 0.8);
-        }
-        
-        .volume-slider::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            background: #ff0050;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
-        
-        /* Time Display */
-        .time-display {
-            color: white;
-            font-size: 13px;
-            font-family: 'Roboto Mono', monospace;
-            white-space: nowrap;
-        }
-        
-        /* Settings Menu */
-        .settings-btn {
-            position: relative;
-        }
-        
-        .speed-menu {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 8px 0;
-            min-width: 100px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-            z-index: 30;
-        }
-        
-        .speed-option {
-            padding: 8px 16px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-        
-        .speed-option:hover {
-            background: rgba(255, 0, 80, 0.3);
-            color: #ff0050;
-        }
-        
-        .speed-option.active {
-            background: rgba(255, 0, 80, 0.5);
-            color: white;
-            font-weight: bold;
-        }
-        
-        /* Hidden utility */
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Theater mode */
-        .video-player-wrapper.theater-mode {
-            max-width: 100%;
-            margin: 0 auto;
-            border-radius: 0;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 640px) {
-            .center-play-btn {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .center-play-btn svg {
-                width: 30px;
-                height: 30px;
-            }
-            
-            .time-display {
-                font-size: 11px;
-            }
-            
-            .control-btn svg {
-                width: 20px;
-                height: 20px;
-            }
-            
-            .volume-slider {
-                width: 0;
-            }
-            
-            .volume-container:hover .volume-slider,
-            .volume-slider:focus {
-                width: 60px;
-            }
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
         }
         
         @keyframes fadeIn {
@@ -390,7 +51,7 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
+<body class="bg-darker text-white font-sans antialiased">
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
@@ -430,87 +91,18 @@
                 <!-- Main Column -->
                 <div class="xl:col-span-3 space-y-4 md:space-y-6">
                     
-                    <!-- Custom HTML5 Video Player - YouTube Style -->
-                    <div class="video-player-wrapper" id="videoPlayerContainer">
-                        <video id="videoPlayer" preload="metadata" playsinline crossorigin="anonymous" poster="">
+                    <!-- HTML5 Video Player with Native Controls -->
+                    <div class="w-full bg-black rounded-xl overflow-hidden aspect-video">
+                        <video 
+                            id="videoPlayer" 
+                            class="w-full h-full"
+                            preload="metadata" 
+                            playsinline 
+                            controls
+                            crossorigin="anonymous">
                             <source src="" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        
-                        <!-- Big Center Play Button -->
-                        <div class="center-play-btn" id="centerPlayBtn">
-                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-
-                        <!-- Seek Overlay Indicators -->
-                        <div class="seek-indicator left" id="seekLeft">
-                            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
-                            <span>-10s</span>
-                        </div>
-                        <div class="seek-indicator right" id="seekRight">
-                            <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
-                            <span>+10s</span>
-                        </div>
-
-                        <!-- Controls Bar -->
-                        <div class="controls-container" id="controlsContainer">
-                            <!-- Progress Bar -->
-                            <div class="progress-area" id="progressArea">
-                                <div class="progress-bar" id="progressBar">
-                                    <div class="progress-filled" id="progressFilled"></div>
-                                    <div class="progress-handle" id="progressHandle"></div>
-                                </div>
-                            </div>
-
-                            <!-- Main Controls -->
-                            <div class="main-controls">
-                                <div class="controls-left">
-                                    <button class="control-btn" id="playPauseBtn" title="Play (k)">
-                                        <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                        <svg class="icon-pause hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                                    </button>
-                                    
-                                    <div class="volume-container">
-                                        <button class="control-btn" id="muteBtn" title="Mute (m)">
-                                            <svg class="icon-vol-high" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-                                            <svg class="icon-vol-mute hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-                                        </button>
-                                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volume">
-                                    </div>
-
-                                    <div class="time-display">
-                                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                                    </div>
-                                </div>
-
-                                <div class="controls-right">
-                                    <button class="control-btn" id="settingsBtn" title="Settings">
-                                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L5.09 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                                    </button>
-                                    
-                                    <!-- Speed Menu -->
-                                    <div class="speed-menu hidden" id="speedMenu">
-                                        <div class="speed-option" data-speed="0.25">0.25x</div>
-                                        <div class="speed-option" data-speed="0.5">0.5x</div>
-                                        <div class="speed-option" data-speed="0.75">0.75x</div>
-                                        <div class="speed-option active" data-speed="1">Normal</div>
-                                        <div class="speed-option" data-speed="1.25">1.25x</div>
-                                        <div class="speed-option" data-speed="1.5">1.5x</div>
-                                        <div class="speed-option" data-speed="1.75">1.75x</div>
-                                        <div class="speed-option" data-speed="2">2x</div>
-                                    </div>
-
-                                    <button class="control-btn" id="theaterBtn" title="Theater Mode (t)">
-                                        <svg viewBox="0 0 24 24"><path d="M19 7H5c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 8H5V9h14v6z"/></svg>
-                                    </button>
-
-                                    <button class="control-btn" id="fullscreenBtn" title="Fullscreen (f)">
-                                        <svg class="icon-fullscreen" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                                        <svg class="icon-fullscreen-exit hidden" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Video Info -->
@@ -550,797 +142,84 @@
                             <button onclick="copyLink()" 
                                     class="flex items-center gap-2 px-3 md:px-4 py-2 bg-dark border border-border rounded-lg hover:bg-primary/20 hover:border-primary transition-all text-xs md:text-sm flex-1 md:flex-none justify-center">
                                 <i class="fas fa-link"></i>
-                                <span class="hidden sm:inline">Copy</span>
+                                <span class="hidden sm:inline">Copy Link</span>
                             </button>
-                            <button onclick="openReportModal()" 
-                                    class="ml-auto flex items-center gap-2 px-3 md:px-4 py-2 text-muted hover:text-danger transition-all text-xs md:text-sm">
+                            <button onclick="reportVideo()" 
+                                    class="flex items-center gap-2 px-3 md:px-4 py-2 bg-dark border border-border rounded-lg hover:bg-primary/20 hover:border-primary transition-all text-xs md:text-sm flex-1 md:flex-none justify-center">
                                 <i class="fas fa-flag"></i>
                                 <span class="hidden sm:inline">Report</span>
                             </button>
                         </div>
 
-                        <!-- Tags -->
-                        <div id="tagsContainer" class="flex flex-wrap gap-2 hidden"></div>
-
                         <!-- Description -->
-                        <div id="videoDescription" class="mt-4 pt-4 border-t border-border text-muted text-sm md:text-base leading-relaxed hidden"></div>
+                        <div class="prose prose-invert max-w-none">
+                            <p id="videoDescription" class="text-sm md:text-base text-muted whitespace-pre-line"></p>
+                        </div>
                     </div>
 
-                    <!-- Related Videos Grid -->
-                    <section class="mb-6 md:mb-8">
-                        <h2 class="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                            <i class="fas fa-th-large text-primary"></i>
-                            Related Videos
-                        </h2>
-                        <div id="relatedVideosGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"></div>
-                    </section>
+                    <!-- Comments Section -->
+                    <div class="bg-card border border-border rounded-xl p-4 md:p-6">
+                        <h3 class="text-lg font-bold mb-4">Comments</h3>
+                        <div id="commentsList" class="space-y-4"></div>
+                    </div>
                 </div>
 
-                <!-- Sidebar Column -->
-                <aside class="hidden xl:block xl:col-span-1 space-y-4 md:space-y-6">
-                    <div class="bg-card border border-border rounded-xl p-4">
-                        <h3 class="font-bold mb-4 flex items-center gap-2 text-sm md:text-base">
-                            <i class="fas fa-mobile-alt text-primary"></i>
-                            Related Shorts
-                        </h3>
-                        <div id="shortsSidebar" class="space-y-3"></div>
+                <!-- Sidebar - Related Videos -->
+                <div class="xl:col-span-1">
+                    <div class="bg-card border border-border rounded-xl p-4 sticky top-20">
+                        <h3 class="text-lg font-bold mb-4">Related Videos</h3>
+                        <div id="relatedVideos" class="space-y-3"></div>
                     </div>
-                </aside>
+                </div>
             </div>
-
-            <!-- Shorts Carousel (Mobile Only) -->
-            <section class="xl:hidden mt-6 md:mt-8">
-                <h2 class="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                    <i class="fas fa-mobile-alt text-primary"></i>
-                    Related Shorts
-                </h2>
-                <div class="relative">
-                    <div id="shortsCarousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2"></div>
-                </div>
-            </section>
         </div>
     </main>
 
-    <!-- Report Modal -->
-    <div id="reportModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
-        <div class="bg-card border border-border rounded-xl p-6 max-w-[500px] w-full max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg md:text-xl font-bold flex items-center gap-2"><i class="fas fa-flag text-primary"></i>Report Video</h3>
-                <button onclick="closeReportModal()" class="text-muted hover:text-danger transition-all text-2xl">&times;</button>
-            </div>
-            <form id="reportForm" onsubmit="submitReport(event)">
-                <div class="mb-4 md:mb-5">
-                    <label for="reportReason" class="block mb-2 text-sm text-muted">Reason *</label>
-                    <select id="reportReason" required class="w-full px-3 py-2 md:py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary text-sm">
-                        <option value="">Select a reason</option>
-                        <option value="inappropriate">Inappropriate Content</option>
-                        <option value="copyright">Copyright Violation</option>
-                        <option value="spam">Spam or Misleading</option>
-                        <option value="quality">Poor Quality</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="mb-4 md:mb-5">
-                    <label for="reportDetails" class="block mb-2 text-sm text-muted">Additional Details</label>
-                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details..." class="w-full px-3 py-2 md:py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y text-sm"></textarea>
-                </div>
-                <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-danger border border-danger rounded-lg hover:bg-danger/90 transition-all text-sm md:text-base">
-                    <i class="fas fa-paper-plane"></i>Submit Report
-                </button>
-            </form>
+    <!-- Footer -->
+    <footer class="bg-dark border-t border-border mt-12 py-8">
+        <div class="max-w-[1400px] mx-auto px-3 md:px-6 text-center text-muted text-sm">
+            <p>&copy; 2024 Xplitleaks. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
-    <!-- No external player library - using native HTML5 -->
-    
     <script>
-        const CONFIG = {
-            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
-            sessionId: localStorage.getItem('sessionId') || generateSessionId()
-        };
-        localStorage.setItem('sessionId', CONFIG.sessionId);
-
-        let currentVideo = null;
-        let videoPlayer = null;
+        // Global variables
+        let currentVideoId = null;
+        let videoData = null;
+        let isLiked = false;
         let viewTracked = false;
-        let isPlaying = false;
-        let controlsTimeout = null;
-        let lastClickTime = 0;
-        let lastClickX = 0;
+        let viewTrackedComplete = false;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Page loaded, initializing custom HTML5 player...');
-            initCustomPlayer();
-            loadVideo();
-        });
-
-        // Initialize Custom HTML5 Player
-        function initCustomPlayer() {
-            videoPlayer = document.getElementById('videoPlayer');
-            const playerWrapper = document.getElementById('videoPlayerContainer');
-            const centerPlayBtn = document.getElementById('centerPlayBtn');
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const iconPlay = playPauseBtn.querySelector('.icon-play');
-            const iconPause = playPauseBtn.querySelector('.icon-pause');
-            const muteBtn = document.getElementById('muteBtn');
-            const iconVolHigh = muteBtn.querySelector('.icon-vol-high');
-            const iconVolMute = muteBtn.querySelector('.icon-vol-mute');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const currentTimeEl = document.getElementById('currentTime');
-            const durationEl = document.getElementById('duration');
-            const progressBar = document.getElementById('progressBar');
-            const progressFilled = document.getElementById('progressFilled');
-            const progressHandle = document.getElementById('progressHandle');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const iconFullscreen = fullscreenBtn.querySelector('.icon-fullscreen');
-            const iconFullscreenExit = fullscreenBtn.querySelector('.icon-fullscreen-exit');
-            const theaterBtn = document.getElementById('theaterBtn');
-            const settingsBtn = document.getElementById('settingsBtn');
-            const speedMenu = document.getElementById('speedMenu');
-            const seekLeft = document.getElementById('seekLeft');
-            const seekRight = document.getElementById('seekRight');
-
-            // Update play/pause buttons
-            function updatePlayPauseUI() {
-                if (isPlaying) {
-                    iconPlay.classList.add('hidden');
-                    iconPause.classList.remove('hidden');
-                    centerPlayBtn.classList.add('hide');
-                    centerPlayBtn.classList.remove('show');
-                    playerWrapper.classList.remove('paused');
-                } else {
-                    iconPlay.classList.remove('hidden');
-                    iconPause.classList.add('hidden');
-                    centerPlayBtn.classList.add('show');
-                    centerPlayBtn.classList.remove('hide');
-                    playerWrapper.classList.add('paused');
-                }
-            }
-
-            // Show/hide controls
-            function showControls() {
-                document.getElementById('controlsContainer').classList.add('show');
-                clearTimeout(controlsTimeout);
-                if (isPlaying) {
-                    controlsTimeout = setTimeout(() => {
-                        document.getElementById('controlsContainer').classList.remove('show');
-                    }, 2500);
-                }
-            }
-
-            // Format time
-            function formatTime(seconds) {
-                if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins}:${secs.toString().padStart(2, '0')}`;
-            }
-
-            // Update progress bar
-            function updateProgress() {
-                if (videoPlayer.duration) {
-                    const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-                    progressFilled.style.width = percent + '%';
-                    progressHandle.style.left = percent + '%';
-                    currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
-                    durationEl.textContent = formatTime(videoPlayer.duration);
-                    
-                    // Track view at 50%
-                    if (!viewTracked && percent >= 50) {
-                        trackView(false);
-                    }
-                }
-            }
-
-            // Play/Pause toggle
-            function togglePlay() {
-                if (videoPlayer.paused) {
-                    videoPlayer.play();
-                } else {
-                    videoPlayer.pause();
-                }
-            }
-
-            // Event listeners
-            videoPlayer.addEventListener('play', () => {
-                isPlaying = true;
-                updatePlayPauseUI();
-                showControls();
-            });
-
-            videoPlayer.addEventListener('pause', () => {
-                isPlaying = false;
-                updatePlayPauseUI();
-                showControls();
-            });
-
-            videoPlayer.addEventListener('timeupdate', updateProgress);
-            videoPlayer.addEventListener('loadedmetadata', () => {
-                durationEl.textContent = formatTime(videoPlayer.duration);
-                updateProgress();
-            });
-
-            // Click on video to toggle play/pause
-            playerWrapper.addEventListener('click', (e) => {
-                // Don't toggle if clicking on controls
-                if (e.target.closest('.controls-container')) return;
-                
-                const currentTime = Date.now();
-                const rect = playerWrapper.getBoundingClientRect();
-                const relativeX = e.clientX - rect.left;
-                const playerWidth = rect.width;
-
-                // Double-click detection
-                if (currentTime - lastClickTime < 300) {
-                    if (relativeX < playerWidth / 3) {
-                        // Left side - seek backward
-                        skip(-10, 'left');
-                    } else if (relativeX > (playerWidth * 2) / 3) {
-                        // Right side - seek forward
-                        skip(10, 'right');
-                    } else {
-                        // Center - toggle play/pause
-                        togglePlay();
-                    }
-                } else {
-                    // Single click - just show controls
-                    showControls();
-                }
-
-                lastClickTime = currentTime;
-                lastClickX = e.clientX;
-            });
-
-            // Mouse movement shows controls
-            playerWrapper.addEventListener('mousemove', showControls);
-
-            // Play/Pause button
-            playPauseBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                togglePlay();
-            });
-
-            // Mute button
-            muteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                videoPlayer.muted = !videoPlayer.muted;
-                updateVolumeUI();
-                showToast(videoPlayer.muted ? 'Muted' : 'Unmuted');
-            });
-
-            // Volume slider
-            volumeSlider.addEventListener('input', (e) => {
-                e.stopPropagation();
-                videoPlayer.volume = e.target.value / 100;
-                videoPlayer.muted = videoPlayer.volume === 0;
-                updateVolumeUI();
-            });
-
-            function updateVolumeUI() {
-                if (videoPlayer.muted || videoPlayer.volume === 0) {
-                    iconVolHigh.classList.add('hidden');
-                    iconVolMute.classList.remove('hidden');
-                    volumeSlider.value = 0;
-                } else {
-                    iconVolHigh.classList.remove('hidden');
-                    iconVolMute.classList.add('hidden');
-                    volumeSlider.value = videoPlayer.volume * 100;
-                }
-            }
-
-            // Progress bar seek
-            progressBar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const rect = progressBar.getBoundingClientRect();
-                const pos = (e.clientX - rect.left) / rect.width;
-                videoPlayer.currentTime = pos * videoPlayer.duration;
-            });
-
-            // Fullscreen button
-            fullscreenBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleFullscreen();
-            });
-
-            // Theater mode button
-            theaterBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleTheaterMode();
-            });
-
-            // Settings button - toggle speed menu
-            settingsBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speedMenu.classList.toggle('hidden');
-            });
-
-            // Speed options
-            speedMenu.querySelectorAll('.speed-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const speed = parseFloat(option.dataset.speed);
-                    videoPlayer.playbackRate = speed;
-                    speedMenu.querySelectorAll('.speed-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    speedMenu.classList.add('hidden');
-                    showToast(`Speed: ${speed}x`);
-                });
-            });
-
-            // Hide speed menu when clicking elsewhere
-            document.addEventListener('click', () => {
-                speedMenu.classList.add('hidden');
-            });
-
-            // Video ended
-            videoPlayer.addEventListener('ended', () => {
-                trackView(true);
-                updatePlayPauseUI();
-            });
-
-            // Wheel for volume
-            playerWrapper.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const currentVolume = videoPlayer.volume;
-                if (e.deltaY < 0) {
-                    videoPlayer.volume = Math.min(1, currentVolume + 0.1);
-                } else {
-                    videoPlayer.volume = Math.max(0, currentVolume - 0.1);
-                }
-                videoPlayer.muted = videoPlayer.volume === 0;
-                updateVolumeUI();
-                showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
-            });
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                
-                switch(e.key.toLowerCase()) {
-                    case ' ':
-                    case 'k':
-                        e.preventDefault();
-                        togglePlay();
-                        break;
-                    case 'j':
-                        e.preventDefault();
-                        skip(-10, 'left');
-                        break;
-                    case 'l':
-                        e.preventDefault();
-                        skip(10, 'right');
-                        break;
-                    case 'f':
-                        e.preventDefault();
-                        toggleFullscreen();
-                        break;
-                    case 'm':
-                        e.preventDefault();
-                        videoPlayer.muted = !videoPlayer.muted;
-                        updateVolumeUI();
-                        showToast(videoPlayer.muted ? 'Muted' : 'Unmuted');
-                        break;
-                    case 't':
-                        e.preventDefault();
-                        toggleTheaterMode();
-                        break;
-                    case 'arrowright':
-                        e.preventDefault();
-                        skip(5, 'right');
-                        break;
-                    case 'arrowleft':
-                        e.preventDefault();
-                        skip(-5, 'left');
-                        break;
-                    case 'arrowup':
-                        e.preventDefault();
-                        videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
-                        updateVolumeUI();
-                        showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
-                        break;
-                    case 'arrowdown':
-                        e.preventDefault();
-                        videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
-                        updateVolumeUI();
-                        showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
-                        break;
-                    default:
-                        if (e.key >= '0' && e.key <= '9') {
-                            e.preventDefault();
-                            const percentage = parseInt(e.key) / 10;
-                            if (videoPlayer.duration) {
-                                videoPlayer.currentTime = videoPlayer.duration * percentage;
-                            }
-                        }
-                }
-            });
-
-            // Initial UI state
-            updatePlayPauseUI();
-            updateVolumeUI();
-            playerWrapper.classList.add('paused');
-        }
-
-        // Skip function with animation
-        function skip(seconds, direction) {
-            const seekIndicator = direction === 'left' ? 
-                document.getElementById('seekLeft') : 
-                document.getElementById('seekRight');
-            
-            videoPlayer.currentTime = Math.max(0, Math.min(
-                videoPlayer.currentTime + seconds, 
-                videoPlayer.duration || 0
-            ));
-
-            // Show indicator
-            seekIndicator.classList.add('show');
-            setTimeout(() => {
-                seekIndicator.classList.remove('show');
-            }, 800);
-        }
-
-        // Toggle fullscreen
-        function toggleFullscreen() {
-            const container = document.getElementById('videoPlayerContainer');
-            const iconFullscreen = document.querySelector('.icon-fullscreen');
-            const iconFullscreenExit = document.querySelector('.icon-fullscreen-exit');
-            
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(err => {
-                    console.log('Error attempting to enable fullscreen:', err);
-                });
-                iconFullscreen.classList.add('hidden');
-                iconFullscreenExit.classList.remove('hidden');
-            } else {
-                document.exitFullscreen();
-                iconFullscreen.classList.remove('hidden');
-                iconFullscreenExit.classList.add('hidden');
-            }
-        }
-
-        // Toggle theater mode
-        function toggleTheaterMode() {
-            const playerContainer = document.getElementById('videoPlayerContainer');
-            playerContainer.classList.toggle('theater-mode');
-        }
-
-        function generateSessionId() {
-            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        }
-
-        async function loadVideo() {
+        // Get URL parameters
+        function getUrlParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
-            const videoId = urlParams.get('id');
-            
-            if (!videoId) {
-                showError('Video ID is required');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (!data || !data.videoUrl) {
-                    throw new Error('Video URL is missing from API response');
-                }
-                
-                currentVideo = data;
-                document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
-                
-                // Set video source using native HTML5 API
-                const videoSource = videoPlayer.querySelector('source');
-                if (videoSource) {
-                    videoSource.src = data.videoUrl;
-                }
-                videoPlayer.load();
-                
-                // Set poster if available
-                if (data.thumbnail) {
-                    videoPlayer.poster = data.thumbnail;
-                }
-                
-                updateVideoInfo(data);
-                loadRelatedShorts(data);
-                loadRelatedVideos(data);
-                setTimeout(() => trackView(false), 10000);
-                
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('errorState').classList.add('hidden');
-                document.getElementById('videoContent').classList.remove('hidden');
-                
-            } catch (error) {
-                console.error('Load video error:', error);
-                showError('Failed to load video: ' + error.message);
-            }
+            return urlParams.get(param);
         }
 
-        function updateVideoInfo(video) {
-            document.getElementById('videoTitle').textContent = video.title;
-            document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
-            document.getElementById('videoViews').textContent = formatNumber(video.views || 0);
-            document.getElementById('videoDuration').textContent = video.duration || '0:00';
-            document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
-            
-            const descEl = document.getElementById('videoDescription');
-            if (video.description) {
-                descEl.textContent = video.description;
-                descEl.classList.remove('hidden');
-            }
-            
-            document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
-            
-            const videoId = video.numericId || video.id;
-            const likeBtn = document.getElementById('likeBtn');
-            if (isLiked(videoId)) {
-                likeBtn.classList.add('bg-primary', 'border-primary');
-                likeBtn.querySelector('i').className = 'fas fa-heart';
-            }
-            
-            const tags = JSON.parse(video.tags || '[]');
-            const tagsContainer = document.getElementById('tagsContainer');
-            if (tags.length > 0) {
-                tagsContainer.innerHTML = tags.map(tag =>
-                    `<a href="index.html?tag=${encodeURIComponent(tag)}" class="bg-dark border border-border text-muted px-2 md:px-3 py-1 rounded-full text-xs hover:border-primary hover:text-primary transition-all">#${tag}</a>`
-                ).join('');
-                tagsContainer.classList.remove('hidden');
-            }
+        // Format time helper
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
-        async function toggleLike() {
-            if (!currentVideo) return;
-            const btn = document.getElementById('likeBtn');
-            const icon = btn.querySelector('i');
-            const countEl = document.getElementById('likeCount');
-            const wasLiked = btn.classList.contains('bg-primary');
-            const videoId = currentVideo.numericId || currentVideo.id;
-            
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.action === 'liked') {
-                        btn.classList.add('bg-primary', 'border-primary');
-                        icon.className = 'fas fa-heart';
-                        currentVideo.likes = (currentVideo.likes || 0) + 1;
-                        markAsLiked(videoId);
-                        showToast('Liked! ❤️', 'success');
-                    } else {
-                        btn.classList.remove('bg-primary', 'border-primary');
-                        icon.className = 'far fa-heart';
-                        currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
-                        markAsUnliked(videoId);
-                    }
-                    countEl.textContent = formatNumber(currentVideo.likes);
-                }
-            } catch (error) {
-                console.error('Like error:', error);
-                showToast('Failed to update like', 'error');
-            }
-        }
-
-        async function trackView(isComplete) {
-            if (viewTracked || !currentVideo) return;
-            try {
-                const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : ((videoPlayer?.currentTime || 0) / (videoPlayer?.duration || 1)) || 0.5;
-                const watchTime = videoPlayer?.currentTime || 0;
-                
-                await fetch(`${CONFIG.apiEndpoint}/short/view`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId, watchDuration, watchTime })
-                });
-                
-                viewTracked = true;
-            } catch (error) {
-                console.error('Track view error:', error);
-            }
-        }
-
-        async function shareVideo() {
-            const btn = document.getElementById('shareBtn');
-            const videoId = currentVideo.numericId || currentVideo.id;
-            
-            try {
-                await fetch(`${CONFIG.apiEndpoint}/short/share`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId })
-                });
-                
-                btn.classList.add('bg-success', 'border-success');
-                showToast('Share counted! ↗️', 'success');
-                setTimeout(() => btn.classList.remove('bg-success', 'border-success'), 500);
-                
-                if (navigator.share) {
-                    navigator.share({ title: currentVideo.title, url: window.location.href }).catch(() => {});
-                } else {
-                    copyLink();
-                }
-            } catch (error) {
-                copyLink();
-            }
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href)
-                .then(() => showToast('Link copied! 📋', 'success'))
-                .catch(() => showToast('Failed to copy link', 'error'));
-        }
-
-        function isLiked(videoId) {
-            const liked = localStorage.getItem('likedVideos');
-            return liked ? JSON.parse(liked).includes(videoId) : false;
-        }
-
-        function markAsLiked(videoId) {
-            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-            if (!liked.includes(videoId)) {
-                liked.push(videoId);
-                localStorage.setItem('likedVideos', JSON.stringify(liked));
-            }
-        }
-
-        function markAsUnliked(videoId) {
-            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-            const index = liked.indexOf(videoId);
-            if (index > -1) {
-                liked.splice(index, 1);
-                localStorage.setItem('likedVideos', JSON.stringify(liked));
-            }
-        }
-
-        async function loadRelatedShorts(video) {
-            const carousel = document.getElementById('shortsCarousel');
-            const sidebar = document.getElementById('shortsSidebar');
-            
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
-                let shorts = await response.json();
-                
-                if (shorts && shorts.length > 0) {
-                    const category = video.category;
-                    let related = shorts.filter(s => s.category === category);
-                    if (related.length < 10) {
-                        const remaining = shorts.filter(s => s.category !== category);
-                        related = [...related, ...remaining].slice(0, 10);
-                    }
-                    
-                    if (carousel) {
-                        carousel.innerHTML = related.slice(0, 8).map(short => createShortCardCompact(short)).join('');
-                    }
-                    
-                    if (sidebar) {
-                        sidebar.innerHTML = related.slice(0, 6).map(short => createShortSidebarItem(short)).join('');
-                    }
-                }
-            } catch (error) {
-                console.error('Load shorts error:', error);
-            }
-        }
-
-        function createShortCardCompact(short) {
-            return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[120px] md:w-[140px] bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all group">
-                <div class="relative aspect-[9/16]">
-                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover"
-                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22200%22><rect fill=%22%23333%22 width=%22120%22 height=%22200%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
-                    <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
-                </div>
-                <div class="p-2">
-                    <h4 class="text-xs font-semibold line-clamp-2 group-hover:text-primary">${short.title}</h4>
-                    <div class="flex items-center gap-1 text-xs text-muted mt-1">
-                        <span><i class="fas fa-eye text-[10px]"></i> ${formatNumber(short.views || 0)}</span>
-                    </div>
-                </div>
-            </a>`;
-        }
-
-        function createShortSidebarItem(short) {
-            return `<a href="shorts.html?id=${short.numericId}" class="flex gap-3 group">
-                <div class="relative w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden">
-                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover"
-                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22150%22><rect fill=%22%23333%22 width=%22100%22 height=%22150%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
-                    <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">${short.title}</h4>
-                    <div class="flex items-center gap-2 text-xs text-muted mt-1">
-                        <span><i class="fas fa-eye"></i> ${formatNumber(short.views || 0)}</span>
-                    </div>
-                </div>
-            </a>`;
-        }
-
-        async function loadRelatedVideos(video) {
-            const container = document.getElementById('relatedVideosGrid');
-            
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=12`);
-                const videos = await response.json();
-                
-                if (videos && videos.length > 0) {
-                    const currentId = currentVideo.numericId || currentVideo.id;
-                    const filtered = videos.filter(v => (v.numericId || v.id) !== currentId).slice(0, 12);
-                    container.innerHTML = filtered.map(v => createVideoCardResponsive(v)).join('');
-                }
-            } catch (error) {
-                console.error('Load recommendations error:', error);
-            }
-        }
-
-        function createVideoCardResponsive(video) {
-            return `<a href="video.html?id=${video.numericId || video.id}" class="group block">
-                <div class="relative aspect-video rounded-lg overflow-hidden mb-2 bg-dark">
-                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
-                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-1.5 py-0.5 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
-                </div>
-                <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight">${video.title}</h3>
-                <div class="flex items-center gap-2 text-xs text-muted mt-1">
-                    <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
-                    <span>•</span>
-                    <span>${video.uploadDate || 'N/A'}</span>
-                </div>
-            </a>`;
-        }
-
-        function openReportModal() {
-            document.getElementById('reportModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeReportModal() {
-            document.getElementById('reportModal').classList.add('hidden');
-            document.getElementById('reportForm').reset();
-            document.body.style.overflow = '';
-        }
-
-        async function submitReport(event) {
-            event.preventDefault();
-            const reason = document.getElementById('reportReason').value;
-            const details = document.getElementById('reportDetails').value;
-            const videoId = currentVideo.numericId || currentVideo.id;
-            
-            try {
-                await fetch(`${CONFIG.apiEndpoint}/report`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ videoId, videoType: 'video', reason: reason + (details ? ': ' + details : '') })
-                });
-                showToast('Report submitted successfully', 'success');
-                closeReportModal();
-            } catch (error) {
-                showToast('Failed to submit report', 'error');
-            }
-        }
-
-        function showError(message) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-            document.getElementById('errorMessage').textContent = message;
-        }
-
+        // Show toast notification
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            const colors = { success: 'border-success', error: 'border-danger', info: 'border-primary' };
-            const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger', info: 'fa-info-circle text-primary' };
             
-            toast.className = `bg-card border-l-4 ${colors[type]} border border-border rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[280px]`;
-            toast.innerHTML = `<i class="fas ${icons[type]} text-xl"></i><span class="flex-1 text-sm">${message}</span><button onclick="this.parentElement.remove()" class="text-muted hover:text-white"><i class="fas fa-times"></i></button>`;
+            const colors = {
+                info: 'bg-card border-primary',
+                success: 'bg-card border-green-500',
+                error: 'bg-card border-red-500'
+            };
+            
+            toast.className = `${colors[type]} border px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[280px] animate-fade-in`;
+            toast.innerHTML = `<span>${message}</span>`;
             
             container.appendChild(toast);
+            
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';
@@ -1348,19 +227,217 @@
             }, 3000);
         }
 
-        function formatNumber(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
+        // Load video data
+        async function loadVideo() {
+            const videoId = getUrlParam('id');
+            
+            if (!videoId) {
+                showError('No video ID provided');
+                return;
+            }
+            
+            currentVideoId = videoId;
+            
+            try {
+                const response = await fetch('videos.json');
+                if (!response.ok) throw new Error('Failed to load videos');
+                
+                const videos = await response.json();
+                const video = videos.find(v => v.id === videoId);
+                
+                if (!video) {
+                    showError('Video not found');
+                    return;
+                }
+                
+                videoData = video;
+                displayVideo(video);
+                
+            } catch (error) {
+                console.error('Error loading video:', error);
+                showError('Failed to load video data');
+            }
         }
 
-        document.getElementById('reportModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'reportModal') closeReportModal();
-        });
+        // Display video
+        function displayVideo(video) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('videoContent').classList.remove('hidden');
+            
+            // Update page title
+            document.getElementById('pageTitle').textContent = `${video.title} - Xplitleaks`;
+            
+            // Set video source
+            const videoPlayer = document.getElementById('videoPlayer');
+            const source = videoPlayer.querySelector('source');
+            source.src = video.videoUrl || video.url;
+            videoPlayer.load();
+            
+            // Update video info
+            document.getElementById('videoTitle').textContent = video.title;
+            document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
+            document.getElementById('videoViews').textContent = (video.views || 0).toLocaleString();
+            document.getElementById('videoDuration').textContent = formatTime(video.duration);
+            document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
+            document.getElementById('videoDescription').textContent = video.description || 'No description available.';
+            
+            // Update like count
+            document.getElementById('likeCount').textContent = (video.likes || 0).toLocaleString();
+            
+            // Load related videos
+            loadRelatedVideos(video);
+            
+            // Track view when video starts playing
+            videoPlayer.addEventListener('play', () => {
+                if (!viewTracked) {
+                    trackView(false);
+                    viewTracked = true;
+                }
+            });
+            
+            // Track complete view
+            videoPlayer.addEventListener('ended', () => {
+                trackView(true);
+            });
+            
+            // Update duration when metadata loads
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                document.getElementById('videoDuration').textContent = formatTime(videoPlayer.duration);
+            });
+        }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeReportModal();
-        });
+        // Show error
+        function showError(message) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // Load related videos
+        async function loadRelatedVideos(currentVideo) {
+            try {
+                const response = await fetch('videos.json');
+                const videos = await response.json();
+                
+                const related = videos
+                    .filter(v => v.id !== currentVideo.id && v.category === currentVideo.category)
+                    .slice(0, 10);
+                
+                const container = document.getElementById('relatedVideos');
+                
+                if (related.length === 0) {
+                    container.innerHTML = '<p class="text-muted text-sm">No related videos found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = related.map(video => `
+                    <a href="video.html?id=${video.id}" class="flex gap-3 group hover:bg-dark/50 p-2 rounded-lg transition-all">
+                        <div class="w-32 aspect-video bg-dark rounded-lg overflow-hidden flex-shrink-0">
+                            <img src="${video.thumbnail || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'90\'><rect fill=\'%23333\' width=\'160\' height=\'90\'/><text fill=\'%23888\' x=\'50%\' y=\'50%\' text-anchor=\'middle\' dy=\'.3em\'>No Thumb</text></svg>'}" 
+                                 alt="${video.title}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                 onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'160\' height=\'90\'><rect fill=\'%23333\' width=\'160\' height=\'90\'/><text fill=\'%23888\' x=\'50%\' y=\'50%\' text-anchor=\'middle\' dy=\'.3em\'>No Thumb</text></svg>'">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">${video.title}</h4>
+                            <p class="text-xs text-muted mt-1">${(video.views || 0).toLocaleString()} views</p>
+                        </div>
+                    </a>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading related videos:', error);
+            }
+        }
+
+        // Toggle like
+        function toggleLike() {
+            if (!currentVideoId) return;
+            
+            isLiked = !isLiked;
+            const btn = document.getElementById('likeBtn');
+            const icon = btn.querySelector('i');
+            const countEl = document.getElementById('likeCount');
+            
+            let count = parseInt(countEl.textContent.replace(/,/g, '')) || 0;
+            
+            if (isLiked) {
+                icon.classList.remove('far');
+                icon.classList.add('fas', 'text-primary');
+                count++;
+                showToast('Video liked!', 'success');
+            } else {
+                icon.classList.remove('fas', 'text-primary');
+                icon.classList.add('far');
+                count--;
+                showToast('Like removed', 'info');
+            }
+            
+            countEl.textContent = count.toLocaleString();
+        }
+
+        // Share video
+        function shareVideo() {
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: videoData?.title || 'Check out this video',
+                    url: url
+                }).catch(err => console.log('Share cancelled'));
+            } else {
+                copyLink();
+            }
+        }
+
+        // Copy link
+        function copyLink() {
+            const url = window.location.href;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        // Report video
+        function reportVideo() {
+            showToast('Report submitted. Thank you!', 'success');
+        }
+
+        // Track view
+        async function trackView(isComplete) {
+            if (!currentVideoId) return;
+            
+            try {
+                // In a real application, this would send data to a server
+                console.log('Tracking view:', { videoId: currentVideoId, isComplete });
+                
+                // Update local view count
+                const viewsEl = document.getElementById('videoViews');
+                let views = parseInt(viewsEl.textContent.replace(/,/g, '')) || 0;
+                
+                if (isComplete && !viewTrackedComplete) {
+                    views++;
+                    viewsEl.textContent = views.toLocaleString();
+                    viewTrackedComplete = true;
+                }
+                
+            } catch (error) {
+                console.error('Error tracking view:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadVideo);
     </script>
 </body>
 </html>
