@@ -10,6 +10,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
@@ -39,7 +42,15 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
         
-        /* Custom Video Player Styles */
+        /* Video.js Custom Theme */
+        .video-js {
+            font-family: inherit;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        
         .video-player-wrapper {
             position: relative;
             background: #000;
@@ -48,215 +59,101 @@
             aspect-ratio: 16/9;
         }
         
-        .video-player-wrapper video {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: pointer;
-        }
-        
-        /* Custom Controls Container */
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-            padding: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        
-        .video-player-wrapper:hover .video-controls,
-        .video-player-wrapper.paused .video-controls {
-            opacity: 1;
-        }
-        
-        .video-controls > * {
-            pointer-events: auto;
-        }
-        
-        /* Progress Bar */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            cursor: pointer;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: #ff0050;
-            border-radius: 2px;
-            width: 0%;
-            position: relative;
-        }
-        
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%) scale(0);
-            width: 16px;
-            height: 16px;
-            background: #ff0050;
-            border-radius: 50%;
-            transition: transform 0.2s;
-        }
-        
-        .progress-bar:hover .progress-fill::after {
-            transform: translateY(-50%) scale(1);
-        }
-        
-        /* Controls Row */
-        .controls-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .control-btn {
-            background: none;
+        .video-js .vjs-big-play-button {
+            background-color: rgba(255, 0, 80, 0.95);
             border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 0.4rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .control-btn:hover {
-            color: #ff0050;
-            transform: scale(1.1);
-        }
-        
-        .time-display {
-            color: white;
-            font-size: 0.85rem;
-            font-family: monospace;
-            margin: 0 0.5rem;
-        }
-        
-        .spacer {
-            flex: 1;
-        }
-        
-        /* Big Play Button */
-        .big-play-button {
-            position: absolute;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 0, 80, 0.95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
             transition: all 0.3s;
-            pointer-events: auto;
         }
         
-        .big-play-button:hover {
+        .video-js .vjs-big-play-button:hover {
+            background-color: rgba(255, 0, 80, 1);
             transform: translate(-50%, -50%) scale(1.1);
-            background: rgba(255, 0, 80, 1);
         }
         
-        .big-play-button.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .big-play-button i {
+        .video-js .vjs-big-play-button .vjs-icon-placeholder:before {
+            content: "\f04b";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
             font-size: 2rem;
-            color: white;
             margin-left: 0.3rem;
         }
         
-        /* Volume Slider */
-        .volume-container {
+        .video-js.vjs-paused .vjs-big-play-button {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
         }
         
-        .volume-slider {
-            width: 0;
-            overflow: hidden;
-            transition: width 0.3s;
+        /* Control Bar */
+        .video-js .vjs-control-bar {
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
         }
         
-        .volume-container:hover .volume-slider {
-            width: 80px;
+        .video-js .vjs-play-control,
+        .video-js .vjs-volume-panel,
+        .video-js .vjs-progress-control,
+        .video-js .vjs-time-control,
+        .video-js .vjs-playback-rate,
+        .video-js .vjs-fullscreen-control {
+            color: white;
         }
         
-        .volume-slider input[type="range"] {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            outline: none;
-            -webkit-appearance: none;
+        .video-js .vjs-play-control:hover,
+        .video-js .vjs-volume-panel:hover,
+        .video-js .vjs-fullscreen-control:hover {
+            color: #ff0050;
         }
         
-        .volume-slider input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
+        /* Progress Bar */
+        .video-js .vjs-play-progress {
             background: #ff0050;
-            border-radius: 50%;
-            cursor: pointer;
         }
         
-        /* Speed Menu */
-        .speed-menu {
-            position: relative;
+        .video-js .vjs-slider {
+            background: rgba(255,255,255,0.3);
         }
         
-        .speed-dropdown {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
+        .video-js .vjs-load-progress {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Volume Slider */
+        .video-js .vjs-volume-level {
+            background: #ff0050;
+        }
+        
+        /* Playback Rate Menu */
+        .video-js .vjs-menu-button-popup .vjs-menu {
             background: rgba(0,0,0,0.95);
             border: 1px solid #333;
             border-radius: 8px;
-            padding: 0.5rem 0;
-            min-width: 100px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            margin-bottom: 0.5rem;
         }
         
-        .speed-menu.active .speed-dropdown {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .speed-option {
-            padding: 0.5rem 1rem;
+        .video-js .vjs-menu-item {
             color: white;
-            cursor: pointer;
-            transition: background 0.2s;
             text-align: center;
         }
         
-        .speed-option:hover {
+        .video-js .vjs-menu-item:hover {
             background: rgba(255, 0, 80, 0.3);
         }
         
-        .speed-option.active {
+        .video-js .vjs-menu-item.vjs-selected {
             background: rgba(255, 0, 80, 0.5);
+        }
+        
+        /* Time Display */
+        .video-js .vjs-time-control {
+            font-family: monospace;
+            font-size: 0.85rem;
+            min-width: 4em;
         }
         
         @keyframes fadeIn {
@@ -306,67 +203,11 @@
                 <!-- Main Column -->
                 <div class="xl:col-span-3 space-y-4 md:space-y-6">
                     
-                    <!-- Custom HTML5 Video Player -->
-                    <div class="video-player-wrapper paused" id="videoPlayerWrapper">
-                        <video id="videoPlayer" preload="metadata" playsinline>
+                    <!-- Video.js Player -->
+                    <div class="video-player-wrapper" id="videoPlayerContainer">
+                        <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" preload="metadata" playsinline controls>
                             Your browser does not support the video tag.
                         </video>
-                        
-                        <!-- Big Play Button -->
-                        <div class="big-play-button" id="bigPlayButton">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        
-                        <!-- Custom Controls -->
-                        <div class="video-controls">
-                            <!-- Progress Bar -->
-                            <div class="progress-bar" id="progressBar">
-                                <div class="progress-fill" id="progressFill"></div>
-                            </div>
-                            
-                            <!-- Controls Row -->
-                            <div class="controls-row">
-                                <!-- Play/Pause -->
-                                <button class="control-btn" id="playPauseBtn" title="Play/Pause (Space)">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                
-                                <!-- Volume -->
-                                <div class="volume-container">
-                                    <button class="control-btn" id="muteBtn" title="Mute (M)">
-                                        <i class="fas fa-volume-high"></i>
-                                    </button>
-                                    <div class="volume-slider">
-                                        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" title="Volume">
-                                    </div>
-                                </div>
-                                
-                                <!-- Time Display -->
-                                <div class="time-display">
-                                    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                                </div>
-                                
-                                <div class="spacer"></div>
-                                
-                                <!-- Playback Speed -->
-                                <div class="speed-menu" id="speedMenu">
-                                    <button class="control-btn" id="speedBtn" title="Playback Speed">
-                                        <span class="text-sm" id="speedText">1x</span>
-                                    </button>
-                                    <div class="speed-dropdown">
-                                        <div class="speed-option" data-speed="0.5">0.5x</div>
-                                        <div class="speed-option active" data-speed="1">1x</div>
-                                        <div class="speed-option" data-speed="1.5">1.5x</div>
-                                        <div class="speed-option" data-speed="2">2x</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Fullscreen -->
-                                <button class="control-btn" id="fullscreenBtn" title="Fullscreen (F)">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Video Info -->
@@ -487,6 +328,9 @@
         </div>
     </div>
 
+    <!-- Video.js -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    
     <script>
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
@@ -497,209 +341,56 @@
         let currentVideo = null;
         let videoPlayer = null;
         let viewTracked = false;
-        let isPlaying = false;
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Page loaded, initializing custom player...');
-            initCustomPlayer();
+            console.log('🚀 Page loaded, initializing Video.js...');
+            initVideoJS();
             loadVideo();
         });
 
-        // Initialize Custom HTML5 Player
-        function initCustomPlayer() {
-            videoPlayer = document.getElementById('videoPlayer');
-            const wrapper = document.getElementById('videoPlayerWrapper');
-            const bigPlayBtn = document.getElementById('bigPlayButton');
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
-            const currentTimeEl = document.getElementById('currentTime');
-            const durationEl = document.getElementById('duration');
-            const muteBtn = document.getElementById('muteBtn');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const speedBtn = document.getElementById('speedBtn');
-            const speedText = document.getElementById('speedText');
-            const speedMenu = document.getElementById('speedMenu');
-            const speedOptions = document.querySelectorAll('.speed-option');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-            // Big Play Button
-            bigPlayBtn.addEventListener('click', () => {
-                if (videoPlayer.paused) {
-                    videoPlayer.play().catch(err => console.error('Play error:', err));
-                } else {
-                    videoPlayer.pause();
+        // Initialize Video.js Player
+        function initVideoJS() {
+            videoPlayer = videojs('videoPlayer', {
+                controls: true,
+                autoplay: false,
+                preload: 'metadata',
+                responsive: true,
+                fluid: false,
+                playbackRates: [0.5, 1, 1.5, 2],
+                controlBar: {
+                    children: [
+                        'playToggle',
+                        'volumePanel',
+                        'currentTimeDisplay',
+                        'timeDivider',
+                        'durationDisplay',
+                        'progressControl',
+                        'playbackRateMenuButton',
+                        'fullscreenToggle'
+                    ]
                 }
             });
 
-            // Play/Pause Button
-            playPauseBtn.addEventListener('click', () => {
-                if (videoPlayer.paused) {
-                    videoPlayer.play().catch(err => console.error('Play error:', err));
-                } else {
-                    videoPlayer.pause();
-                }
-            });
-
-            // Video click to toggle play/pause
-            videoPlayer.addEventListener('click', (e) => {
-                if (e.target.closest('.video-controls')) return;
-                if (videoPlayer.paused) {
-                    videoPlayer.play().catch(err => console.error('Play error:', err));
-                } else {
-                    videoPlayer.pause();
-                }
-            });
-
-            // Update play button icon and state
-            videoPlayer.addEventListener('play', () => {
-                isPlaying = true;
-                bigPlayBtn.classList.add('hidden');
-                wrapper.classList.remove('paused');
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            });
-
-            videoPlayer.addEventListener('pause', () => {
-                isPlaying = false;
-                bigPlayBtn.classList.remove('hidden');
-                bigPlayBtn.innerHTML = '<i class="fas fa-play"></i>';
-                wrapper.classList.add('paused');
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            });
-
-            videoPlayer.addEventListener('ended', () => {
-                isPlaying = false;
-                bigPlayBtn.classList.remove('hidden');
-                bigPlayBtn.innerHTML = '<i class="fas fa-redo"></i>';
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                trackView(true);
-            });
-
-            // Progress Bar
-            videoPlayer.addEventListener('timeupdate', () => {
-                if (videoPlayer.duration) {
-                    const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-                    progressFill.style.width = progress + '%';
-                    currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
-                    
-                    if (!viewTracked) {
-                        const progressRatio = videoPlayer.currentTime / videoPlayer.duration;
-                        if (progressRatio >= 0.5) {
-                            trackView(false);
-                        }
+            // Track view when 50% watched
+            videoPlayer.on('timeupdate', () => {
+                if (videoPlayer.duration() && !viewTracked) {
+                    const progressRatio = videoPlayer.currentTime() / videoPlayer.duration();
+                    if (progressRatio >= 0.5) {
+                        trackView(false);
                     }
                 }
             });
 
-            videoPlayer.addEventListener('loadedmetadata', () => {
-                durationEl.textContent = formatTime(videoPlayer.duration);
+            // Track view when video ends
+            videoPlayer.on('ended', () => {
+                trackView(true);
             });
 
-            // Click on progress bar to seek
-            progressBar.addEventListener('click', (e) => {
-                if (videoPlayer.duration) {
-                    const rect = progressBar.getBoundingClientRect();
-                    const pos = (e.clientX - rect.left) / rect.width;
-                    videoPlayer.currentTime = pos * videoPlayer.duration;
-                }
+            // Handle fullscreen with custom container
+            videoPlayer.on('fullscreenchange', () => {
+                const isFullscreen = videoPlayer.isFullscreen();
+                console.log('Fullscreen changed:', isFullscreen);
             });
-
-            // Volume Control
-            muteBtn.addEventListener('click', () => {
-                videoPlayer.muted = !videoPlayer.muted;
-                updateVolumeIcon();
-            });
-
-            volumeSlider.addEventListener('input', (e) => {
-                videoPlayer.volume = parseFloat(e.target.value);
-                videoPlayer.muted = false;
-                updateVolumeIcon();
-            });
-
-            function updateVolumeIcon() {
-                const icon = muteBtn.querySelector('i');
-                if (videoPlayer.muted || videoPlayer.volume === 0) {
-                    icon.className = 'fas fa-volume-xmark';
-                } else if (videoPlayer.volume < 0.5) {
-                    icon.className = 'fas fa-volume-low';
-                } else {
-                    icon.className = 'fas fa-volume-high';
-                }
-            }
-
-            // Playback Speed
-            speedBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speedMenu.classList.toggle('active');
-            });
-
-            speedOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const speed = parseFloat(option.dataset.speed);
-                    videoPlayer.playbackRate = speed;
-                    speedText.textContent = speed + 'x';
-                    speedOptions.forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    speedMenu.classList.remove('active');
-                });
-            });
-
-            // Close speed menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!speedMenu.contains(e.target)) {
-                    speedMenu.classList.remove('active');
-                }
-            });
-
-            // Fullscreen
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    wrapper.requestFullscreen().catch(err => console.error('Fullscreen error:', err));
-                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                } else {
-                    document.exitFullscreen();
-                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                }
-            });
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                
-                switch(e.key.toLowerCase()) {
-                    case ' ':
-                    case 'k':
-                        e.preventDefault();
-                        if (videoPlayer.paused) {
-                            videoPlayer.play().catch(err => console.error('Play error:', err));
-                        } else {
-                            videoPlayer.pause();
-                        }
-                        break;
-                    case 'f':
-                        if (!document.fullscreenElement) {
-                            wrapper.requestFullscreen().catch(err => console.error('Fullscreen error:', err));
-                            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                        } else {
-                            document.exitFullscreen();
-                            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                        }
-                        break;
-                    case 'm':
-                        videoPlayer.muted = !videoPlayer.muted;
-                        updateVolumeIcon();
-                        break;
-                    case 'arrowleft':
-                        videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 5);
-                        break;
-                    case 'arrowright':
-                        videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 5);
-                        break;
-                }
-            });
-
-            // Set default volume
-            videoPlayer.volume = 1;
         }
 
         function formatTime(seconds) {
@@ -738,19 +429,16 @@
                 currentVideo = data;
                 document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
                 
-                // Set video source - using URL directly from API, no cleaning
-                const source = document.createElement('source');
-                source.src = data.videoUrl;
-                source.type = 'video/mp4';
-                videoPlayer.appendChild(source);
+                // Set video source using Video.js API
+                videoPlayer.src({
+                    src: data.videoUrl,
+                    type: 'video/mp4'
+                });
                 
                 // Set poster if available
                 if (data.thumbnail) {
-                    videoPlayer.setAttribute('poster', data.thumbnail);
+                    videoPlayer.poster(data.thumbnail);
                 }
-                
-                // Load the video
-                videoPlayer.load();
                 
                 updateVideoInfo(data);
                 loadRelatedShorts(data);
@@ -840,8 +528,8 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
-                const watchTime = videoPlayer?.currentTime || 0;
+                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime() / videoPlayer?.duration()) || 0.5;
+                const watchTime = videoPlayer?.currentTime() || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
