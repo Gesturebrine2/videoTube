@@ -1,1471 +1,883 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0a0a0a">
-<title id="pageTitle">Loading.... - Xplitleaks</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-:root {
-    --primary: #ff0050;
-    --secondary: #00f2ea;
-    --dark: #0a0a0a;
-    --darker: #050505;
-    --card: #1a1a1a;
-    --text: #ffffff;
-    --text-muted: #888888;
-    --border: #333333;
-    --success: #00d084;
-    --warning: #ffab00;
-    --danger: #ff0050;
-}
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--darker);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-/* ==================== HEADER ==================== */
-.header {
-    background: var(--dark);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-.back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.3s;
-    font-size: 0.9rem;
-}
-.back-btn:hover {
-    background: var(--primary);
-    border-color: var(--primary);
-    transform: translateX(-5px);
-}
-/* ==================== MAIN CONTAINER ==================== */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-/* ==================== VIDEO PLAYER SECTION ==================== */
-.video-section {
-    margin-bottom: 2rem;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.player-container {
-    background: var(--dark);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-}
-.player-container video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-}
-/* Custom Video Player Controls */
-.video-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.player-container:hover .video-controls {
-    opacity: 1;
-}
-.control-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 0.5rem;
-    transition: all 0.3s;
-}
-.control-btn:hover {
-    color: var(--primary);
-}
-.progress-bar {
-    flex: 1;
-    height: 4px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-}
-.progress-fill {
-    height: 100%;
-    background: var(--primary);
-    border-radius: 2px;
-    width: 0%;
-}
-/* Video Error Message */
-.video-error-message {
-    background: rgba(255, 0, 80, 0.1);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 1rem 0;
-    text-align: center;
-    display: none;
-}
-.video-error-message.show {
-    display: block;
-}
-/* ==================== VIDEO INFO ==================== */
-.video-info {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.video-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-}
-.video-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    margin-bottom: 1rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-.video-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.video-meta-item i {
-    color: var(--primary);
-}
-.category-badge {
-    background: var(--primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-.video-description {
-    color: var(--text-muted);
-    line-height: 1.8;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-}
-.tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-}
-.tag {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-.tag:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-}
-/* ==================== ENGAGEMENT BUTTONS ==================== */
-.engagement-bar {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding: 1rem 0;
-    border-top: 1px solid var(--border);
-    margin-top: 1rem;
-}
-.engagement-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-.engagement-btn:hover {
-    background: var(--primary);
-    border-color: var(--primary);
-    transform: translateY(-2px);
-}
-.engagement-btn.liked {
-    background: var(--primary);
-    border-color: var(--primary);
-}
-.engagement-btn.liked i {
-    animation: heartBeat 0.6s;
-}
-@keyframes heartBeat {
-    0%, 100% { transform: scale(1); }
-    25% { transform: scale(1.2); }
-    50% { transform: scale(0.9); }
-    75% { transform: scale(1.1); }
-}
-.engagement-btn.shared {
-    background: var(--success);
-    border-color: var(--success);
-}
-.engagement-count {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-/* ==================== SHORTS CAROUSEL ==================== */
-.shorts-section {
-    margin: 3rem 0;
-    position: relative;
-}
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-.section-title i {
-    color: var(--primary);
-}
-.view-all-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s;
-}
-.view-all-link:hover {
-    color: var(--secondary);
-}
-.shorts-carousel-wrapper {
-    position: relative;
-}
-.shorts-carousel {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    padding-bottom: 1rem;
-    -webkit-overflow-scrolling: touch;
-}
-.shorts-carousel::-webkit-scrollbar {
-    height: 8px;
-}
-.shorts-carousel::-webkit-scrollbar-track {
-    background: var(--dark);
-    border-radius: 4px;
-}
-.shorts-carousel::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-}
-.shorts-carousel::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-.short-card {
-    flex: 0 0 auto;
-    width: 180px;
-    scroll-snap-align: start;
-    position: relative;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s;
-    text-decoration: none;
-    color: var(--text);
-}
-.short-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: 0 5px 20px rgba(255, 0, 80, 0.3);
-}
-.short-thumbnail {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-    background: var(--dark);
-    position: relative;
-}
-.short-duration {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-.short-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-.short-card:hover .short-overlay {
-    opacity: 1;
-}
-.short-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.short-meta {
-    display: flex;
-    gap: 0.75rem;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-.short-meta span {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-.short-meta i {
-    color: var(--primary);
-}
-.play-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 0, 80, 0.9);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    opacity: 0;
-    transition: all 0.3s;
-}
-.short-card:hover .play-overlay {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
-}
-.scroll-indicator {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 0, 80, 0.8);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 10;
-    border: none;
-    color: white;
-}
-.shorts-carousel-wrapper:hover .scroll-indicator {
-    opacity: 1;
-}
-.scroll-indicator.left {
-    left: 0;
-}
-.scroll-indicator.right {
-    right: 0;
-}
-.scroll-indicator:hover {
-    background: var(--primary);
-}
-/* ==================== RECOMMENDED VIDEOS ==================== */
-.recommended-section {
-    margin: 3rem 0;
-}
-.videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-.video-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s;
-    text-decoration: none;
-    color: var(--text);
-}
-.video-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: 0 5px 20px rgba(255, 0, 80, 0.2);
-}
-.video-card-thumbnail {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    background: var(--dark);
-    position: relative;
-}
-.video-card-duration {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-.video-card-info {
-    padding: 1rem;
-}
-.video-card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.4;
-}
-.video-card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-.video-card-meta span {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-/* ==================== REPORT MODAL ==================== */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-.modal.active {
-    display: flex;
-}
-.modal-content {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: modalPop 0.3s;
-}
-@keyframes modalPop {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-.modal-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-}
-.modal-close {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.modal-close:hover {
-    color: var(--danger);
-    transform: rotate(90deg);
-}
-.form-group {
-    margin-bottom: 1.25rem;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    font-size: 0.95rem;
-}
-.form-group textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-/* ==================== LOADING & ERROR STATES ==================== */
-.loading-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-muted);
-}
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-}
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-.error-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-.error-state i {
-    font-size: 4rem;
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-.error-state h2 {
-    margin-bottom: 0.5rem;
-}
-.error-state p {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-.toast-container {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-.toast {
-    padding: 1rem 1.5rem;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-width: 300px;
-    animation: slideInRight 0.3s;
-}
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-.toast.success {
-    border-left: 4px solid var(--success);
-}
-.toast.error {
-    border-left: 4px solid var(--danger);
-}
-.toast.info {
-    border-left: 4px solid var(--primary);
-}
-.toast-close {
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 1024px) {
-    .container {
-        padding: 1rem;
-    }
-    .video-section {
-        max-width: 100%;
-    }
-}
-@media (max-width: 768px) {
-    .header {
-        padding: 1rem;
-    }
-    .video-title {
-        font-size: 1.25rem;
-    }
-    .short-card {
-        width: 150px;
-    }
-    .short-thumbnail {
-        height: 266px;
-    }
-    .videos-grid {
-        grid-template-columns: 1fr;
-    }
-    .engagement-bar {
-        justify-content: center;
-    }
-    .engagement-btn {
-        flex: 1;
-        justify-content: center;
-        max-width: 150px;
-    }
-    .toast-container {
-        right: 10px;
-        left: 10px;
-    }
-    .toast {
-        min-width: auto;
-        width: 100%;
-    }
-    .scroll-indicator {
-        display: none !important;
-    }
-}
-.hidden {
-    display: none !important;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0a0a0a">
+    <title id="pageTitle">Loading... - Xplitleaks</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config with Custom Colors -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff0050',
+                        secondary: '#00f2ea',
+                        dark: '#0a0a0a',
+                        darker: '#050505',
+                        card: '#1a1a1a',
+                        border: '#333333',
+                        muted: '#888888',
+                        success: '#00d084',
+                        warning: '#ffab00',
+                        danger: '#ff0050'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Vidstack CSS -->
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+    
+    <!-- Custom Styles for Vidstack & Animations -->
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0050;
+        }
+        
+        /* Smooth transitions */
+        * {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        
+        /* Hide scrollbar for carousel but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Vidstack theme customization */
+        .vidstack-player {
+            --media-brand: #ff0050;
+            --media-focus-ring: 0 0 0 3px rgba(255, 0, 80, 0.4);
+        }
+    </style>
 </head>
-<body>
-<!-- ==================== TOAST CONTAINER ==================== -->
-<div class="toast-container" id="toastContainer"></div>
-<!-- ==================== HEADER ==================== -->
-<header class="header">
-    <div class="logo">Xplitleaks</div>
-    <a href="index.html" class="back-btn">
-        <i class="fas fa-arrow-left"></i>
-        <span>Back to Home</span>
-    </a>
-</header>
-<!-- ==================== MAIN CONTENT ==================== -->
-<div class="container">
-    <!-- Loading State -->
-    <div id="loadingState" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Loading video...</p>
-    </div>
-    <!-- Error State -->
-    <div id="errorState" class="error-state hidden">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h2>Video Not Found</h2>
-        <p id="errorMessage">The video you're looking for doesn't exist or has been removed.</p>
-        <a href="index.html" class="back-btn" style="display: inline-flex;">
-            <i class="fas fa-home"></i>
+<body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
+
+    <!-- ==================== TOAST CONTAINER ==================== -->
+    <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="bg-dark border-b border-border sticky top-0 z-[1000] px-4 md:px-8 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Xplitleaks
+        </div>
+        <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-primary hover:border-primary hover:-translate-x-1 transition-all">
+            <i class="fas fa-arrow-left"></i>
             <span>Back to Home</span>
         </a>
-    </div>
-    <!-- Video Content -->
-    <div id="videoContent" class="hidden">
-        <!-- Video Player Section -->
-        <section class="video-section">
-            <div class="player-container">
-                <video id="videoPlayer" playsinline controls preload="metadata">
-                    <source src="" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <div id="videoErrorMessage" class="video-error-message"></div>
-            <!-- Video Info -->
-            <div class="video-info">
-                <h1 class="video-title" id="videoTitle">Loading...</h1>
-                <div class="video-meta">
-                    <span class="category-badge" id="videoCategory">Category</span>
-                    <span class="video-meta-item">
-                        <i class="fas fa-eye"></i>
-                        <span id="videoViews">0</span> views
-                    </span>
-                    <span class="video-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span id="videoDuration">0:00</span>
-                    </span>
-                    <span class="video-meta-item">
-                        <i class="fas fa-calendar"></i>
-                        <span id="videoDate">N/A</span>
-                    </span>
+    </header>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="max-w-[1200px] mx-auto px-4 md:px-8 py-8">
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-16 text-muted">
+            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+            <p>Loading video...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden text-center py-16 bg-card border border-border rounded-xl">
+            <i class="fas fa-exclamation-triangle text-6xl text-danger mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">Video Not Found</h2>
+            <p id="errorMessage" class="text-muted mb-6">The video you're looking for doesn't exist or has been removed.</p>
+            <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-primary hover:border-primary transition-all">
+                <i class="fas fa-home"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+
+        <!-- Video Content -->
+        <div id="videoContent" class="hidden">
+            
+            <!-- ==================== VIDEO PLAYER SECTION ==================== -->
+            <section class="mb-8 max-w-[1000px] mx-auto">
+                <!-- Vidstack Player Container -->
+                <div class="bg-dark rounded-xl overflow-hidden border border-border mb-6 aspect-video relative">
+                    <media-player 
+                        id="videoPlayer" 
+                        class="w-full h-full"
+                        title="Video Player"
+                        src=""
+                        poster=""
+                        crossorigin
+                        playsinline
+                    >
+                        <media-video-layout></media-video-layout>
+                    </media-player>
                 </div>
-                <div class="engagement-bar">
-                    <button class="engagement-btn" id="likeBtn" onclick="toggleLike()">
-                        <i class="far fa-heart"></i>
-                        <span>Like</span>
-                        <span class="engagement-count" id="likeCount">0</span>
-                    </button>
-                    <button class="engagement-btn" id="shareBtn" onclick="shareVideo()">
-                        <i class="fas fa-share"></i>
-                        <span>Share</span>
-                    </button>
-                    <button class="engagement-btn" onclick="copyLink()">
-                        <i class="fas fa-link"></i>
-                        <span>Copy Link</span>
-                    </button>
-                    <button class="engagement-btn" onclick="openReportModal()" style="margin-left: auto;">
-                        <i class="fas fa-flag"></i>
-                        <span>Report</span>
-                    </button>
+
+                <!-- Video Error Message -->
+                <div id="videoErrorMessage" class="hidden bg-danger/10 border border-danger text-danger p-4 rounded-lg mb-6 text-center"></div>
+
+                <!-- Video Info Card -->
+                <div class="bg-card border border-border rounded-xl p-6 mb-6">
+                    <h1 id="videoTitle" class="text-2xl font-bold mb-4">Loading...</h1>
+                    
+                    <!-- Video Metadata -->
+                    <div class="flex flex-wrap gap-4 items-center text-sm text-muted mb-4">
+                        <span id="videoCategory" class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">Category</span>
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-eye text-primary"></i>
+                            <span id="videoViews">0</span> views
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-clock text-primary"></i>
+                            <span id="videoDuration">0:00</span>
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-calendar text-primary"></i>
+                            <span id="videoDate">N/A</span>
+                        </span>
+                    </div>
+
+                    <!-- Engagement Buttons -->
+                    <div class="flex flex-wrap gap-3 py-4 border-t border-border mt-4">
+                        <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
+                            <i class="far fa-heart"></i>
+                            <span>Like</span>
+                            <span id="likeCount" class="text-muted text-sm">0</span>
+                        </button>
+                        <button id="shareBtn" onclick="shareVideo()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
+                            <i class="fas fa-share"></i>
+                            <span>Share</span>
+                        </button>
+                        <button onclick="copyLink()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
+                            <i class="fas fa-link"></i>
+                            <span>Copy Link</span>
+                        </button>
+                        <button onclick="openReportModal()" class="ml-auto flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
+                            <i class="fas fa-flag"></i>
+                            <span>Report</span>
+                        </button>
+                    </div>
+
+                    <!-- Video Description -->
+                    <div id="videoDescription" class="text-muted leading-relaxed mt-4 pt-4 border-t border-border hidden"></div>
+                    
+                    <!-- Tags Container -->
+                    <div id="tagsContainer" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border hidden"></div>
                 </div>
-                <div class="video-description" id="videoDescription"></div>
-                <div class="tags-container" id="tagsContainer"></div>
-            </div>
-        </section>
-        <!-- Shorts Carousel Section -->
-        <section class="shorts-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-mobile-alt"></i>
-                    Related Shorts
-                </h2>
-                <a href="shorts.html" class="view-all-link">
-                    View All <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-            <div class="shorts-carousel-wrapper">
-                <button class="scroll-indicator left" onclick="scrollShorts('left')">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <div class="shorts-carousel" id="shortsCarousel">
-                    <div class="loading-state" style="width: 100%;">
-                        <div class="loading-spinner"></div>
-                        <p>Loading shorts...</p>
+            </section>
+
+            <!-- ==================== SHORTS CAROUSEL ==================== -->
+            <section class="mb-12 relative">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold flex items-center gap-3">
+                        <i class="fas fa-mobile-alt text-primary"></i>
+                        Related Shorts
+                    </h2>
+                    <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="relative">
+                    <!-- Scroll Buttons -->
+                    <button onclick="scrollShorts('left')" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all group-hover:opacity-100">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="scrollShorts('right')" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all group-hover:opacity-100">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                    <!-- Shorts Carousel -->
+                    <div id="shortsCarousel" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4">
+                        <div class="text-center py-16 w-full text-muted">
+                            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+                            <p>Loading shorts...</p>
+                        </div>
                     </div>
                 </div>
-                <button class="scroll-indicator right" onclick="scrollShorts('right')">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
-        <!-- Recommended Videos Section -->
-        <section class="recommended-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-th-large"></i>
+            </section>
+
+            <!-- ==================== RECOMMENDED VIDEOS ==================== -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold flex items-center gap-3 mb-6">
+                    <i class="fas fa-th-large text-primary"></i>
                     Recommended for You
                 </h2>
-            </div>
-            <div class="videos-grid" id="recommendedVideos">
-                <div class="loading-state" style="grid-column: 1/-1;">
-                    <div class="loading-spinner"></div>
-                    <p>Loading recommendations...</p>
+                
+                <div id="recommendedVideos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="text-center py-16 col-span-full text-muted">
+                        <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+                        <p>Loading recommendations...</p>
+                    </div>
                 </div>
-            </div>
-        </section>
-    </div>
-</div>
-<!-- ==================== REPORT MODAL ==================== -->
-<div class="modal" id="reportModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">
-                <i class="fas fa-flag"></i>
-                Report Video
-            </h3>
-            <button class="modal-close" onclick="closeReportModal()">&times;</button>
+            </section>
         </div>
-        <form id="reportForm" onsubmit="submitReport(event)">
-            <div class="form-group">
-                <label for="reportReason">Reason *</label>
-                <select id="reportReason" required>
-                    <option value="">Select a reason</option>
-                    <option value="inappropriate">Inappropriate Content</option>
-                    <option value="copyright">Copyright Violation</option>
-                    <option value="spam">Spam or Misleading</option>
-                    <option value="quality">Poor Quality</option>
-                    <option value="other">Other</option>
-                </select>
+    </main>
+
+    <!-- ==================== REPORT MODAL ==================== -->
+    <div id="reportModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
+        <div class="bg-card border border-border rounded-xl p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto animate-[modalPop_0.3s_ease-out]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-flag text-primary"></i>
+                    Report Video
+                </h3>
+                <button onclick="closeReportModal()" class="text-muted hover:text-danger hover:rotate-90 transition-all text-2xl">
+                    &times;
+                </button>
             </div>
-            <div class="form-group">
-                <label for="reportDetails">Additional Details</label>
-                <textarea id="reportDetails" placeholder="Please provide more details about your report..."></textarea>
-            </div>
-            <button type="submit" class="back-btn" style="width: 100%; justify-content: center; background: var(--danger); border-color: var(--danger);">
-                <i class="fas fa-paper-plane"></i>
-                Submit Report
-            </button>
-        </form>
-    </div>
-</div>
-<!-- ==================== JAVASCRIPT ==================== -->
-<script>
-// ==================== CONFIGURATION ====================
-const CONFIG = {
-    apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
-    sessionId: localStorage.getItem('sessionId') || generateSessionId()
-};
-localStorage.setItem('sessionId', CONFIG.sessionId);
-
-// ==================== STATE ====================
-let currentVideo = null;
-let videoPlayer = null;
-let viewTracked = false;
-
-// ==================== INITIALIZATION ====================
-document.addEventListener('DOMContentLoaded', () => {
-    console.log(' Page loaded, initializing...');
-    loadVideo();
-});
-
-function generateSessionId() {
-    return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-}
-
-// ==================== LOAD VIDEO ====================
-async function loadVideo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoId = urlParams.get('id');
-    console.log('📹 Video ID from URL:', videoId);
-    console.log('🌐 Full URL:', window.location.href);
-    
-    if (!videoId) {
-        showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
-        return;
-    }
-    
-    try {
-        console.log('📡 Fetching video from API...');
-        const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
-        console.log('✅ API Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ API Error:', errorText);
-            throw new Error(`API returned ${response.status}: ${errorText}`);
-        }
-        
-        const data = await response.json();
-        console.log('📦 Video data received:', data);
-        
-        // 🔥 FIX 1: Trim ALL URLs to remove trailing spaces from API
-        const cleanedData = {
-            ...data,
-            videoUrl: (data.videoUrl || '').trim(),
-            thumbnail: (data.thumbnail || '').trim(),
-            title: (data.title || '').trim(),
-            description: (data.description || '').trim()
-        };
-        
-        console.log('🧹 Cleaned videoUrl:', cleanedData.videoUrl);
-        console.log('🧹 Cleaned thumbnail:', cleanedData.thumbnail);
-        console.log('🧹 videoUrl length:', cleanedData.videoUrl.length);
-        
-        if (!cleanedData || !cleanedData.videoUrl) {
-            console.error('❌ Missing video URL in response');
-            throw new Error('Video URL is missing from API response');
-        }
-        
-        currentVideo = cleanedData;
-        
-        // Update page title
-        document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
-        
-        // Setup player
-        setupPlayer(cleanedData);
-        
-        // Update info
-        updateVideoInfo(cleanedData);
-        
-        // Load related content
-        loadRelatedShorts(cleanedData);
-        loadRecommendedVideos(cleanedData);
-        
-        // Track view (after 10 seconds or 50% watched)
-        setTimeout(() => trackView(false), 10000);
-        
-        // 🔥 FIX 2: Hide errorState BEFORE showing content (THIS WAS THE MAIN BUG!)
-        console.log('👁️ Showing video content...');
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('errorState').classList.add('hidden');
-        document.getElementById('videoContent').classList.remove('hidden');
-        
-        console.log('✅ Video content displayed successfully');
-        
-    } catch (error) {
-        console.error('💥 Load video error:', error);
-        console.error('💥 Error stack:', error.stack);
-        showError('Failed to load video: ' + error.message);
-    }
-}
-
-// ==================== SETUP NATIVE VIDEO PLAYER ====================
-function setupPlayer(video) {
-    videoPlayer = document.getElementById('videoPlayer');
-    console.log('🎬 Setting up native video player...');
-    console.log('🔗 Video URL:', video.videoUrl);
-    
-    if (!videoPlayer) {
-        console.error('❌ Video player element not found!');
-        return;
-    }
-    
-    // Set video source
-    const source = videoPlayer.querySelector('source');
-    if (source) {
-        source.src = video.videoUrl;
-        source.type = 'video/mp4';
-    }
-    
-    // Set poster if available
-    if (video.thumbnail) {
-        videoPlayer.setAttribute('poster', video.thumbnail);
-    }
-    
-    // Error handling
-    videoPlayer.addEventListener('error', (e) => {
-        console.error('❌ Video element error:', e);
-        console.error('❌ Error code:', videoPlayer.error?.code);
-        console.error('❌ Error message:', videoPlayer.error?.message);
-        showVideoError('Failed to load video file. The file may be unavailable.');
-    });
-    
-    // Success handling
-    videoPlayer.addEventListener('loadeddata', () => {
-        console.log('✅ Video loaded successfully');
-    });
-    
-    videoPlayer.addEventListener('canplay', () => {
-        console.log('✅ Video can play');
-    });
-    
-    videoPlayer.addEventListener('play', () => {
-        console.log('▶️ Video started playing');
-    });
-    
-    // Load video
-    console.log('⏳ Loading video...');
-    videoPlayer.load();
-    
-    // Track view on video end
-    videoPlayer.addEventListener('ended', () => {
-        console.log('⏹️ Video ended, tracking view');
-        trackView(true);
-    });
-    
-    // Track progress for view tracking
-    videoPlayer.addEventListener('timeupdate', () => {
-        if (videoPlayer.duration > 0 && !viewTracked) {
-            const progress = videoPlayer.currentTime / videoPlayer.duration;
-            if (progress >= 0.5) {
-                console.log('📊 50% watched, tracking view');
-                trackView(false);
-            }
-        }
-    });
-}
-
-function showVideoError(message) {
-    const errorDiv = document.getElementById('videoErrorMessage');
-    errorDiv.textContent = message;
-    errorDiv.classList.add('show');
-    showToast('Video playback error', 'error');
-}
-
-// ==================== UPDATE VIDEO INFO ====================
-function updateVideoInfo(video) {
-    document.getElementById('videoTitle').textContent = video.title;
-    document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
-    document.getElementById('videoViews').textContent = formatNumber(video.views || 0);
-    document.getElementById('videoDuration').textContent = video.duration || '0:00';
-    document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
-    document.getElementById('videoDescription').textContent = video.description || '';
-    document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
-    
-    // Update like button state
-    const videoId = video.numericId || video.id;
-    if (isLiked(videoId)) {
-        document.getElementById('likeBtn').classList.add('liked');
-        document.getElementById('likeBtn').querySelector('i').className = 'fas fa-heart';
-    }
-    
-    // Load tags
-    const tags = JSON.parse(video.tags || '[]');
-    const tagsContainer = document.getElementById('tagsContainer');
-    if (tags.length > 0) {
-        tagsContainer.innerHTML = tags.map(tag =>
-            `<a href="index.html?tag=${encodeURIComponent(tag)}" class="tag">#${tag}</a>`
-        ).join('');
-    } else {
-        tagsContainer.classList.add('hidden');
-    }
-}
-
-// ==================== ENGAGEMENT TRACKING ====================
-async function toggleLike() {
-    if (!currentVideo) return;
-    const btn = document.getElementById('likeBtn');
-    const icon = btn.querySelector('i');
-    const countEl = document.getElementById('likeCount');
-    const wasLiked = btn.classList.contains('liked');
-    const videoId = currentVideo.numericId || currentVideo.id;
-    
-    try {
-        console.log('❤️ Toggling like for video:', videoId);
-        const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Session-Id': CONFIG.sessionId
-            },
-            body: JSON.stringify({ shortId: videoId })
-        });
-        console.log('📡 Like API response:', response.status);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('📦 Like action:', data.action);
             
-            if (data.action === 'liked') {
-                btn.classList.add('liked');
-                icon.className = 'fas fa-heart';
-                currentVideo.likes = (currentVideo.likes || 0) + 1;
-                markAsLiked(videoId);
-                showToast('Liked! ❤️', 'success');
-            } else {
-                btn.classList.remove('liked');
-                icon.className = 'far fa-heart';
-                currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
-                markAsUnliked(videoId);
-            }
-            countEl.textContent = formatNumber(currentVideo.likes);
-        }
-    } catch (error) {
-        console.error('❌ Like error:', error);
-        if (wasLiked) {
-            btn.classList.add('liked');
-            icon.className = 'fas fa-heart';
-        } else {
-            btn.classList.remove('liked');
-            icon.className = 'far fa-heart';
-        }
-        showToast('Failed to update like', 'error');
-    }
-}
-
-async function trackView(isComplete) {
-    if (viewTracked || !currentVideo) return;
-    try {
-        const videoId = currentVideo.numericId || currentVideo.id;
-        const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
-        const watchTime = videoPlayer?.currentTime || 0;
-        
-        console.log('📊 Tracking view:', { videoId, watchDuration, watchTime, isComplete });
-        
-        await fetch(`${CONFIG.apiEndpoint}/short/view`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Session-Id': CONFIG.sessionId
-            },
-            body: JSON.stringify({
-                shortId: videoId,
-                watchDuration,
-                watchTime
-            })
-        });
-        
-        viewTracked = true;
-        console.log('✅ View tracked successfully');
-    } catch (error) {
-        console.error('❌ Track view error:', error);
-    }
-}
-
-async function shareVideo() {
-    const btn = document.getElementById('shareBtn');
-    const videoId = currentVideo.numericId || currentVideo.id;
-    
-    try {
-        await fetch(`${CONFIG.apiEndpoint}/short/share`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Session-Id': CONFIG.sessionId
-            },
-            body: JSON.stringify({ shortId: videoId })
-        });
-        
-        btn.classList.add('shared');
-        showToast('Share counted! ↗️', 'success');
-        
-        setTimeout(() => {
-            btn.classList.remove('shared');
-        }, 500);
-        
-        if (navigator.share) {
-            navigator.share({
-                title: currentVideo.title,
-                url: window.location.href
-            }).catch(() => {});
-        } else {
-            copyLink();
-        }
-    } catch (error) {
-        console.error('❌ Share error:', error);
-        copyLink();
-    }
-}
-
-function copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        showToast('Link copied! 📋', 'success');
-    }).catch(() => {
-        showToast('Failed to copy link', 'error');
-    });
-}
-
-// ==================== LIKE STATE MANAGEMENT ====================
-function isLiked(videoId) {
-    const liked = localStorage.getItem('likedVideos');
-    return liked ? JSON.parse(liked).includes(videoId) : false;
-}
-
-function markAsLiked(videoId) {
-    const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-    if (!liked.includes(videoId)) {
-        liked.push(videoId);
-        localStorage.setItem('likedVideos', JSON.stringify(liked));
-    }
-}
-
-function markAsUnliked(videoId) {
-    const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-    const index = liked.indexOf(videoId);
-    if (index > -1) {
-        liked.splice(index, 1);
-        localStorage.setItem('likedVideos', JSON.stringify(liked));
-    }
-}
-
-// ==================== LOAD RELATED SHORTS ====================
-async function loadRelatedShorts(video) {
-    const carousel = document.getElementById('shortsCarousel');
-    try {
-        console.log('📱 Loading related shorts...');
-        const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
-        let shorts = await response.json();
-        console.log('📦 Shorts loaded:', shorts);
-        
-        if (shorts && shorts.length > 0) {
-            const category = video.category;
-            let related = shorts.filter(s => s.category === category);
-            if (related.length < 10) {
-                const remaining = shorts.filter(s => s.category !== category);
-                related = [...related, ...remaining].slice(0, 10);
-            }
-            carousel.innerHTML = related.map(short => createShortCard(short)).join('');
-        } else {
-            carousel.innerHTML = `
-                <div class="loading-state" style="width: 100%;">
-                    <i class="fas fa-video" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                    <p>No shorts available</p>
+            <form id="reportForm" onsubmit="submitReport(event)">
+                <div class="mb-5">
+                    <label for="reportReason" class="block mb-2 text-sm text-muted">Reason *</label>
+                    <select id="reportReason" required class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary">
+                        <option value="">Select a reason</option>
+                        <option value="inappropriate">Inappropriate Content</option>
+                        <option value="copyright">Copyright Violation</option>
+                        <option value="spam">Spam or Misleading</option>
+                        <option value="quality">Poor Quality</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
+                
+                <div class="mb-5">
+                    <label for="reportDetails" class="block mb-2 text-sm text-muted">Additional Details</label>
+                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details about your report..." class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
+                </div>
+                
+                <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-danger border border-danger rounded-lg hover:bg-danger/90 transition-all">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Report
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== VIDSTACK PLAYER SCRIPT ==================== -->
+    <script type="module">
+        import { MediaProvider } from 'https://cdn.vidstack.io/player';
+        
+        // Initialize Vidstack player
+        const player = document.getElementById('videoPlayer');
+        
+        // Export player to window for global access
+        window.vidstackPlayer = player;
+        
+        // Listen for player events
+        player?.addEventListener('loaded-data', () => {
+            console.log('✅ Video loaded successfully');
+        });
+        
+        player?.addEventListener('error', (e) => {
+            console.error('❌ Video error:', e);
+        });
+    </script>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
+            sessionId: localStorage.getItem('sessionId') || generateSessionId()
+        };
+        localStorage.setItem('sessionId', CONFIG.sessionId);
+
+        // ==================== STATE ====================
+        let currentVideo = null;
+        let viewTracked = false;
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Page loaded, initializing...');
+            loadVideo();
+        });
+
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        // ==================== LOAD VIDEO ====================
+        async function loadVideo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('id');
+            console.log('📹 Video ID from URL:', videoId);
+            
+            if (!videoId) {
+                showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
+                return;
+            }
+            
+            try {
+                console.log('📡 Fetching video from API...');
+                const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
+                console.log('✅ API Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API Error:', errorText);
+                    throw new Error(`API returned ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('📦 Video data received:', data);
+                
+                // 🔥 FIX: Clean URLs - remove double slashes and trim spaces
+                const cleanedData = {
+                    ...data,
+                    videoUrl: (data.videoUrl || '').replace(/\/+/g, '/').trim(),
+                    thumbnail: (data.thumbnail || '').replace(/\/+/g, '/').trim(),
+                    title: (data.title || '').trim(),
+                    description: (data.description || '').trim()
+                };
+                
+                console.log('🧹 Cleaned videoUrl:', cleanedData.videoUrl);
+                
+                if (!cleanedData || !cleanedData.videoUrl) {
+                    console.error('❌ Missing video URL in response');
+                    throw new Error('Video URL is missing from API response');
+                }
+                
+                currentVideo = cleanedData;
+                
+                // Update page title
+                document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
+                
+                // Setup player
+                setupPlayer(cleanedData);
+                
+                // Update info
+                updateVideoInfo(cleanedData);
+                
+                // Load related content
+                loadRelatedShorts(cleanedData);
+                loadRecommendedVideos(cleanedData);
+                
+                // Track view (after 10 seconds or 50% watched)
+                setTimeout(() => trackView(false), 10000);
+                
+                // 🔥 FIX: Hide error state BEFORE showing content
+                console.log('👁️ Showing video content...');
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.add('hidden');
+                document.getElementById('videoContent').classList.remove('hidden');
+                
+                console.log('✅ Video content displayed successfully');
+                
+            } catch (error) {
+                console.error('💥 Load video error:', error);
+                showError('Failed to load video: ' + error.message);
+            }
+        }
+
+        // ==================== SETUP VIDSTACK PLAYER ====================
+        function setupPlayer(video) {
+            const player = document.getElementById('videoPlayer');
+            console.log('🎬 Setting up Vidstack player...');
+            console.log('🔗 Video URL:', video.videoUrl);
+            
+            if (!player) {
+                console.error('❌ Player element not found!');
+                return;
+            }
+            
+            // Set video source
+            player.src = video.videoUrl;
+            
+            // Set poster if available
+            if (video.thumbnail) {
+                player.setAttribute('poster', video.thumbnail);
+            }
+            
+            // Error handling
+            player.addEventListener('error', (e) => {
+                console.error('❌ Video element error:', e);
+                showVideoError('Failed to load video file. The file may be unavailable.');
+            });
+            
+            // Success handling
+            player.addEventListener('loaded-data', () => {
+                console.log('✅ Video loaded successfully');
+            });
+            
+            player.addEventListener('can-play', () => {
+                console.log('✅ Video can play');
+            });
+            
+            // Track view on video end
+            player.addEventListener('ended', () => {
+                console.log('⏹️ Video ended, tracking view');
+                trackView(true);
+            });
+            
+            // Track progress for view tracking
+            player.addEventListener('time-update', () => {
+                if (player.duration > 0 && !viewTracked) {
+                    const progress = player.currentTime / player.duration;
+                    if (progress >= 0.5) {
+                        console.log('📊 50% watched, tracking view');
+                        trackView(false);
+                    }
+                }
+            });
+        }
+
+        function showVideoError(message) {
+            const errorDiv = document.getElementById('videoErrorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            showToast('Video playback error', 'error');
+        }
+
+        // ==================== UPDATE VIDEO INFO ====================
+        function updateVideoInfo(video) {
+            document.getElementById('videoTitle').textContent = video.title;
+            document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
+            document.getElementById('videoViews').textContent = formatNumber(video.views || 0);
+            document.getElementById('videoDuration').textContent = video.duration || '0:00';
+            document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
+            
+            // Description
+            const descEl = document.getElementById('videoDescription');
+            if (video.description) {
+                descEl.textContent = video.description;
+                descEl.classList.remove('hidden');
+            }
+            
+            // Like count
+            document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
+            
+            // Update like button state
+            const videoId = video.numericId || video.id;
+            const likeBtn = document.getElementById('likeBtn');
+            if (isLiked(videoId)) {
+                likeBtn.classList.add('bg-primary', 'border-primary');
+                likeBtn.querySelector('i').className = 'fas fa-heart';
+            }
+            
+            // Load tags
+            const tags = JSON.parse(video.tags || '[]');
+            const tagsContainer = document.getElementById('tagsContainer');
+            if (tags.length > 0) {
+                tagsContainer.innerHTML = tags.map(tag =>
+                    `<a href="index.html?tag=${encodeURIComponent(tag)}" class="bg-dark border border-border text-muted px-3 py-1 rounded-full text-sm hover:border-primary hover:text-primary transition-all">#${tag}</a>`
+                ).join('');
+                tagsContainer.classList.remove('hidden');
+            }
+        }
+
+        // ==================== ENGAGEMENT TRACKING ====================
+        async function toggleLike() {
+            if (!currentVideo) return;
+            const btn = document.getElementById('likeBtn');
+            const icon = btn.querySelector('i');
+            const countEl = document.getElementById('likeCount');
+            const wasLiked = btn.classList.contains('bg-primary');
+            const videoId = currentVideo.numericId || currentVideo.id;
+            
+            try {
+                console.log('❤️ Toggling like for video:', videoId);
+                const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': CONFIG.sessionId
+                    },
+                    body: JSON.stringify({ shortId: videoId })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.action === 'liked') {
+                        btn.classList.add('bg-primary', 'border-primary');
+                        icon.className = 'fas fa-heart';
+                        currentVideo.likes = (currentVideo.likes || 0) + 1;
+                        markAsLiked(videoId);
+                        showToast('Liked! ❤️', 'success');
+                    } else {
+                        btn.classList.remove('bg-primary', 'border-primary');
+                        icon.className = 'far fa-heart';
+                        currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
+                        markAsUnliked(videoId);
+                    }
+                    countEl.textContent = formatNumber(currentVideo.likes);
+                }
+            } catch (error) {
+                console.error('❌ Like error:', error);
+                if (wasLiked) {
+                    btn.classList.add('bg-primary', 'border-primary');
+                    icon.className = 'fas fa-heart';
+                } else {
+                    btn.classList.remove('bg-primary', 'border-primary');
+                    icon.className = 'far fa-heart';
+                }
+                showToast('Failed to update like', 'error');
+            }
+        }
+
+        async function trackView(isComplete) {
+            if (viewTracked || !currentVideo) return;
+            try {
+                const videoId = currentVideo.numericId || currentVideo.id;
+                const player = document.getElementById('videoPlayer');
+                const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
+                const watchTime = player?.currentTime || 0;
+                
+                await fetch(`${CONFIG.apiEndpoint}/short/view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': CONFIG.sessionId
+                    },
+                    body: JSON.stringify({
+                        shortId: videoId,
+                        watchDuration,
+                        watchTime
+                    })
+                });
+                
+                viewTracked = true;
+                console.log('✅ View tracked successfully');
+            } catch (error) {
+                console.error('❌ Track view error:', error);
+            }
+        }
+
+        async function shareVideo() {
+            const btn = document.getElementById('shareBtn');
+            const videoId = currentVideo.numericId || currentVideo.id;
+            
+            try {
+                await fetch(`${CONFIG.apiEndpoint}/short/share`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': CONFIG.sessionId
+                    },
+                    body: JSON.stringify({ shortId: videoId })
+                });
+                
+                btn.classList.add('bg-success', 'border-success');
+                showToast('Share counted! ↗️', 'success');
+                
+                setTimeout(() => {
+                    btn.classList.remove('bg-success', 'border-success');
+                }, 500);
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: currentVideo.title,
+                        url: window.location.href
+                    }).catch(() => {});
+                } else {
+                    copyLink();
+                }
+            } catch (error) {
+                console.error('❌ Share error:', error);
+                copyLink();
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast('Link copied! 📋', 'success');
+            }).catch(() => {
+                showToast('Failed to copy link', 'error');
+            });
+        }
+
+        // ==================== LIKE STATE MANAGEMENT ====================
+        function isLiked(videoId) {
+            const liked = localStorage.getItem('likedVideos');
+            return liked ? JSON.parse(liked).includes(videoId) : false;
+        }
+
+        function markAsLiked(videoId) {
+            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
+            if (!liked.includes(videoId)) {
+                liked.push(videoId);
+                localStorage.setItem('likedVideos', JSON.stringify(liked));
+            }
+        }
+
+        function markAsUnliked(videoId) {
+            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
+            const index = liked.indexOf(videoId);
+            if (index > -1) {
+                liked.splice(index, 1);
+                localStorage.setItem('likedVideos', JSON.stringify(liked));
+            }
+        }
+
+        // ==================== LOAD RELATED SHORTS ====================
+        async function loadRelatedShorts(video) {
+            const carousel = document.getElementById('shortsCarousel');
+            try {
+                console.log('📱 Loading related shorts...');
+                const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
+                let shorts = await response.json();
+                
+                if (shorts && shorts.length > 0) {
+                    const category = video.category;
+                    let related = shorts.filter(s => s.category === category);
+                    if (related.length < 10) {
+                        const remaining = shorts.filter(s => s.category !== category);
+                        related = [...related, ...remaining].slice(0, 10);
+                    }
+                    carousel.innerHTML = related.map(short => createShortCard(short)).join('');
+                } else {
+                    carousel.innerHTML = `
+                        <div class="text-center py-16 w-full text-muted">
+                            <i class="fas fa-video text-4xl mb-3"></i>
+                            <p>No shorts available</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Load shorts error:', error);
+                carousel.innerHTML = `
+                    <div class="text-center py-16 w-full text-muted">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
+                        <p>Failed to load shorts</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createShortCard(short) {
+            return `
+                <a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary hover:shadow-[0_5px_20px_rgba(255,0,80,0.3)] transition-all group">
+                    <div class="relative aspect-[9/16]">
+                        <img src="${short.thumbnail || ''}"
+                            alt="${short.title}"
+                            class="w-full h-full object-cover bg-dark"
+                            onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                            ${short.duration || '0:00'}
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                            <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
+                            <div class="flex gap-3 text-xs text-muted">
+                                <span class="flex items-center gap-1"><i class="fas fa-eye text-primary"></i> ${formatNumber(short.views || 0)}</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-heart text-primary"></i> ${formatNumber(short.likes || 0)}</span>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-xl scale-100 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-play ml-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             `;
         }
-    } catch (error) {
-        console.error('❌ Load shorts error:', error);
-        carousel.innerHTML = `
-            <div class="loading-state" style="width: 100%;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                <p>Failed to load shorts</p>
-            </div>
-        `;
-    }
-}
 
-function createShortCard(short) {
-    return `
-        <a href="shorts.html?id=${short.numericId}" class="short-card">
-            <img src="${short.thumbnail || ''}"
-                alt="${short.title}"
-                class="short-thumbnail"
-                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-            <span class="short-duration">${short.duration || '0:00'}</span>
-            <div class="play-overlay">
-                <i class="fas fa-play"></i>
-            </div>
-            <div class="short-overlay">
-                <div class="short-title">${short.title}</div>
-                <div class="short-meta">
-                    <span><i class="fas fa-eye"></i> ${formatNumber(short.views || 0)}</span>
-                    <span><i class="fas fa-heart"></i> ${formatNumber(short.likes || 0)}</span>
-                </div>
-            </div>
-        </a>
-    `;
-}
+        function scrollShorts(direction) {
+            const carousel = document.getElementById('shortsCarousel');
+            const scrollAmount = direction === 'left' ? -400 : 400;
+            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
 
-function scrollShorts(direction) {
-    const carousel = document.getElementById('shortsCarousel');
-    const scrollAmount = direction === 'left' ? -400 : 400;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-}
+        // ==================== LOAD RECOMMENDED VIDEOS ====================
+        async function loadRecommendedVideos(video) {
+            const container = document.getElementById('recommendedVideos');
+            try {
+                console.log('🎬 Loading recommended videos...');
+                const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
+                const videos = await response.json();
+                
+                if (videos && videos.length > 0) {
+                    const currentId = currentVideo.numericId || currentVideo.id;
+                    const filtered = videos.filter(v =>
+                        (v.numericId || v.id) !== currentId
+                    );
+                    container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-16 col-span-full text-muted">
+                            <i class="fas fa-video text-4xl mb-3"></i>
+                            <p>No recommendations available</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Load recommendations error:', error);
+                container.innerHTML = `
+                    <div class="text-center py-16 col-span-full text-muted">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
+                        <p>Failed to load recommendations</p>
+                    </div>
+                `;
+            }
+        }
 
-// ==================== LOAD RECOMMENDED VIDEOS ====================
-async function loadRecommendedVideos(video) {
-    const container = document.getElementById('recommendedVideos');
-    try {
-        console.log('🎬 Loading recommended videos...');
-        const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
-        const videos = await response.json();
-        console.log('📦 Recommended videos:', videos);
-        
-        if (videos && videos.length > 0) {
-            const currentId = currentVideo.numericId || currentVideo.id;
-            const filtered = videos.filter(v =>
-                (v.numericId || v.id) !== currentId
-            );
-            container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
-        } else {
-            container.innerHTML = `
-                <div class="loading-state" style="grid-column: 1/-1;">
-                    <i class="fas fa-video" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                    <p>No recommendations available</p>
-                </div>
+        function createVideoCard(video) {
+            return `
+                <a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary hover:shadow-[0_5px_20px_rgba(255,0,80,0.2)] transition-all group">
+                    <div class="relative aspect-video">
+                        <img src="${video.thumbnail || ''}"
+                            alt="${video.title}"
+                            class="w-full h-full object-cover bg-dark"
+                            onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                            ${video.duration || '0:00'}
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2 line-clamp-2">${video.title}</h3>
+                        <div class="flex flex-wrap gap-3 text-sm text-muted">
+                            <span class="flex items-center gap-1"><i class="fas fa-eye text-primary"></i> ${formatNumber(video.views || 0)}</span>
+                            <span class="flex items-center gap-1"><i class="fas fa-clock text-primary"></i> ${video.uploadDate || 'N/A'}</span>
+                        </div>
+                    </div>
+                </a>
             `;
         }
-    } catch (error) {
-        console.error('❌ Load recommendations error:', error);
-        container.innerHTML = `
-            <div class="loading-state" style="grid-column: 1/-1;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                <p>Failed to load recommendations</p>
-            </div>
-        `;
-    }
-}
 
-function createVideoCard(video) {
-    return `
-        <a href="video.html?id=${video.numericId || video.id}" class="video-card">
-            <img src="${video.thumbnail || ''}"
-                alt="${video.title}"
-                class="video-card-thumbnail"
-                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-            <span class="video-card-duration">${video.duration || '0:00'}</span>
-            <div class="video-card-info">
-                <h3 class="video-card-title">${video.title}</h3>
-                <div class="video-card-meta">
-                    <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
-                    <span><i class="fas fa-clock"></i> ${video.uploadDate || 'N/A'}</span>
-                </div>
-            </div>
-        </a>
-    `;
-}
-
-// ==================== REPORT MODAL ====================
-function openReportModal() {
-    document.getElementById('reportModal').classList.add('active');
-}
-
-function closeReportModal() {
-    document.getElementById('reportModal').classList.remove('active');
-    document.getElementById('reportForm').reset();
-}
-
-async function submitReport(event) {
-    event.preventDefault();
-    const reason = document.getElementById('reportReason').value;
-    const details = document.getElementById('reportDetails').value;
-    const videoId = currentVideo.numericId || currentVideo.id;
-    
-    try {
-        await fetch(`${CONFIG.apiEndpoint}/report`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Session-Id': CONFIG.sessionId
-            },
-            body: JSON.stringify({
-                videoId,
-                videoType: 'video',
-                reason: reason + (details ? ': ' + details : '')
-            })
-        });
-        
-        showToast('Report submitted successfully', 'success');
-        closeReportModal();
-    } catch (error) {
-        console.error('❌ Submit report error:', error);
-        showToast('Failed to submit report', 'error');
-    }
-}
-
-// ==================== ERROR HANDLING ====================
-function showError(message) {
-    console.error('❌ Showing error:', message);
-    document.getElementById('loadingState').classList.add('hidden');
-    document.getElementById('errorState').classList.remove('hidden');
-    document.getElementById('errorMessage').textContent = message;
-}
-
-// ==================== TOAST NOTIFICATIONS ====================
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        info: 'fa-info-circle'
-    };
-    
-    toast.innerHTML = `
-        <i class="fas ${icons[type]}"></i>
-        <span>${message}</span>
-        <button class="toast-close" onclick="this.parentElement.remove()">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// ==================== UTILITIES ====================
-function formatNumber(num) {
-    if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toString();
-}
-
-// Close modals on outside click
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('active');
+        // ==================== REPORT MODAL ====================
+        function openReportModal() {
+            document.getElementById('reportModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
-    });
-});
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeReportModal();
-    }
-});
-</script>
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            document.getElementById('reportForm').reset();
+            document.body.style.overflow = '';
+        }
+
+        async function submitReport(event) {
+            event.preventDefault();
+            const reason = document.getElementById('reportReason').value;
+            const details = document.getElementById('reportDetails').value;
+            const videoId = currentVideo.numericId || currentVideo.id;
+            
+            try {
+                await fetch(`${CONFIG.apiEndpoint}/report`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Id': CONFIG.sessionId
+                    },
+                    body: JSON.stringify({
+                        videoId,
+                        videoType: 'video',
+                        reason: reason + (details ? ': ' + details : '')
+                    })
+                });
+                
+                showToast('Report submitted successfully', 'success');
+                closeReportModal();
+            } catch (error) {
+                console.error('❌ Submit report error:', error);
+                showToast('Failed to submit report', 'error');
+            }
+        }
+
+        // ==================== ERROR HANDLING ====================
+        function showError(message) {
+            console.error('❌ Showing error:', message);
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'border-success',
+                error: 'border-danger',
+                info: 'border-primary'
+            };
+            
+            const icons = {
+                success: 'fa-check-circle text-success',
+                error: 'fa-exclamation-circle text-danger',
+                info: 'fa-info-circle text-primary'
+            };
+            
+            toast.className = `bg-card border-l-4 ${colors[type]} border border-border rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[300px] animate-[slideInRight_0.3s_ease-out]`;
+            
+            toast.innerHTML = `
+                <i class="fas ${icons[type]} text-xl"></i>
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-muted hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== UTILITIES ====================
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Close modal on outside click
+        document.getElementById('reportModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'reportModal') {
+                closeReportModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeReportModal();
+            }
+        });
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes modalPop {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
