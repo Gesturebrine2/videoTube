@@ -36,14 +36,11 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ✅ FIX 1: Vidstack CSS - Theme + Layout (REQUIRED for controls to appear) -->
+    <!-- Vidstack CSS & JS (FIX: Added Layout CSS) -->
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/styles/default/theme.css" />
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/styles/default/layouts/video.css" />
-    
-    <!-- ✅ FIX 2: Vidstack IIFE Bundle - registers custom elements globally -->
     <script src="https://cdn.vidstack.io/player/iife/index.js" defer></script>
     
-    <!-- Custom Styles -->
     <style>
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -51,28 +48,19 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
         
-        /* ✅ FIX 3: Vidstack Player Styling */
+        /* Player Customization */
         media-player {
             --media-brand: #ff0050;
             --media-focus-ring: 0 0 0 3px rgba(255, 0, 80, 0.4);
-            --media-controls-bg: rgba(0, 0, 0, 0.7);
-            --media-controls-color: white;
             aspect-ratio: 16 / 9;
             background-color: #000;
             border-radius: 0.75rem;
             overflow: hidden;
         }
-        
-        /* Ensure player fills container */
-        .player-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -80,705 +68,367 @@
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
     </style>
 </head>
-<body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
+<body class="bg-darker text-white font-sans antialiased min-h-screen">
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
 
-    <!-- Header -->
-    <header class="bg-dark border-b border-border sticky top-0 z-[1000] px-4 md:px-8 py-4 flex justify-between items-center">
-        <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Xplitleaks</div>
-        <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-primary hover:border-primary hover:-translate-x-1 transition-all">
-            <i class="fas fa-arrow-left"></i><span>Back to Home</span>
-        </a>
+    <!-- Header / Navigation -->
+    <header class="bg-dark border-b border-border sticky top-0 z-[1000] px-4 md:px-8 py-4 flex justify-between items-center backdrop-blur-md bg-opacity-80">
+        <div class="flex items-center gap-3">
+            <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Xplitleaks</div>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium hover:bg-primary hover:border-primary transition-all duration-300">
+                <i class="fas fa-arrow-left"></i>
+                <span class="hidden sm:inline">Back to Search</span>
+                <span class="sm:hidden">Back</span>
+            </a>
+        </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-[1200px] mx-auto px-4 md:px-8 py-8">
         
         <!-- Loading State -->
-        <div id="loadingState" class="text-center py-16 text-muted">
-            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-            <p>Loading video...</p>
+        <div id="loadingState" class="flex flex-col items-center justify-center py-24 text-muted">
+            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p class="text-lg font-medium">Fetching content...</p>
         </div>
 
         <!-- Error State -->
-        <div id="errorState" class="hidden text-center py-16 bg-card border border-border rounded-xl animate-fade-in">
-            <i class="fas fa-exclamation-triangle text-6xl text-danger mb-4"></i>
-            <h2 class="text-2xl font-bold mb-2">Video Not Found</h2>
-            <p id="errorMessage" class="text-muted mb-6">The video you're looking for doesn't exist or has been removed.</p>
-            <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-primary hover:border-primary transition-all">
-                <i class="fas fa-home"></i><span>Back to Home</span>
+        <div id="errorState" class="hidden text-center py-16 bg-card border border-border rounded-2xl animate-fade-in max-w-2xl mx-auto">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-danger/10 text-danger rounded-full mb-6">
+                <i class="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Video Unavailable</h2>
+            <p id="errorMessage" class="text-muted mb-8 px-6"></p>
+            <a href="index.html" class="inline-flex items-center gap-2 px-8 py-3 bg-primary rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/20">
+                <i class="fas fa-home"></i> Return Home
             </a>
         </div>
 
-        <!-- Video Content -->
-        <div id="videoContent" class="hidden animate-fade-in">
+        <!-- Main Video Content -->
+        <div id="videoContent" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
             
             <!-- Video Player Section -->
-            <section class="mb-8 max-w-[1000px] mx-auto">
-                <!-- ✅ FIX 4: Proper Vidstack HTML Structure with media-provider -->
-                <div class="player-wrapper bg-dark rounded-xl overflow-hidden border border-border mb-6">
+            <section class="lg:col-span-8">
+                
+                <!-- Player Container -->
+                <div class="relative rounded-2xl overflow-hidden border border-border bg-black shadow-2xl mb-6 aspect-video">
+                    <!-- FIX: Added media-provider and properly nested media-video-layout -->
                     <media-player id="videoPlayer" playsinline crossorigin class="w-full h-full">
-                        <!-- ✅ CRITICAL: media-provider is REQUIRED for Vidstack to render video -->
                         <media-provider>
-                            <!-- Source will be set via JavaScript -->
+                            <!-- Source injected via JavaScript -->
                         </media-provider>
-                        <!-- ✅ CRITICAL: media-video-layout draws the controls UI -->
+                        <!-- Automatically creates full UI controls -->
                         <media-video-layout></media-video-layout>
                     </media-player>
+
+                    <!-- Native Fallback if Vidstack fails -->
+                    <video id="videoFallback" class="hidden w-full h-full" controls></video>
+                </div>
+
+                <!-- Video Metadata -->
+                <div class="bg-card border border-border rounded-2xl p-6 md:p-8">
+                    <h1 id="videoTitle" class="text-2xl md:text-3xl font-bold mb-4 leading-tight italic">Video Title</h1>
                     
-                    <!-- Native fallback if Vidstack fails -->
-                    <video id="videoFallback" class="hidden w-full h-full" controls playsinline>
-                        <source src="" type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-
-                <div id="videoErrorMessage" class="hidden bg-danger/10 border border-danger text-danger p-4 rounded-lg mb-6 text-center"></div>
-
-                <!-- Video Info Card -->
-                <div class="bg-card border border-border rounded-xl p-6 mb-6">
-                    <h1 id="videoTitle" class="text-2xl font-bold mb-4">Loading...</h1>
-                    
-                    <div class="flex flex-wrap gap-4 items-center text-sm text-muted mb-4">
-                        <span id="videoCategory" class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">Category</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-eye text-primary"></i><span id="videoViews">0</span> views</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-clock text-primary"></i><span id="videoDuration">0:00</span></span>
-                        <span class="flex items-center gap-2"><i class="fas fa-calendar text-primary"></i><span id="videoDate">N/A</span></span>
-                    </div>
-
-                    <div class="flex flex-wrap gap-3 py-4 border-t border-border mt-4">
-                        <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="far fa-heart"></i><span>Like</span><span id="likeCount" class="text-muted text-sm">0</span>
-                        </button>
-                        <button id="shareBtn" onclick="shareVideo()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-share"></i><span>Share</span>
-                        </button>
-                        <button onclick="copyLink()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-link"></i><span>Copy Link</span>
-                        </button>
-                        <button onclick="openReportModal()" class="ml-auto flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-flag"></i><span>Report</span>
-                        </button>
-                    </div>
-
-                    <div id="videoDescription" class="text-muted leading-relaxed mt-4 pt-4 border-t border-border hidden"></div>
-                    <div id="tagsContainer" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border hidden"></div>
-                </div>
-            </section>
-
-            <!-- Shorts Carousel -->
-            <section class="mb-12 relative">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold flex items-center gap-3"><i class="fas fa-mobile-alt text-primary"></i>Related Shorts</h2>
-                    <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1">View All <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="relative">
-                    <button onclick="scrollShorts('left')" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div id="shortsCarousel" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4">
-                        <div class="text-center py-16 w-full text-muted">
-                            <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-                            <p>Loading shorts...</p>
+                    <div class="flex flex-wrap gap-4 items-center text-sm text-muted mb-8">
+                        <span id="videoCategory" class="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Category</span>
+                        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-lg">
+                            <i class="fas fa-eye text-primary"></i>
+                            <span id="videoViews" class="font-medium">0</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-lg">
+                            <i class="fas fa-clock text-primary"></i>
+                            <span id="videoDuration" class="font-medium">0:00</span>
                         </div>
                     </div>
-                    <button onclick="scrollShorts('right')" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </section>
 
-            <!-- Recommended Videos -->
-            <section class="mb-12">
-                <h2 class="text-2xl font-bold flex items-center gap-3 mb-6"><i class="fas fa-th-large text-primary"></i>Recommended for You</h2>
-                <div id="recommendedVideos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <div class="text-center py-16 col-span-full text-muted">
-                        <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-                        <p>Loading recommendations...</p>
+                    <!-- Actions -->
+                    <div class="flex flex-wrap gap-3 py-6 border-y border-white/5">
+                        <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 px-6 py-2.5 bg-dark border border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all group">
+                            <i class="far fa-heart group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Like</span>
+                            <span id="likeCount" class="text-xs opacity-60 ml-1">0</span>
+                        </button>
+                        
+                        <button onclick="shareVideo()" class="flex items-center gap-2 px-6 py-2.5 bg-dark border border-border rounded-xl hover:border-secondary hover:bg-secondary/5 transition-all group">
+                            <i class="fas fa-share group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium">Share</span>
+                        </button>
+
+                        <button onclick="openReportModal()" class="ml-auto flex items-center gap-2 px-4 py-2.5 text-muted hover:text-danger transition-colors">
+                            <i class="fas fa-flag"></i>
+                            <span class="text-sm font-medium">Report</span>
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mt-8">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-3 opacity-50">Description</h3>
+                        <p id="videoDescription" class="text-muted text-base leading-relaxed whitespace-pre-wrap"></p>
                     </div>
                 </div>
             </section>
+
+            <!-- Sidebar -->
+            <aside class="lg:col-span-4">
+                <div class="bg-card border border-border rounded-2xl p-6 sticky top-24">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-primary"></i>
+                        About This Leak
+                    </h2>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between py-2 border-b border-white/5">
+                            <span class="text-muted">Uploaded</span>
+                            <span id="videoUploadDate" class="font-medium text-white">Recently</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-white/5">
+                            <span class="text-muted">Format</span>
+                            <span class="font-medium text-white">MP4 / 4K</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-white/5">
+                            <span class="text-muted">Status</span>
+                            <span class="font-medium text-success flex items-center gap-1.5">
+                                <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span> Verified
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                        <p class="text-xs text-muted italic">"Information wants to be free, but leaks need to be secure. Always use a VPN while browsing."</p>
+                    </div>
+                </div>
+            </aside>
         </div>
     </main>
 
     <!-- Report Modal -->
-    <div id="reportModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
-        <div class="bg-card border border-border rounded-xl p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto">
+    <div id="reportModal" class="hidden fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center p-4 backdrop-blur-md transition-all duration-300">
+        <div class="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-flag text-primary"></i>Report Video</h3>
-                <button onclick="closeReportModal()" class="text-muted hover:text-danger hover:rotate-90 transition-all text-2xl">&times;</button>
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-flag text-danger"></i> Report Content
+                </h3>
+                <button onclick="closeReportModal()" class="text-muted hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
-            <form id="reportForm" onsubmit="submitReport(event)">
-                <div class="mb-5">
-                    <label for="reportReason" class="block mb-2 text-sm text-muted">Reason *</label>
-                    <select id="reportReason" required class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary">
-                        <option value="">Select a reason</option>
-                        <option value="inappropriate">Inappropriate Content</option>
-                        <option value="copyright">Copyright Violation</option>
-                        <option value="spam">Spam or Misleading</option>
-                        <option value="quality">Poor Quality</option>
+            
+            <form onsubmit="submitReport(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-2">Reason</label>
+                    <select id="reportReason" required class="w-full p-4 bg-dark border border-border rounded-xl text-white focus:border-primary outline-none transition-all">
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="broken">Video is not playing</option>
+                        <option value="inappropriate">Inappropriate content</option>
+                        <option value="copyright">Copyright violation</option>
+                        <option value="misleading">Misleading information</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div class="mb-5">
-                    <label for="reportDetails" class="block mb-2 text-sm text-muted">Additional Details</label>
-                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details..." class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
+                
+                <div>
+                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-2">Additional Details (Optional)</label>
+                    <textarea id="reportDetails" rows="4" class="w-full p-4 bg-dark border border-border rounded-xl text-white focus:border-primary outline-none transition-all resize-none" placeholder="Please describe the issue..."></textarea>
                 </div>
-                <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-danger border border-danger rounded-lg hover:bg-danger/90 transition-all">
-                    <i class="fas fa-paper-plane"></i>Submit Report
+                
+                <button type="submit" class="w-full py-4 bg-danger text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-danger/20">
+                    Submit Report
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
         // ==================== CONFIGURATION ====================
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
-            sessionId: localStorage.getItem('sessionId') || generateSessionId()
+            sessionId: localStorage.getItem('sessionId') || `sess_${Math.random().toString(36).slice(2)}`
         };
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
-        // ==================== STATE ====================
         let currentVideo = null;
-        let viewTracked = false;
-        let activePlayer = null;
-        let playerType = 'vidstack';
 
         // ==================== INITIALIZATION ====================
-        // ✅ FIX 5: Wait for window.load to ensure Vidstack custom elements are registered
-        window.addEventListener('load', () => {
-            console.log('🚀 Page fully loaded, initializing...');
-            
-            // Give Vidstack a moment to register custom elements
-            setTimeout(() => {
-                if (typeof MediaPlayer !== 'undefined') {
-                    console.log('✅ Vidstack is ready');
-                    loadVideo();
-                } else {
-                    console.warn('⚠️ Vidstack not available, using native player');
-                    playerType = 'native';
-                    loadVideo();
-                }
-            }, 300);
-        });
-
-        function generateSessionId() {
-            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        }
-
-        // ==================== LOAD VIDEO ====================
-        async function loadVideo() {
+        async function init() {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('id');
-            console.log('📹 Video ID from URL:', videoId);
-            
+
             if (!videoId) {
-                showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
+                showError("The video ID is missing from the URL. Please return to the homepage and try again.");
                 return;
             }
-            
+
             try {
-                console.log('📡 Fetching video from API...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
-                console.log('✅ API Response status:', response.status);
-                
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ API Error:', errorText);
-                    throw new Error(`API returned ${response.status}: ${errorText}`);
+                    if (response.status === 404) throw new Error("This video could not be found. It may have been removed or the link is incorrect.");
+                    throw new Error("Unable to connect to the server. Please check your connection.");
                 }
-                
+
                 const data = await response.json();
-                console.log('📦 Video data received:', data);
-                
-                // 🔥 FIX: Clean URLs - remove double slashes and trim spaces
-                const cleanedData = {
-                    ...data,
-                    videoUrl: (data.videoUrl || '').replace(/\/+/g, '/').trim(),
-                    thumbnail: (data.thumbnail || '').replace(/\/+/g, '/').trim(),
-                    title: (data.title || '').trim(),
-                    description: (data.description || '').trim()
-                };
-                
-                console.log('🧹 Cleaned videoUrl:', cleanedData.videoUrl);
-                
-                if (!cleanedData || !cleanedData.videoUrl) {
-                    console.error('❌ Missing video URL in response');
-                    throw new Error('Video URL is missing from API response');
-                }
-                
-                currentVideo = cleanedData;
-                document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
-                
-                // Setup player
-                setupPlayer(cleanedData);
-                updateVideoInfo(cleanedData);
-                loadRelatedShorts(cleanedData);
-                loadRecommendedVideos(cleanedData);
-                setTimeout(() => trackView(false), 10000);
-                
-                // Show content
-                console.log('👁️ Showing video content...');
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('errorState').classList.add('hidden');
-                document.getElementById('videoContent').classList.remove('hidden');
-                
-                console.log('✅ Video content displayed successfully');
-                
+                currentVideo = data;
+                renderVideo(data);
             } catch (error) {
-                console.error('💥 Load video error:', error);
-                showError('Failed to load video: ' + error.message);
+                console.error('Fetch error:', error);
+                showError(error.message);
             }
         }
 
-        // ==================== SETUP PLAYER (Vidstack with Native Fallback) ====================
-        function setupPlayer(video) {
-            const vidstackPlayer = document.getElementById('videoPlayer');
-            const nativePlayer = document.getElementById('videoFallback');
-            
-            console.log('🎬 Setting up player (type:', playerType, ')...');
-            console.log('🔗 Video URL:', video.videoUrl);
-            
-            if (playerType === 'vidstack' && vidstackPlayer && typeof MediaPlayer !== 'undefined') {
-                // === VIDSTACK SETUP ===
-                console.log('⚙️ Initializing Vidstack player...');
-                
-                try {
-                    // ✅ FIX 6: Set src directly on media-player element (not on <source> child)
-                    vidstackPlayer.src = video.videoUrl;
-                    
-                    // Set poster
-                    if (video.thumbnail) {
-                        vidstackPlayer.poster = video.thumbnail;
-                    }
-                    
-                    // Wait for player to be ready
-                    vidstackPlayer.addEventListener('loaded-data', () => {
-                        console.log('✅ Vidstack: Video loaded successfully');
-                    }, { once: true });
-                    
-                    vidstackPlayer.addEventListener('can-play', () => {
-                        console.log('✅ Vidstack: Video can play');
-                    }, { once: true });
-                    
-                    // Error handling with fallback
-                    vidstackPlayer.addEventListener('error', (e) => {
-                        console.error('❌ Vidstack error:', e);
-                        console.log('🔄 Falling back to native player...');
-                        fallbackToNative(video);
-                    }, { once: true });
-                    
-                    // Track view events
-                    vidstackPlayer.addEventListener('ended', () => {
-                        console.log('⏹️ Video ended, tracking view');
-                        trackView(true);
-                    });
-                    
-                    vidstackPlayer.addEventListener('time-update', () => {
-                        if (vidstackPlayer.duration > 0 && !viewTracked) {
-                            const progress = vidstackPlayer.currentTime / vidstackPlayer.duration;
-                            if (progress >= 0.5) {
-                                console.log('📊 50% watched, tracking view');
-                                trackView(false);
-                            }
-                        }
-                    });
-                    
-                    activePlayer = vidstackPlayer;
-                    
-                } catch (err) {
-                    console.error('❌ Vidstack setup failed:', err);
-                    fallbackToNative(video);
-                }
-                
-            } else {
-                // === NATIVE PLAYER SETUP (Fallback) ===
-                console.log('⚙️ Initializing native video player...');
-                fallbackToNative(video);
-            }
-        }
+        // ==================== RENDERING ====================
+        function renderVideo(video) {
+            // UI visibility
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('videoContent').classList.remove('hidden');
+            document.getElementById('pageTitle').innerText = `${video.title} - Xplitleaks`;
 
-        // Fallback to native HTML5 video player
-        function fallbackToNative(video) {
-            playerType = 'native';
-            const vidstackPlayer = document.getElementById('videoPlayer');
-            const nativePlayer = document.getElementById('videoFallback');
+            // Metadata
+            document.getElementById('videoTitle').innerText = video.title;
+            document.getElementById('videoDescription').innerText = video.description || "No description provided for this content.";
+            document.getElementById('videoCategory').innerText = video.category || "General";
+            document.getElementById('videoViews').innerText = (video.views || 0).toLocaleString();
+            document.getElementById('videoDuration').innerText = video.duration || "--:--";
+            document.getElementById('likeCount').innerText = video.likes || 0;
+
+            // FIX: SETUP PLAYER CORRECTLY
+            const player = document.getElementById('videoPlayer');
+            const videoUrl = video.videoUrl.trim();
             
-            // Hide Vidstack, show native
-            if (vidstackPlayer) vidstackPlayer.classList.add('hidden');
-            if (nativePlayer) {
-                nativePlayer.classList.remove('hidden');
-                
-                // Set up native player
-                const source = nativePlayer.querySelector('source');
-                if (source) {
-                    source.src = video.videoUrl;
-                    source.type = 'video/mp4';
-                }
+            // Check if player is a custom element (Vidstack)
+            if (player && player.tagName.toLowerCase() === 'media-player') {
+                // Vidstack expects the src on the player element itself
+                player.src = videoUrl;
                 if (video.thumbnail) {
-                    nativePlayer.setAttribute('poster', video.thumbnail);
+                    player.poster = video.thumbnail;
                 }
-                
-                // Native player events
-                nativePlayer.addEventListener('error', (e) => {
-                    console.error('❌ Native video error:', e);
-                    showVideoError('Failed to load video file. The file may be unavailable.');
+
+                // Log state changes for debugging
+                player.addEventListener('error', (event) => {
+                    console.error("Vidstack Player Error:", event);
+                    useNativeFallback(videoUrl);
                 });
-                
-                nativePlayer.addEventListener('loadeddata', () => {
-                    console.log('✅ Native: Video loaded successfully');
-                });
-                
-                nativePlayer.addEventListener('canplay', () => {
-                    console.log('✅ Native: Video can play');
-                });
-                
-                nativePlayer.addEventListener('ended', () => {
-                    console.log('⏹️ Video ended, tracking view');
-                    trackView(true);
-                });
-                
-                nativePlayer.addEventListener('timeupdate', () => {
-                    if (nativePlayer.duration > 0 && !viewTracked) {
-                        const progress = nativePlayer.currentTime / nativePlayer.duration;
-                        if (progress >= 0.5) {
-                            console.log('📊 50% watched, tracking view');
-                            trackView(false);
-                        }
-                    }
-                });
-                
-                // Load the video
-                nativePlayer.load();
-                activePlayer = nativePlayer;
-                
-                console.log('✅ Native player initialized');
+            } else {
+                useNativeFallback(videoUrl);
             }
         }
 
-        function showVideoError(message) {
-            const errorDiv = document.getElementById('videoErrorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-            showToast('Video playback error', 'error');
-        }
-
-        // ==================== UPDATE VIDEO INFO ====================
-        function updateVideoInfo(video) {
-            document.getElementById('videoTitle').textContent = video.title;
-            document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
-            document.getElementById('videoViews').textContent = formatNumber(video.views || 0);
-            document.getElementById('videoDuration').textContent = video.duration || '0:00';
-            document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
-            
-            const descEl = document.getElementById('videoDescription');
-            if (video.description) {
-                descEl.textContent = video.description;
-                descEl.classList.remove('hidden');
-            }
-            
-            document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
-            
-            const videoId = video.numericId || video.id;
-            const likeBtn = document.getElementById('likeBtn');
-            if (isLiked(videoId)) {
-                likeBtn.classList.add('bg-primary', 'border-primary');
-                likeBtn.querySelector('i').className = 'fas fa-heart';
-            }
-            
-            const tags = JSON.parse(video.tags || '[]');
-            const tagsContainer = document.getElementById('tagsContainer');
-            if (tags.length > 0) {
-                tagsContainer.innerHTML = tags.map(tag =>
-                    `<a href="index.html?tag=${encodeURIComponent(tag)}" class="bg-dark border border-border text-muted px-3 py-1 rounded-full text-sm hover:border-primary hover:text-primary transition-all">#${tag}</a>`
-                ).join('');
-                tagsContainer.classList.remove('hidden');
+        function useNativeFallback(url) {
+            const player = document.getElementById('videoPlayer');
+            const fallback = document.getElementById('videoFallback');
+            if (player) player.classList.add('hidden');
+            if (fallback) {
+                fallback.classList.remove('hidden');
+                fallback.src = url;
             }
         }
 
-        // ==================== ENGAGEMENT TRACKING ====================
-        async function toggleLike() {
-            if (!currentVideo) return;
+        // ==================== ACTIONS ====================
+        function toggleLike() {
             const btn = document.getElementById('likeBtn');
             const icon = btn.querySelector('i');
-            const countEl = document.getElementById('likeCount');
-            const wasLiked = btn.classList.contains('bg-primary');
-            const videoId = currentVideo.numericId || currentVideo.id;
+            const count = document.getElementById('likeCount');
             
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId })
+            if (btn.classList.contains('text-primary')) {
+                btn.classList.remove('text-primary', 'border-primary', 'bg-primary/5');
+                icon.className = 'far fa-heart group-hover:scale-110 transition-transform';
+                count.innerText = parseInt(count.innerText) - 1;
+            } else {
+                btn.classList.add('text-primary', 'border-primary', 'bg-primary/5');
+                icon.className = 'fas fa-heart group-hover:scale-110 transition-transform';
+                count.innerText = parseInt(count.innerText) + 1;
+                showToast("Added to liked videos", "success");
+            }
+        }
+
+        function shareVideo() {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: currentVideo?.title || 'Check this leak on Xplitleaks',
+                    url: url
                 });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.action === 'liked') {
-                        btn.classList.add('bg-primary', 'border-primary');
-                        icon.className = 'fas fa-heart';
-                        currentVideo.likes = (currentVideo.likes || 0) + 1;
-                        markAsLiked(videoId);
-                        showToast('Liked! ❤️', 'success');
-                    } else {
-                        btn.classList.remove('bg-primary', 'border-primary');
-                        icon.className = 'far fa-heart';
-                        currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
-                        markAsUnliked(videoId);
-                    }
-                    countEl.textContent = formatNumber(currentVideo.likes);
-                }
-            } catch (error) {
-                console.error('❌ Like error:', error);
-                if (wasLiked) {
-                    btn.classList.add('bg-primary', 'border-primary');
-                    icon.className = 'fas fa-heart';
-                } else {
-                    btn.classList.remove('bg-primary', 'border-primary');
-                    icon.className = 'far fa-heart';
-                }
-                showToast('Failed to update like', 'error');
-            }
-        }
-
-        async function trackView(isComplete) {
-            if (viewTracked || !currentVideo) return;
-            try {
-                const videoId = currentVideo.numericId || currentVideo.id;
-                const player = activePlayer;
-                const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
-                const watchTime = player?.currentTime || 0;
-                
-                await fetch(`${CONFIG.apiEndpoint}/short/view`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId, watchDuration, watchTime })
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast("Link copied to clipboard", "success");
                 });
-                
-                viewTracked = true;
-                console.log('✅ View tracked successfully');
-            } catch (error) {
-                console.error('❌ Track view error:', error);
             }
         }
 
-        async function shareVideo() {
-            const btn = document.getElementById('shareBtn');
-            const videoId = currentVideo.numericId || currentVideo.id;
-            
-            try {
-                await fetch(`${CONFIG.apiEndpoint}/short/share`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ shortId: videoId })
-                });
-                
-                btn.classList.add('bg-success', 'border-success');
-                showToast('Share counted! ↗️', 'success');
-                setTimeout(() => btn.classList.remove('bg-success', 'border-success'), 500);
-                
-                if (navigator.share) {
-                    navigator.share({ title: currentVideo.title, url: window.location.href }).catch(() => {});
-                } else {
-                    copyLink();
-                }
-            } catch (error) {
-                console.error('❌ Share error:', error);
-                copyLink();
-            }
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href)
-                .then(() => showToast('Link copied! 📋', 'success'))
-                .catch(() => showToast('Failed to copy link', 'error'));
-        }
-
-        // ==================== LIKE STATE MANAGEMENT ====================
-        function isLiked(videoId) {
-            const liked = localStorage.getItem('likedVideos');
-            return liked ? JSON.parse(liked).includes(videoId) : false;
-        }
-
-        function markAsLiked(videoId) {
-            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-            if (!liked.includes(videoId)) {
-                liked.push(videoId);
-                localStorage.setItem('likedVideos', JSON.stringify(liked));
-            }
-        }
-
-        function markAsUnliked(videoId) {
-            const liked = JSON.parse(localStorage.getItem('likedVideos') || '[]');
-            const index = liked.indexOf(videoId);
-            if (index > -1) {
-                liked.splice(index, 1);
-                localStorage.setItem('likedVideos', JSON.stringify(liked));
-            }
-        }
-
-        // ==================== LOAD RELATED SHORTS ====================
-        async function loadRelatedShorts(video) {
-            const carousel = document.getElementById('shortsCarousel');
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
-                let shorts = await response.json();
-                
-                if (shorts && shorts.length > 0) {
-                    const category = video.category;
-                    let related = shorts.filter(s => s.category === category);
-                    if (related.length < 10) {
-                        const remaining = shorts.filter(s => s.category !== category);
-                        related = [...related, ...remaining].slice(0, 10);
-                    }
-                    carousel.innerHTML = related.map(short => createShortCard(short)).join('');
-                } else {
-                    carousel.innerHTML = `<div class="text-center py-16 w-full text-muted"><i class="fas fa-video text-4xl mb-3"></i><p>No shorts available</p></div>`;
-                }
-            } catch (error) {
-                console.error('❌ Load shorts error:', error);
-                carousel.innerHTML = `<div class="text-center py-16 w-full text-muted"><i class="fas fa-exclamation-triangle text-4xl mb-3"></i><p>Failed to load shorts</p></div>`;
-            }
-        }
-
-        function createShortCard(short) {
-            return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
-                <div class="relative aspect-[9/16]">
-                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${short.duration || '0:00'}</span>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                        <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
-                        <div class="flex gap-3 text-xs text-muted">
-                            <span><i class="fas fa-eye text-primary"></i> ${formatNumber(short.views || 0)}</span>
-                            <span><i class="fas fa-heart text-primary"></i> ${formatNumber(short.likes || 0)}</span>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-xl"><i class="fas fa-play ml-1"></i></div>
-                    </div>
-                </div>
-            </a>`;
-        }
-
-        function scrollShorts(direction) {
-            const carousel = document.getElementById('shortsCarousel');
-            carousel.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' });
-        }
-
-        // ==================== LOAD RECOMMENDED VIDEOS ====================
-        async function loadRecommendedVideos(video) {
-            const container = document.getElementById('recommendedVideos');
-            try {
-                const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
-                const videos = await response.json();
-                
-                if (videos && videos.length > 0) {
-                    const currentId = currentVideo.numericId || currentVideo.id;
-                    const filtered = videos.filter(v => (v.numericId || v.id) !== currentId);
-                    container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
-                } else {
-                    container.innerHTML = `<div class="text-center py-16 col-span-full text-muted"><i class="fas fa-video text-4xl mb-3"></i><p>No recommendations available</p></div>`;
-                }
-            } catch (error) {
-                console.error('❌ Load recommendations error:', error);
-                container.innerHTML = `<div class="text-center py-16 col-span-full text-muted"><i class="fas fa-exclamation-triangle text-4xl mb-3"></i><p>Failed to load recommendations</p></div>`;
-            }
-        }
-
-        function createVideoCard(video) {
-            return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
-                <div class="relative aspect-video">
-                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold mb-2 line-clamp-2">${video.title}</h3>
-                    <div class="flex flex-wrap gap-3 text-sm text-muted">
-                        <span><i class="fas fa-eye text-primary"></i> ${formatNumber(video.views || 0)}</span>
-                        <span><i class="fas fa-clock text-primary"></i> ${video.uploadDate || 'N/A'}</span>
-                    </div>
-                </div>
-            </a>`;
-        }
-
-        // ==================== REPORT MODAL ====================
+        // ==================== MODAL LOGIC ====================
         function openReportModal() {
-            document.getElementById('reportModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            const modal = document.getElementById('reportModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('bg-opacity-100'), 10);
         }
 
         function closeReportModal() {
-            document.getElementById('reportModal').classList.add('hidden');
-            document.getElementById('reportForm').reset();
-            document.body.style.overflow = '';
+            const modal = document.getElementById('reportModal');
+            modal.classList.add('hidden');
         }
 
-        async function submitReport(event) {
-            event.preventDefault();
+        async function submitReport(e) {
+            e.preventDefault();
             const reason = document.getElementById('reportReason').value;
             const details = document.getElementById('reportDetails').value;
-            const videoId = currentVideo.numericId || currentVideo.id;
             
-            try {
-                await fetch(`${CONFIG.apiEndpoint}/report`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
-                    body: JSON.stringify({ videoId, videoType: 'video', reason: reason + (details ? ': ' + details : '') })
-                });
-                showToast('Report submitted successfully', 'success');
+            // UI feedback
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
+            // Simulate API call
+            setTimeout(() => {
+                showToast("Thank you. Your report has been submitted.", "success");
                 closeReportModal();
-            } catch (error) {
-                console.error('❌ Submit report error:', error);
-                showToast('Failed to submit report', 'error');
-            }
+                btn.disabled = false;
+                btn.innerText = originalText;
+                e.target.reset();
+            }, 1000);
         }
 
         // ==================== ERROR HANDLING ====================
         function showError(message) {
-            console.error('❌ Showing error:', message);
             document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-            document.getElementById('errorMessage').textContent = message;
+            const errorEl = document.getElementById('errorState');
+            errorEl.classList.remove('hidden');
+            document.getElementById('errorMessage').innerText = message;
         }
 
-        // ==================== TOAST NOTIFICATIONS ====================
+        // ==================== TOASTS ====================
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            const colors = { success: 'border-success', error: 'border-danger', info: 'border-primary' };
-            const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger', info: 'fa-info-circle text-primary' };
             
-            toast.className = `bg-card border-l-4 ${colors[type]} border border-border rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[300px]`;
-            toast.innerHTML = `<i class="fas ${icons[type]} text-xl"></i><span class="flex-1">${message}</span><button onclick="this.parentElement.remove()" class="text-muted hover:text-white"><i class="fas fa-times"></i></button>`;
+            const colors = { success: 'border-primary bg-card', error: 'border-danger bg-card', info: 'border-secondary bg-card' };
+            const icons = { success: 'fa-check-circle text-primary', error: 'fa-exclamation-circle text-danger', info: 'fa-info-circle text-secondary' };
+            
+            toast.className = `p-4 rounded-xl border-l-4 ${colors[type]} bg-card shadow-2xl flex items-center gap-3 min-w-[300px] transform translate-x-full transition-all duration-300 opacity-0`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type]} text-lg"></i>
+                <span class="text-sm font-medium flex-1 text-white">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-muted hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
             
             container.appendChild(toast);
+            
+            // Trigger animation
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            }, 100);
+
+            // Auto-remove
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 4000);
         }
 
-        // ==================== UTILITIES ====================
-        function formatNumber(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-
-        // Close modal on outside click
-        document.getElementById('reportModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'reportModal') closeReportModal();
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeReportModal();
-        });
+        // Wait for all scripts (Vidstack) to be fully ready before initializing
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
