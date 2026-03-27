@@ -658,8 +658,8 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime() / videoPlayer?.duration()) || 0.5;
-                const watchTime = videoPlayer?.currentTime() || 0;
+                const watchDuration = isComplete ? 1 : ((videoPlayer?.currentTime || 0) / (videoPlayer?.duration || 1)) || 0.5;
+                const watchTime = videoPlayer?.currentTime || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
@@ -759,7 +759,7 @@
             return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[120px] md:w-[140px] bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all group">
                 <div class="relative aspect-[9/16]">
                     <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover"
-                        onerror="this.onerror=null; this.src='image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22200%22><rect fill=%22%23333%22 width=%22120%22 height=%22200%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22200%22><rect fill=%22%23333%22 width=%22120%22 height=%22200%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
                     <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
                 </div>
                 <div class="p-2">
@@ -808,7 +808,7 @@
             return `<a href="video.html?id=${video.numericId || video.id}" class="group block">
                 <div class="relative aspect-video rounded-lg overflow-hidden mb-2 bg-dark">
                     <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onerror="this.onerror=null; this.src='image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
                     <span class="absolute bottom-2 right-2 bg-black/80 text-white px-1.5 py-0.5 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
                 </div>
                 <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight">${video.title}</h3>
