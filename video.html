@@ -36,47 +36,53 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Vidstack CSS & JS (Combined CDN for easier setup) -->
+    <!-- ✅ FIX 1: Vidstack CSS - Theme + Layout (REQUIRED for controls to appear) -->
     <link rel="stylesheet" href="https://cdn.vidstack.io/player/styles/default/theme.css" />
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/styles/default/layouts/video.css" />
+    
+    <!-- ✅ FIX 2: Vidstack IIFE Bundle - registers custom elements globally -->
     <script src="https://cdn.vidstack.io/player/iife/index.js" defer></script>
     
     <!-- Custom Styles -->
     <style>
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
-        * { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Vidstack theming */
+        /* ✅ FIX 3: Vidstack Player Styling */
         media-player {
             --media-brand: #ff0050;
             --media-focus-ring: 0 0 0 3px rgba(255, 0, 80, 0.4);
-            --media-controls-color: white;
             --media-controls-bg: rgba(0, 0, 0, 0.7);
-        }
-        
-        /* Ensure player container has proper sizing */
-        .player-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
+            --media-controls-color: white;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            border-radius: 0.75rem;
             overflow: hidden;
         }
-        .player-wrapper media-player {
-            position: absolute;
-            top: 0;
-            left: 0;
+        
+        /* Ensure player fills container */
+        .player-wrapper {
+            position: relative;
             width: 100%;
             height: 100%;
         }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
     </style>
 </head>
 <body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
 
-    <!-- Toast Container -->
+    <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
 
     <!-- Header -->
@@ -97,7 +103,7 @@
         </div>
 
         <!-- Error State -->
-        <div id="errorState" class="hidden text-center py-16 bg-card border border-border rounded-xl">
+        <div id="errorState" class="hidden text-center py-16 bg-card border border-border rounded-xl animate-fade-in">
             <i class="fas fa-exclamation-triangle text-6xl text-danger mb-4"></i>
             <h2 class="text-2xl font-bold mb-2">Video Not Found</h2>
             <p id="errorMessage" class="text-muted mb-6">The video you're looking for doesn't exist or has been removed.</p>
@@ -107,19 +113,23 @@
         </div>
 
         <!-- Video Content -->
-        <div id="videoContent" class="hidden">
+        <div id="videoContent" class="hidden animate-fade-in">
             
             <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
+                <!-- ✅ FIX 4: Proper Vidstack HTML Structure with media-provider -->
                 <div class="player-wrapper bg-dark rounded-xl overflow-hidden border border-border mb-6">
-                    <!-- Vidstack Player with fallback to native video -->
-                    <media-player id="videoPlayer" title="Video Player" crossorigin playsinline class="w-full h-full">
-                        <source type="video/mp4" />
+                    <media-player id="videoPlayer" playsinline crossorigin class="w-full h-full">
+                        <!-- ✅ CRITICAL: media-provider is REQUIRED for Vidstack to render video -->
+                        <media-provider>
+                            <!-- Source will be set via JavaScript -->
+                        </media-provider>
+                        <!-- ✅ CRITICAL: media-video-layout draws the controls UI -->
                         <media-video-layout></media-video-layout>
                     </media-player>
                     
-                    <!-- Fallback native video if Vidstack fails -->
-                    <video id="videoFallback" class="hidden w-full h-full" controls playsinline poster="">
+                    <!-- Native fallback if Vidstack fails -->
+                    <video id="videoFallback" class="hidden w-full h-full" controls playsinline>
                         <source src="" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
@@ -235,32 +245,25 @@
         // ==================== STATE ====================
         let currentVideo = null;
         let viewTracked = false;
-        let activePlayer = null; // Will hold either Vidstack or native player
-        let playerType = 'vidstack'; // Track which player is active
+        let activePlayer = null;
+        let playerType = 'vidstack';
 
         // ==================== INITIALIZATION ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Page loaded, initializing...');
+        // ✅ FIX 5: Wait for window.load to ensure Vidstack custom elements are registered
+        window.addEventListener('load', () => {
+            console.log('🚀 Page fully loaded, initializing...');
             
-            // Wait for Vidstack to be ready, then load video
-            if (typeof MediaPlayer !== 'undefined') {
-                // Vidstack is already loaded
-                loadVideo();
-            } else {
-                // Wait for Vidstack script to load
-                window.addEventListener('load', () => {
-                    setTimeout(() => {
-                        if (typeof MediaPlayer !== 'undefined') {
-                            console.log('✅ Vidstack loaded');
-                            loadVideo();
-                        } else {
-                            console.warn('⚠️ Vidstack not available, falling back to native player');
-                            playerType = 'native';
-                            loadVideo();
-                        }
-                    }, 500);
-                });
-            }
+            // Give Vidstack a moment to register custom elements
+            setTimeout(() => {
+                if (typeof MediaPlayer !== 'undefined') {
+                    console.log('✅ Vidstack is ready');
+                    loadVideo();
+                } else {
+                    console.warn('⚠️ Vidstack not available, using native player');
+                    playerType = 'native';
+                    loadVideo();
+                }
+            }, 300);
         });
 
         function generateSessionId() {
@@ -311,7 +314,7 @@
                 currentVideo = cleanedData;
                 document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
                 
-                // Setup player (will use Vidstack or fallback to native)
+                // Setup player
                 setupPlayer(cleanedData);
                 updateVideoInfo(cleanedData);
                 loadRelatedShorts(cleanedData);
@@ -332,7 +335,7 @@
             }
         }
 
-        // ==================== SETUP PLAYER (Vidstack or Native Fallback) ====================
+        // ==================== SETUP PLAYER (Vidstack with Native Fallback) ====================
         function setupPlayer(video) {
             const vidstackPlayer = document.getElementById('videoPlayer');
             const nativePlayer = document.getElementById('videoFallback');
@@ -345,12 +348,12 @@
                 console.log('⚙️ Initializing Vidstack player...');
                 
                 try {
-                    // Set source using Vidstack's provider API
+                    // ✅ FIX 6: Set src directly on media-player element (not on <source> child)
                     vidstackPlayer.src = video.videoUrl;
                     
                     // Set poster
                     if (video.thumbnail) {
-                        vidstackPlayer.setAttribute('poster', video.thumbnail);
+                        vidstackPlayer.poster = video.thumbnail;
                     }
                     
                     // Wait for player to be ready
@@ -362,10 +365,9 @@
                         console.log('✅ Vidstack: Video can play');
                     }, { once: true });
                     
-                    // Error handling
+                    // Error handling with fallback
                     vidstackPlayer.addEventListener('error', (e) => {
                         console.error('❌ Vidstack error:', e);
-                        // Fallback to native player
                         console.log('🔄 Falling back to native player...');
                         fallbackToNative(video);
                     }, { once: true });
@@ -394,7 +396,7 @@
                 }
                 
             } else {
-                // === NATIVE PLAYER SETUP (Fallback or Default) ===
+                // === NATIVE PLAYER SETUP (Fallback) ===
                 console.log('⚙️ Initializing native video player...');
                 fallbackToNative(video);
             }
@@ -408,52 +410,54 @@
             
             // Hide Vidstack, show native
             if (vidstackPlayer) vidstackPlayer.classList.add('hidden');
-            if (nativePlayer) nativePlayer.classList.remove('hidden');
-            
-            // Set up native player
-            const source = nativePlayer.querySelector('source');
-            if (source) {
-                source.src = video.videoUrl;
-                source.type = 'video/mp4';
-            }
-            if (video.thumbnail) {
-                nativePlayer.setAttribute('poster', video.thumbnail);
-            }
-            
-            // Native player events
-            nativePlayer.addEventListener('error', (e) => {
-                console.error('❌ Native video error:', e);
-                showVideoError('Failed to load video file. The file may be unavailable.');
-            });
-            
-            nativePlayer.addEventListener('loadeddata', () => {
-                console.log('✅ Native: Video loaded successfully');
-            });
-            
-            nativePlayer.addEventListener('canplay', () => {
-                console.log('✅ Native: Video can play');
-            });
-            
-            nativePlayer.addEventListener('ended', () => {
-                console.log('⏹️ Video ended, tracking view');
-                trackView(true);
-            });
-            
-            nativePlayer.addEventListener('timeupdate', () => {
-                if (nativePlayer.duration > 0 && !viewTracked) {
-                    const progress = nativePlayer.currentTime / nativePlayer.duration;
-                    if (progress >= 0.5) {
-                        console.log('📊 50% watched, tracking view');
-                        trackView(false);
-                    }
+            if (nativePlayer) {
+                nativePlayer.classList.remove('hidden');
+                
+                // Set up native player
+                const source = nativePlayer.querySelector('source');
+                if (source) {
+                    source.src = video.videoUrl;
+                    source.type = 'video/mp4';
                 }
-            });
-            
-            // Load the video
-            nativePlayer.load();
-            activePlayer = nativePlayer;
-            
-            console.log('✅ Native player initialized');
+                if (video.thumbnail) {
+                    nativePlayer.setAttribute('poster', video.thumbnail);
+                }
+                
+                // Native player events
+                nativePlayer.addEventListener('error', (e) => {
+                    console.error('❌ Native video error:', e);
+                    showVideoError('Failed to load video file. The file may be unavailable.');
+                });
+                
+                nativePlayer.addEventListener('loadeddata', () => {
+                    console.log('✅ Native: Video loaded successfully');
+                });
+                
+                nativePlayer.addEventListener('canplay', () => {
+                    console.log('✅ Native: Video can play');
+                });
+                
+                nativePlayer.addEventListener('ended', () => {
+                    console.log('⏹️ Video ended, tracking view');
+                    trackView(true);
+                });
+                
+                nativePlayer.addEventListener('timeupdate', () => {
+                    if (nativePlayer.duration > 0 && !viewTracked) {
+                        const progress = nativePlayer.currentTime / nativePlayer.duration;
+                        if (progress >= 0.5) {
+                            console.log('📊 50% watched, tracking view');
+                            trackView(false);
+                        }
+                    }
+                });
+                
+                // Load the video
+                nativePlayer.load();
+                activePlayer = nativePlayer;
+                
+                console.log('✅ Native player initialized');
+            }
         }
 
         function showVideoError(message) {
@@ -644,7 +648,7 @@
         function createShortCard(short) {
             return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-[9/16]">
-                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
                     <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${short.duration || '0:00'}</span>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                         <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
@@ -688,7 +692,7 @@
         function createVideoCard(video) {
             return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-video">
-                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
                     <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
                 </div>
                 <div class="p-4">
