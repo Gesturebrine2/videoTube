@@ -10,7 +10,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Tailwind Config with Custom Colors -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -37,23 +37,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
-        
-        /* Smooth transitions */
         * { transition: background-color 0.2s, border-color 0.2s, transform 0.2s; }
-        
-        /* Hide scrollbar for carousel but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Video player aspect ratio */
         .video-aspect {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
         }
@@ -66,7 +59,6 @@
             object-fit: contain;
             background: #000;
         }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -111,7 +103,6 @@
             
             <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
-                <!-- Native HTML5 Video Player -->
                 <div class="video-aspect bg-dark rounded-xl overflow-hidden border border-border mb-6">
                     <video id="videoPlayer" class="w-full h-full" controls playsinline preload="metadata" poster="">
                         <source src="" type="video/mp4" />
@@ -119,7 +110,6 @@
                     </video>
                 </div>
 
-                <!-- Video Error Message -->
                 <div id="videoErrorMessage" class="hidden bg-danger/10 border border-danger text-danger p-4 rounded-lg mb-6 text-center"></div>
 
                 <!-- Video Info Card -->
@@ -218,21 +208,17 @@
         </div>
     </div>
 
-    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        // ==================== CONFIGURATION ====================
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
             sessionId: localStorage.getItem('sessionId') || generateSessionId()
         };
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
-        // ==================== STATE ====================
         let currentVideo = null;
         let videoPlayer = null;
         let viewTracked = false;
 
-        // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Page loaded, initializing...');
             loadVideo();
@@ -242,7 +228,6 @@
             return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
 
-        // ==================== LOAD VIDEO ====================
         async function loadVideo() {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('id');
@@ -267,7 +252,6 @@
                 const data = await response.json();
                 console.log('📦 Video data received:', data);
                 
-                // ✅ Using URLs directly from API (NO cleaning/removal of slashes)
                 if (!data || !data.videoUrl) {
                     console.error('❌ Missing video URL in response');
                     throw new Error('Video URL is missing from API response');
@@ -276,14 +260,12 @@
                 currentVideo = data;
                 document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
                 
-                // Setup native player
                 setupPlayer(data);
                 updateVideoInfo(data);
                 loadRelatedShorts(data);
                 loadRecommendedVideos(data);
                 setTimeout(() => trackView(false), 10000);
                 
-                // ✅ Hide error state BEFORE showing content (critical fix!)
                 console.log('👁️ Showing video content...');
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('errorState').classList.add('hidden');
@@ -297,7 +279,6 @@
             }
         }
 
-        // ==================== SETUP NATIVE VIDEO PLAYER ====================
         function setupPlayer(video) {
             videoPlayer = document.getElementById('videoPlayer');
             console.log('🎬 Setting up native video player...');
@@ -308,26 +289,22 @@
                 return;
             }
             
-            // Set video source (using URL as-is from API)
             const source = videoPlayer.querySelector('source');
             if (source) {
-                source.src = video.videoUrl;  // ← No .trim() or .replace() here
+                source.src = video.videoUrl;
                 source.type = 'video/mp4';
             }
             
-            // Set poster if available (using URL as-is)
             if (video.thumbnail) {
-                videoPlayer.setAttribute('poster', video.thumbnail);  // ← No cleaning
+                videoPlayer.setAttribute('poster', video.thumbnail);
             }
             
-            // Error handling
             videoPlayer.addEventListener('error', (e) => {
                 console.error('❌ Video element error:', e);
                 console.error('❌ Error code:', videoPlayer.error?.code);
                 showVideoError('Failed to load video file. The file may be unavailable.');
             });
             
-            // Success handling
             videoPlayer.addEventListener('loadeddata', () => {
                 console.log('✅ Video loaded successfully');
             });
@@ -336,16 +313,13 @@
                 console.log('✅ Video can play');
             });
             
-            // Load video
             videoPlayer.load();
             
-            // Track view on video end
             videoPlayer.addEventListener('ended', () => {
                 console.log('⏹️ Video ended, tracking view');
                 trackView(true);
             });
             
-            // Track progress for view tracking
             videoPlayer.addEventListener('timeupdate', () => {
                 if (videoPlayer.duration > 0 && !viewTracked) {
                     const progress = videoPlayer.currentTime / videoPlayer.duration;
@@ -364,7 +338,6 @@
             showToast('Video playback error', 'error');
         }
 
-        // ==================== UPDATE VIDEO INFO ====================
         function updateVideoInfo(video) {
             document.getElementById('videoTitle').textContent = video.title;
             document.getElementById('videoCategory').textContent = video.category || 'Uncategorized';
@@ -372,17 +345,14 @@
             document.getElementById('videoDuration').textContent = video.duration || '0:00';
             document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
             
-            // Description
             const descEl = document.getElementById('videoDescription');
             if (video.description) {
                 descEl.textContent = video.description;
                 descEl.classList.remove('hidden');
             }
             
-            // Like count
             document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
             
-            // Update like button state
             const videoId = video.numericId || video.id;
             const likeBtn = document.getElementById('likeBtn');
             if (isLiked(videoId)) {
@@ -390,7 +360,6 @@
                 likeBtn.querySelector('i').className = 'fas fa-heart';
             }
             
-            // Load tags
             const tags = JSON.parse(video.tags || '[]');
             const tagsContainer = document.getElementById('tagsContainer');
             if (tags.length > 0) {
@@ -401,7 +370,6 @@
             }
         }
 
-        // ==================== ENGAGEMENT TRACKING ====================
         async function toggleLike() {
             if (!currentVideo) return;
             const btn = document.getElementById('likeBtn');
@@ -499,7 +467,6 @@
                 .catch(() => showToast('Failed to copy link', 'error'));
         }
 
-        // ==================== LIKE STATE MANAGEMENT ====================
         function isLiked(videoId) {
             const liked = localStorage.getItem('likedVideos');
             return liked ? JSON.parse(liked).includes(videoId) : false;
@@ -522,7 +489,6 @@
             }
         }
 
-        // ==================== LOAD RELATED SHORTS ====================
         async function loadRelatedShorts(video) {
             const carousel = document.getElementById('shortsCarousel');
             try {
@@ -547,10 +513,14 @@
             }
         }
 
+        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createShortCard(short) {
             return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-[9/16]">
-                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <img src="${short.thumbnail || ''}" 
+                        alt="${short.title}" 
+                        class="w-full h-full object-cover bg-dark" 
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22><rect fill=%22%23333%22 width=%22180%22 height=%22320%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
                     <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${short.duration || '0:00'}</span>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                         <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
@@ -571,7 +541,6 @@
             carousel.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' });
         }
 
-        // ==================== LOAD RECOMMENDED VIDEOS ====================
         async function loadRecommendedVideos(video) {
             const container = document.getElementById('recommendedVideos');
             try {
@@ -592,10 +561,14 @@
             }
         }
 
+        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createVideoCard(video) {
             return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-video">
-                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <img src="${video.thumbnail || ''}" 
+                        alt="${video.title}" 
+                        class="w-full h-full object-cover bg-dark" 
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
                     <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
                 </div>
                 <div class="p-4">
@@ -608,7 +581,6 @@
             </a>`;
         }
 
-        // ==================== REPORT MODAL ====================
         function openReportModal() {
             document.getElementById('reportModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -640,7 +612,6 @@
             }
         }
 
-        // ==================== ERROR HANDLING ====================
         function showError(message) {
             console.error('❌ Showing error:', message);
             document.getElementById('loadingState').classList.add('hidden');
@@ -648,7 +619,6 @@
             document.getElementById('errorMessage').textContent = message;
         }
 
-        // ==================== TOAST NOTIFICATIONS ====================
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -666,19 +636,16 @@
             }, 3000);
         }
 
-        // ==================== UTILITIES ====================
         function formatNumber(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
-        // Close modal on outside click
         document.getElementById('reportModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'reportModal') closeReportModal();
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeReportModal();
         });
