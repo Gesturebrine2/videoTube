@@ -267,33 +267,23 @@
                 const data = await response.json();
                 console.log('📦 Video data received:', data);
                 
-                // 🔥 FIX 1: Clean URLs - remove double slashes AND trailing spaces
-                const cleanedData = {
-                    ...data,
-                    videoUrl: (data.videoUrl || '').replace(/\/+/g, '/').trim(),
-                    thumbnail: (data.thumbnail || '').replace(/\/+/g, '/').trim(),
-                    title: (data.title || '').trim(),
-                    description: (data.description || '').trim()
-                };
-                
-                console.log('🧹 Cleaned videoUrl:', cleanedData.videoUrl);
-                
-                if (!cleanedData || !cleanedData.videoUrl) {
+                // ✅ Using URLs directly from API (NO cleaning/removal of slashes)
+                if (!data || !data.videoUrl) {
                     console.error('❌ Missing video URL in response');
                     throw new Error('Video URL is missing from API response');
                 }
                 
-                currentVideo = cleanedData;
-                document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
+                currentVideo = data;
+                document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
                 
                 // Setup native player
-                setupPlayer(cleanedData);
-                updateVideoInfo(cleanedData);
-                loadRelatedShorts(cleanedData);
-                loadRecommendedVideos(cleanedData);
+                setupPlayer(data);
+                updateVideoInfo(data);
+                loadRelatedShorts(data);
+                loadRecommendedVideos(data);
                 setTimeout(() => trackView(false), 10000);
                 
-                // 🔥 FIX 2: Hide error state BEFORE showing content (was missing!)
+                // ✅ Hide error state BEFORE showing content (critical fix!)
                 console.log('👁️ Showing video content...');
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('errorState').classList.add('hidden');
@@ -318,16 +308,16 @@
                 return;
             }
             
-            // Set video source
+            // Set video source (using URL as-is from API)
             const source = videoPlayer.querySelector('source');
             if (source) {
-                source.src = video.videoUrl;
+                source.src = video.videoUrl;  // ← No .trim() or .replace() here
                 source.type = 'video/mp4';
             }
             
-            // Set poster if available
+            // Set poster if available (using URL as-is)
             if (video.thumbnail) {
-                videoPlayer.setAttribute('poster', video.thumbnail);
+                videoPlayer.setAttribute('poster', video.thumbnail);  // ← No cleaning
             }
             
             // Error handling
