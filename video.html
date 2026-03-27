@@ -10,8 +10,6 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Plyr CSS -->
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     
     <!-- Tailwind Config -->
     <script>
@@ -42,101 +40,309 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
         
-        /* Plyr Custom Theme - Pink (#ff0050) */
-        :root {
-            --plyr-color-main: #ff0050;
-            --plyr-control-radius: 8px;
-        }
-        
-        .plyr {
-            font-family: inherit;
-            border-radius: 12px;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-        
+        /* Custom HTML5 Video Player - YouTube Style */
         .video-player-wrapper {
             position: relative;
             background: #000;
             border-radius: 12px;
             overflow: hidden;
             aspect-ratio: 16/9;
+            width: 100%;
         }
         
-        /* Plyr control bar styling */
-        .plyr__controls {
-            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.7));
+        .video-player-wrapper video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
         }
         
-        .plyr__control {
-            transition: all 0.2s ease;
-        }
-        
-        .plyr__control:hover {
-            transform: scale(1.1);
-        }
-        
-        .plyr__control--overlaid {
-            background: rgba(255, 0, 80, 0.95);
-            border-radius: 50%;
+        /* Center Play Button */
+        .center-play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 80px;
             height: 80px;
+            background: rgba(255, 0, 80, 0.95);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 30px rgba(255, 0, 80, 0.5);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
         }
         
-        .plyr__control--overlaid:hover {
-            background: rgba(255, 0, 80, 1);
+        .center-play-btn svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+            margin-left: 4px;
+        }
+        
+        .center-play-btn.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .center-play-btn.hide {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        
+        /* Seek Indicators */
+        .seek-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .seek-indicator.show {
+            opacity: 1;
+        }
+        
+        .seek-indicator.left {
+            left: 30%;
+        }
+        
+        .seek-indicator.right {
+            right: 30%;
+        }
+        
+        .seek-indicator svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        
+        .seek-indicator span {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Controls Container */
+        .controls-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.7), transparent);
+            padding: 10px 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 20;
+        }
+        
+        .controls-container.show,
+        .video-player-wrapper:hover .controls-container {
+            opacity: 1;
+        }
+        
+        .video-player-wrapper.paused .controls-container {
+            opacity: 1;
+        }
+        
+        /* Progress Bar */
+        .progress-area {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            position: relative;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        
+        .progress-area:hover .progress-bar {
+            height: 6px;
+        }
+        
+        .progress-filled {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0050, #ff2a6d);
+            border-radius: 2px;
+            width: 0%;
+            pointer-events: none;
+        }
+        
+        .progress-handle {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 12px;
+            height: 12px;
+            background: #ff0050;
+            border-radius: 50%;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 80, 0.8);
+        }
+        
+        .progress-area:hover .progress-handle {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        /* Main Controls */
+        .main-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .controls-left,
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Control Buttons */
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
             transform: scale(1.1);
         }
         
-        .plyr__progress__container {
-            flex: 1;
+        .control-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
         }
         
-        .plyr__progress__buffer {
-            background: rgba(255,255,255,0.2);
+        /* Volume Container */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
-        .plyr__volume__container {
-            margin-left: 8px;
+        .volume-slider {
+            width: 0;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: width 0.2s ease;
+            overflow: hidden;
         }
         
-        .plyr__menu__container {
-            background: rgba(0,0,0,0.95);
+        .volume-container:hover .volume-slider,
+        .volume-slider:focus {
+            width: 80px;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #ff0050;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(255, 0, 80, 0.8);
+        }
+        
+        .volume-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: #ff0050;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Time Display */
+        .time-display {
+            color: white;
+            font-size: 13px;
+            font-family: 'Roboto Mono', monospace;
+            white-space: nowrap;
+        }
+        
+        /* Settings Menu */
+        .settings-btn {
+            position: relative;
+        }
+        
+        .speed-menu {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
             border: 1px solid #333;
             border-radius: 8px;
-            backdrop-filter: blur(10px);
+            padding: 8px 0;
+            min-width: 100px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            z-index: 30;
         }
         
-        .plyr__menu__container .plyr__control {
+        .speed-option {
             padding: 8px 16px;
             color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
         }
         
-        .plyr__menu__container .plyr__control:hover {
+        .speed-option:hover {
             background: rgba(255, 0, 80, 0.3);
             color: #ff0050;
         }
         
-        .plyr__menu__container .plyr__control[aria-checked="true"] {
+        .speed-option.active {
             background: rgba(255, 0, 80, 0.5);
             color: white;
             font-weight: bold;
         }
         
-        .plyr__time {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.85rem;
-        }
-        
-        .plyr__tooltip {
-            background: rgba(0,0,0,0.9);
-            border-radius: 4px;
-            padding: 4px 8px;
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
         }
         
         /* Theater mode */
@@ -144,6 +350,37 @@
             max-width: 100%;
             margin: 0 auto;
             border-radius: 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .center-play-btn {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .center-play-btn svg {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .time-display {
+                font-size: 11px;
+            }
+            
+            .control-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .volume-slider {
+                width: 0;
+            }
+            
+            .volume-container:hover .volume-slider,
+            .volume-slider:focus {
+                width: 60px;
+            }
         }
         
         @keyframes fadeIn {
@@ -193,11 +430,87 @@
                 <!-- Main Column -->
                 <div class="xl:col-span-3 space-y-4 md:space-y-6">
                     
-                    <!-- Plyr Player -->
+                    <!-- Custom HTML5 Video Player - YouTube Style -->
                     <div class="video-player-wrapper" id="videoPlayerContainer">
-                        <video id="videoPlayer" preload="metadata" playsinline crossorigin>
+                        <video id="videoPlayer" preload="metadata" playsinline crossorigin="anonymous" poster="">
+                            <source src="" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
+                        
+                        <!-- Big Center Play Button -->
+                        <div class="center-play-btn" id="centerPlayBtn">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+
+                        <!-- Seek Overlay Indicators -->
+                        <div class="seek-indicator left" id="seekLeft">
+                            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                            <span>-10s</span>
+                        </div>
+                        <div class="seek-indicator right" id="seekRight">
+                            <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                            <span>+10s</span>
+                        </div>
+
+                        <!-- Controls Bar -->
+                        <div class="controls-container" id="controlsContainer">
+                            <!-- Progress Bar -->
+                            <div class="progress-area" id="progressArea">
+                                <div class="progress-bar" id="progressBar">
+                                    <div class="progress-filled" id="progressFilled"></div>
+                                    <div class="progress-handle" id="progressHandle"></div>
+                                </div>
+                            </div>
+
+                            <!-- Main Controls -->
+                            <div class="main-controls">
+                                <div class="controls-left">
+                                    <button class="control-btn" id="playPauseBtn" title="Play (k)">
+                                        <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        <svg class="icon-pause hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                    </button>
+                                    
+                                    <div class="volume-container">
+                                        <button class="control-btn" id="muteBtn" title="Mute (m)">
+                                            <svg class="icon-vol-high" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                            <svg class="icon-vol-mute hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                                        </button>
+                                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" title="Volume">
+                                    </div>
+
+                                    <div class="time-display">
+                                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                                    </div>
+                                </div>
+
+                                <div class="controls-right">
+                                    <button class="control-btn" id="settingsBtn" title="Settings">
+                                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L5.09 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                                    </button>
+                                    
+                                    <!-- Speed Menu -->
+                                    <div class="speed-menu hidden" id="speedMenu">
+                                        <div class="speed-option" data-speed="0.25">0.25x</div>
+                                        <div class="speed-option" data-speed="0.5">0.5x</div>
+                                        <div class="speed-option" data-speed="0.75">0.75x</div>
+                                        <div class="speed-option active" data-speed="1">Normal</div>
+                                        <div class="speed-option" data-speed="1.25">1.25x</div>
+                                        <div class="speed-option" data-speed="1.5">1.5x</div>
+                                        <div class="speed-option" data-speed="1.75">1.75x</div>
+                                        <div class="speed-option" data-speed="2">2x</div>
+                                    </div>
+
+                                    <button class="control-btn" id="theaterBtn" title="Theater Mode (t)">
+                                        <svg viewBox="0 0 24 24"><path d="M19 7H5c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 8H5V9h14v6z"/></svg>
+                                    </button>
+
+                                    <button class="control-btn" id="fullscreenBtn" title="Fullscreen (f)">
+                                        <svg class="icon-fullscreen" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                                        <svg class="icon-fullscreen-exit hidden" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Video Info -->
@@ -318,8 +631,7 @@
         </div>
     </div>
 
-    <!-- Plyr JS -->
-    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <!-- No external player library - using native HTML5 -->
     
     <script>
         const CONFIG = {
@@ -331,200 +643,365 @@
         let currentVideo = null;
         let videoPlayer = null;
         let viewTracked = false;
+        let isPlaying = false;
+        let controlsTimeout = null;
+        let lastClickTime = 0;
+        let lastClickX = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Page loaded, initializing Plyr...');
-            initPlyr();
+            console.log('🚀 Page loaded, initializing custom HTML5 player...');
+            initCustomPlayer();
             loadVideo();
         });
 
-        // Initialize Plyr Player with default settings and pink theme
-        function initPlyr() {
-            videoPlayer = new Plyr('#videoPlayer', {
-                controls: [
-                    'play-large',
-                    'play',
-                    'progress',
-                    'current-time',
-                    'mute',
-                    'volume',
-                    'captions',
-                    'settings',
-                    'pip',
-                    'airplay',
-                    'fullscreen'
-                ],
-                settings: ['captions', 'quality', 'speed'],
-                speed: { selected: 1, options: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
-                keyboard: { focused: true, global: true },
-                tooltips: { controls: true, seek: true }
-            });
+        // Initialize Custom HTML5 Player
+        function initCustomPlayer() {
+            videoPlayer = document.getElementById('videoPlayer');
+            const playerWrapper = document.getElementById('videoPlayerContainer');
+            const centerPlayBtn = document.getElementById('centerPlayBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const iconPlay = playPauseBtn.querySelector('.icon-play');
+            const iconPause = playPauseBtn.querySelector('.icon-pause');
+            const muteBtn = document.getElementById('muteBtn');
+            const iconVolHigh = muteBtn.querySelector('.icon-vol-high');
+            const iconVolMute = muteBtn.querySelector('.icon-vol-mute');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const progressBar = document.getElementById('progressBar');
+            const progressFilled = document.getElementById('progressFilled');
+            const progressHandle = document.getElementById('progressHandle');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const iconFullscreen = fullscreenBtn.querySelector('.icon-fullscreen');
+            const iconFullscreenExit = fullscreenBtn.querySelector('.icon-fullscreen-exit');
+            const theaterBtn = document.getElementById('theaterBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const speedMenu = document.getElementById('speedMenu');
+            const seekLeft = document.getElementById('seekLeft');
+            const seekRight = document.getElementById('seekRight');
 
-            // Track view when 50% watched
-            videoPlayer.on('timeupdate', (event) => {
-                if (videoPlayer.duration && !viewTracked) {
-                    const progressRatio = videoPlayer.currentTime / videoPlayer.duration;
-                    if (progressRatio >= 0.5) {
+            // Update play/pause buttons
+            function updatePlayPauseUI() {
+                if (isPlaying) {
+                    iconPlay.classList.add('hidden');
+                    iconPause.classList.remove('hidden');
+                    centerPlayBtn.classList.add('hide');
+                    centerPlayBtn.classList.remove('show');
+                    playerWrapper.classList.remove('paused');
+                } else {
+                    iconPlay.classList.remove('hidden');
+                    iconPause.classList.add('hidden');
+                    centerPlayBtn.classList.add('show');
+                    centerPlayBtn.classList.remove('hide');
+                    playerWrapper.classList.add('paused');
+                }
+            }
+
+            // Show/hide controls
+            function showControls() {
+                document.getElementById('controlsContainer').classList.add('show');
+                clearTimeout(controlsTimeout);
+                if (isPlaying) {
+                    controlsTimeout = setTimeout(() => {
+                        document.getElementById('controlsContainer').classList.remove('show');
+                    }, 2500);
+                }
+            }
+
+            // Format time
+            function formatTime(seconds) {
+                if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            // Update progress bar
+            function updateProgress() {
+                if (videoPlayer.duration) {
+                    const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                    progressFilled.style.width = percent + '%';
+                    progressHandle.style.left = percent + '%';
+                    currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+                    durationEl.textContent = formatTime(videoPlayer.duration);
+                    
+                    // Track view at 50%
+                    if (!viewTracked && percent >= 50) {
                         trackView(false);
                     }
                 }
-            });
+            }
 
-            // Track view when video ends
-            videoPlayer.on('ended', () => {
-                trackView(true);
-            });
-
-            // Handle fullscreen
-            videoPlayer.on('enterfullscreen', () => {
-                console.log('Entered fullscreen');
-            });
-
-            videoPlayer.on('exitfullscreen', () => {
-                console.log('Exited fullscreen');
-            });
-
-            // Wait for Plyr to fully initialize before setting up double-click
-            videoPlayer.on('ready', () => {
-                const playerElement = document.querySelector('.plyr');
-                
-                if (!playerElement) {
-                    console.error('Plyr element not found');
-                    return;
+            // Play/Pause toggle
+            function togglePlay() {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
                 }
+            }
+
+            // Event listeners
+            videoPlayer.addEventListener('play', () => {
+                isPlaying = true;
+                updatePlayPauseUI();
+                showControls();
+            });
+
+            videoPlayer.addEventListener('pause', () => {
+                isPlaying = false;
+                updatePlayPauseUI();
+                showControls();
+            });
+
+            videoPlayer.addEventListener('timeupdate', updateProgress);
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(videoPlayer.duration);
+                updateProgress();
+            });
+
+            // Click on video to toggle play/pause
+            playerWrapper.addEventListener('click', (e) => {
+                // Don't toggle if clicking on controls
+                if (e.target.closest('.controls-container')) return;
                 
-                // Double-click to seek (YouTube-style)
-                let lastClickTime = 0;
-                let lastClickX = 0;
+                const currentTime = Date.now();
+                const rect = playerWrapper.getBoundingClientRect();
+                const relativeX = e.clientX - rect.left;
+                const playerWidth = rect.width;
+
+                // Double-click detection
+                if (currentTime - lastClickTime < 300) {
+                    if (relativeX < playerWidth / 3) {
+                        // Left side - seek backward
+                        skip(-10, 'left');
+                    } else if (relativeX > (playerWidth * 2) / 3) {
+                        // Right side - seek forward
+                        skip(10, 'right');
+                    } else {
+                        // Center - toggle play/pause
+                        togglePlay();
+                    }
+                } else {
+                    // Single click - just show controls
+                    showControls();
+                }
+
+                lastClickTime = currentTime;
+                lastClickX = e.clientX;
+            });
+
+            // Mouse movement shows controls
+            playerWrapper.addEventListener('mousemove', showControls);
+
+            // Play/Pause button
+            playPauseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePlay();
+            });
+
+            // Mute button
+            muteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                videoPlayer.muted = !videoPlayer.muted;
+                updateVolumeUI();
+                showToast(videoPlayer.muted ? 'Muted' : 'Unmuted');
+            });
+
+            // Volume slider
+            volumeSlider.addEventListener('input', (e) => {
+                e.stopPropagation();
+                videoPlayer.volume = e.target.value / 100;
+                videoPlayer.muted = videoPlayer.volume === 0;
+                updateVolumeUI();
+            });
+
+            function updateVolumeUI() {
+                if (videoPlayer.muted || videoPlayer.volume === 0) {
+                    iconVolHigh.classList.add('hidden');
+                    iconVolMute.classList.remove('hidden');
+                    volumeSlider.value = 0;
+                } else {
+                    iconVolHigh.classList.remove('hidden');
+                    iconVolMute.classList.add('hidden');
+                    volumeSlider.value = videoPlayer.volume * 100;
+                }
+            }
+
+            // Progress bar seek
+            progressBar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                videoPlayer.currentTime = pos * videoPlayer.duration;
+            });
+
+            // Fullscreen button
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFullscreen();
+            });
+
+            // Theater mode button
+            theaterBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleTheaterMode();
+            });
+
+            // Settings button - toggle speed menu
+            settingsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speedMenu.classList.toggle('hidden');
+            });
+
+            // Speed options
+            speedMenu.querySelectorAll('.speed-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const speed = parseFloat(option.dataset.speed);
+                    videoPlayer.playbackRate = speed;
+                    speedMenu.querySelectorAll('.speed-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    speedMenu.classList.add('hidden');
+                    showToast(`Speed: ${speed}x`);
+                });
+            });
+
+            // Hide speed menu when clicking elsewhere
+            document.addEventListener('click', () => {
+                speedMenu.classList.add('hidden');
+            });
+
+            // Video ended
+            videoPlayer.addEventListener('ended', () => {
+                trackView(true);
+                updatePlayPauseUI();
+            });
+
+            // Wheel for volume
+            playerWrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const currentVolume = videoPlayer.volume;
+                if (e.deltaY < 0) {
+                    videoPlayer.volume = Math.min(1, currentVolume + 0.1);
+                } else {
+                    videoPlayer.volume = Math.max(0, currentVolume - 0.1);
+                }
+                videoPlayer.muted = videoPlayer.volume === 0;
+                updateVolumeUI();
+                showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
                 
-                playerElement.addEventListener('click', (event) => {
-                    const currentTime = Date.now();
-                    const clickX = event.clientX || (event.touches && event.touches[0]?.clientX) || 0;
-                    
-                    // Check for double-click within 300ms
-                    if (currentTime - lastClickTime < 300) {
-                        const rect = playerElement.getBoundingClientRect();
-                        const relativeX = clickX - rect.left;
-                        const playerWidth = rect.width;
-                        
-                        if (relativeX < playerWidth / 3) {
-                            // Left side - seek backward
-                            skip(-10, 'left');
-                        } else if (relativeX > (playerWidth * 2) / 3) {
-                            // Right side - seek forward
-                            skip(10, 'right');
-                        } else {
-                            // Center - toggle play/pause
-                            if (videoPlayer.paused) {
-                                videoPlayer.play();
-                            } else {
-                                videoPlayer.pause();
+                switch(e.key.toLowerCase()) {
+                    case ' ':
+                    case 'k':
+                        e.preventDefault();
+                        togglePlay();
+                        break;
+                    case 'j':
+                        e.preventDefault();
+                        skip(-10, 'left');
+                        break;
+                    case 'l':
+                        e.preventDefault();
+                        skip(10, 'right');
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        toggleFullscreen();
+                        break;
+                    case 'm':
+                        e.preventDefault();
+                        videoPlayer.muted = !videoPlayer.muted;
+                        updateVolumeUI();
+                        showToast(videoPlayer.muted ? 'Muted' : 'Unmuted');
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        toggleTheaterMode();
+                        break;
+                    case 'arrowright':
+                        e.preventDefault();
+                        skip(5, 'right');
+                        break;
+                    case 'arrowleft':
+                        e.preventDefault();
+                        skip(-5, 'left');
+                        break;
+                    case 'arrowup':
+                        e.preventDefault();
+                        videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
+                        updateVolumeUI();
+                        showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
+                        break;
+                    case 'arrowdown':
+                        e.preventDefault();
+                        videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
+                        updateVolumeUI();
+                        showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
+                        break;
+                    default:
+                        if (e.key >= '0' && e.key <= '9') {
+                            e.preventDefault();
+                            const percentage = parseInt(e.key) / 10;
+                            if (videoPlayer.duration) {
+                                videoPlayer.currentTime = videoPlayer.duration * percentage;
                             }
                         }
-                    }
-                    
-                    lastClickTime = currentTime;
-                    lastClickX = clickX;
-                });
-
-                // Volume wheel control
-                playerElement.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    const currentVolume = videoPlayer.volume;
-                    if (e.deltaY < 0) {
-                        videoPlayer.volume = Math.min(1, currentVolume + 0.1);
-                    } else {
-                        videoPlayer.volume = Math.max(0, currentVolume - 0.1);
-                    }
-                });
+                }
             });
+
+            // Initial UI state
+            updatePlayPauseUI();
+            updateVolumeUI();
+            playerWrapper.classList.add('paused');
         }
 
-        // Keyboard shortcuts (YouTube-style) - Plyr has built-in shortcuts but we add extras
-        document.addEventListener('keydown', (e) => {
-            // Don't trigger if typing in input or if Plyr is handling it
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            
-            switch(e.key.toLowerCase()) {
-                case 'j':
-                    e.preventDefault();
-                    skip(-10, 'left');
-                    break;
-                case 'l':
-                    e.preventDefault();
-                    skip(10, 'right');
-                    break;
-                case 't':
-                    e.preventDefault();
-                    toggleTheaterMode();
-                    break;
-                case 'number':
-                    // Number keys 0-9 to seek to percentage
-                    if (e.key >= '0' && e.key <= '9') {
-                        e.preventDefault();
-                        const percentage = parseInt(e.key) / 10;
-                        if (videoPlayer && videoPlayer.duration) {
-                            videoPlayer.currentTime = videoPlayer.duration * percentage;
-                        }
-                    }
-                    break;
-            }
-        });
-
-        // Skip function with animation (Plyr uses properties, not methods)
+        // Skip function with animation
         function skip(seconds, direction) {
-            const currentTime = videoPlayer.currentTime;
-            const duration = videoPlayer.duration || 0;
-            videoPlayer.currentTime = Math.max(0, Math.min(currentTime + seconds, duration));
+            const seekIndicator = direction === 'left' ? 
+                document.getElementById('seekLeft') : 
+                document.getElementById('seekRight');
+            
+            videoPlayer.currentTime = Math.max(0, Math.min(
+                videoPlayer.currentTime + seconds, 
+                videoPlayer.duration || 0
+            ));
+
+            // Show indicator
+            seekIndicator.classList.add('show');
+            setTimeout(() => {
+                seekIndicator.classList.remove('show');
+            }, 800);
         }
 
-        // Volume controls (Plyr uses properties, not methods)
-        function increaseVolume() {
-            const currentVolume = videoPlayer.volume;
-            videoPlayer.volume = Math.min(1, currentVolume + 0.1);
-            showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
-        }
-
-        function decreaseVolume() {
-            const currentVolume = videoPlayer.volume;
-            videoPlayer.volume = Math.max(0, currentVolume - 0.1);
-            showToast(`Volume: ${Math.round(videoPlayer.volume * 100)}%`);
-        }
-
-        function toggleMute() {
-            videoPlayer.muted = !videoPlayer.muted;
-            showToast(videoPlayer.muted ? 'Muted' : 'Unmuted');
-        }
-
+        // Toggle fullscreen
         function toggleFullscreen() {
-            const container = document.querySelector('.plyr');
+            const container = document.getElementById('videoPlayerContainer');
+            const iconFullscreen = document.querySelector('.icon-fullscreen');
+            const iconFullscreenExit = document.querySelector('.icon-fullscreen-exit');
+            
             if (!document.fullscreenElement) {
                 container.requestFullscreen().catch(err => {
                     console.log('Error attempting to enable fullscreen:', err);
                 });
+                iconFullscreen.classList.add('hidden');
+                iconFullscreenExit.classList.remove('hidden');
             } else {
                 document.exitFullscreen();
+                iconFullscreen.classList.remove('hidden');
+                iconFullscreenExit.classList.add('hidden');
             }
         }
 
-        function toggleCaptions() {
-            // Plyr handles captions through the UI
-            const btn = document.querySelector('[data-plyr="captions"]');
-            if (btn) {
-                btn.click();
-            }
-        }
-
+        // Toggle theater mode
         function toggleTheaterMode() {
             const playerContainer = document.getElementById('videoPlayerContainer');
             playerContainer.classList.toggle('theater-mode');
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
         function generateSessionId() {
@@ -556,14 +1033,12 @@
                 currentVideo = data;
                 document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
                 
-                // Set video source using Plyr API
-                videoPlayer.source = {
-                    type: 'video',
-                    sources: [{
-                        src: data.videoUrl,
-                        type: 'video/mp4'
-                    }]
-                };
+                // Set video source using native HTML5 API
+                const videoSource = videoPlayer.querySelector('source');
+                if (videoSource) {
+                    videoSource.src = data.videoUrl;
+                }
+                videoPlayer.load();
                 
                 // Set poster if available
                 if (data.thumbnail) {
