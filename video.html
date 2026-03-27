@@ -23,10 +23,7 @@
                         darker: '#050505',
                         card: '#1a1a1a',
                         border: '#333333',
-                        muted: '#888888',
-                        success: '#00d084',
-                        warning: '#ffab00',
-                        danger: '#ff0050'
+                        muted: '#888888'
                     }
                 }
             }
@@ -36,55 +33,178 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ✅ Video.js CSS - Using reliable CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video-js.min.css" rel="stylesheet" />
-    
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
-        * { transition: background-color 0.2s, border-color 0.2s, transform 0.2s; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Video.js Custom Theme */
-        .video-js {
-            width: 100%;
-            height: 100%;
+        /* Custom Video Player Styles */
+        .video-player-wrapper {
+            position: relative;
+            background: #000;
             border-radius: 12px;
             overflow: hidden;
         }
-        .video-js .vjs-big-play-button {
-            background-color: #ff0050;
-            border: none;
+        
+        .video-player-wrapper video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        /* Custom Controls Container */
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .video-player-wrapper:hover .video-controls,
+        .video-player-wrapper.paused .video-controls {
+            opacity: 1;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ff0050;
+            border-radius: 2px;
+            width: 0%;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #ff0050;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            line-height: 70px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .progress-bar:hover .progress-fill::after {
+            opacity: 1;
+        }
+        
+        /* Controls Row */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+        
+        .control-btn:hover {
+            color: #ff0050;
+        }
+        
+        .time-display {
+            color: white;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+        
+        .spacer {
+            flex: 1;
+        }
+        
+        /* Big Play Button */
+        .big-play-button {
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 0, 80, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 1;
         }
-        @media (min-width: 768px) {
-            .video-js .vjs-big-play-button {
-                width: 90px;
-                height: 90px;
-                line-height: 90px;
-            }
+        
+        .big-play-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(255, 0, 80, 1);
         }
-        .video-js .vjs-big-play-button:hover {
-            background-color: #ff3370;
+        
+        .big-play-button.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
-        .video-js .vjs-control-bar {
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        
+        .big-play-button i {
+            font-size: 2rem;
+            color: white;
+            margin-left: 0.3rem;
         }
-        .video-js .vjs-play-progress,
-        .video-js .vjs-volume-level {
-            background-color: #ff0050;
+        
+        /* Volume Slider */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .video-js .vjs-slider {
-            background-color: rgba(255,255,255,0.3);
+        
+        .volume-slider {
+            width: 0;
+            overflow: hidden;
+            transition: width 0.3s;
+        }
+        
+        .volume-container:hover .volume-slider {
+            width: 80px;
+        }
+        
+        .volume-slider input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #ff0050;
+            border-radius: 50%;
+            cursor: pointer;
         }
         
         @keyframes fadeIn {
@@ -134,13 +254,60 @@
                 <!-- Main Column -->
                 <div class="xl:col-span-3 space-y-4 md:space-y-6">
                     
-                    <!-- Video Player -->
-                    <div class="video-aspect bg-dark rounded-xl overflow-hidden border border-border">
-                        <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" 
-                               controls preload="metadata" poster="" playsinline>
+                    <!-- Custom HTML5 Video Player -->
+                    <div class="video-player-wrapper" id="videoPlayerWrapper">
+                        <video id="videoPlayer" preload="metadata" poster="">
                             <source src="" type="video/mp4" />
-                            <p class="vjs-no-js">To view this video please enable JavaScript</p>
+                            Your browser does not support the video tag.
                         </video>
+                        
+                        <!-- Big Play Button -->
+                        <div class="big-play-button" id="bigPlayButton">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        
+                        <!-- Custom Controls -->
+                        <div class="video-controls">
+                            <!-- Progress Bar -->
+                            <div class="progress-bar" id="progressBar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            
+                            <!-- Controls Row -->
+                            <div class="controls-row">
+                                <!-- Play/Pause -->
+                                <button class="control-btn" id="playPauseBtn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                
+                                <!-- Volume -->
+                                <div class="volume-container">
+                                    <button class="control-btn" id="muteBtn">
+                                        <i class="fas fa-volume-high"></i>
+                                    </button>
+                                    <div class="volume-slider">
+                                        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                                    </div>
+                                </div>
+                                
+                                <!-- Time Display -->
+                                <div class="time-display">
+                                    <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                                </div>
+                                
+                                <div class="spacer"></div>
+                                
+                                <!-- Playback Speed -->
+                                <button class="control-btn" id="speedBtn">
+                                    <span class="text-sm">1x</span>
+                                </button>
+                                
+                                <!-- Fullscreen -->
+                                <button class="control-btn" id="fullscreenBtn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Video Info -->
@@ -149,9 +316,7 @@
                         
                         <!-- Stats Row -->
                         <div class="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-muted mb-4 pb-4 border-b border-border">
-                            <span id="videoCategory" class="bg-primary/10 text-primary px-2 md:px-3 py-1 rounded-full text-xs font-semibold">
-                                Category
-                            </span>
+                            <span id="videoCategory" class="bg-primary/10 text-primary px-2 md:px-3 py-1 rounded-full text-xs font-semibold">Category</span>
                             <span class="flex items-center gap-1">
                                 <i class="fas fa-eye text-primary"></i>
                                 <span id="videoViews">0</span> views
@@ -192,13 +357,10 @@
                         </div>
 
                         <!-- Tags -->
-                        <div id="tagsContainer" class="flex flex-wrap gap-2 hidden">
-                            <!-- Tags will be inserted here -->
-                        </div>
+                        <div id="tagsContainer" class="flex flex-wrap gap-2 hidden"></div>
 
                         <!-- Description -->
-                        <div id="videoDescription" class="mt-4 pt-4 border-t border-border text-muted text-sm md:text-base leading-relaxed hidden">
-                        </div>
+                        <div id="videoDescription" class="mt-4 pt-4 border-t border-border text-muted text-sm md:text-base leading-relaxed hidden"></div>
                     </div>
 
                     <!-- Related Videos Grid -->
@@ -207,23 +369,18 @@
                             <i class="fas fa-th-large text-primary"></i>
                             Related Videos
                         </h2>
-                        <div id="relatedVideosGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                            <!-- Related videos will be inserted here -->
-                        </div>
+                        <div id="relatedVideosGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4"></div>
                     </section>
                 </div>
 
                 <!-- Sidebar Column -->
                 <aside class="hidden xl:block xl:col-span-1 space-y-4 md:space-y-6">
-                    <!-- Shorts/Up Next -->
                     <div class="bg-card border border-border rounded-xl p-4">
                         <h3 class="font-bold mb-4 flex items-center gap-2 text-sm md:text-base">
                             <i class="fas fa-mobile-alt text-primary"></i>
                             Related Shorts
                         </h3>
-                        <div id="shortsSidebar" class="space-y-3">
-                            <!-- Shorts will be inserted here as vertical list -->
-                        </div>
+                        <div id="shortsSidebar" class="space-y-3"></div>
                     </div>
                 </aside>
             </div>
@@ -235,9 +392,7 @@
                     Related Shorts
                 </h2>
                 <div class="relative">
-                    <div id="shortsCarousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2">
-                        <!-- Shorts will be inserted here -->
-                    </div>
+                    <div id="shortsCarousel" class="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-2"></div>
                 </div>
             </section>
         </div>
@@ -273,17 +428,6 @@
         </div>
     </div>
 
-    <!-- ✅ Video.js Script - Using reliable CDN with fallback -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video.min.js"></script>
-    
-    <!-- Fallback if CDN fails -->
-    <script>
-        if (typeof videojs === 'undefined') {
-            console.warn('Video.js failed to load from CDN, falling back to native player');
-            window.USE_NATIVE_PLAYER = true;
-        }
-    </script>
-
     <script>
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
@@ -294,11 +438,179 @@
         let currentVideo = null;
         let videoPlayer = null;
         let viewTracked = false;
+        let isPlaying = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Page loaded, initializing...');
+            initCustomPlayer();
             loadVideo();
         });
+
+        // Initialize Custom HTML5 Player
+        function initCustomPlayer() {
+            videoPlayer = document.getElementById('videoPlayer');
+            const wrapper = document.getElementById('videoPlayerWrapper');
+            const bigPlayBtn = document.getElementById('bigPlayButton');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const muteBtn = document.getElementById('muteBtn');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const speedBtn = document.getElementById('speedBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+            // Big Play Button
+            bigPlayBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+            });
+
+            // Play/Pause Button
+            playPauseBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+            });
+
+            // Update play button icon
+            videoPlayer.addEventListener('play', () => {
+                isPlaying = true;
+                bigPlayBtn.classList.add('hidden');
+                wrapper.classList.remove('paused');
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+
+            videoPlayer.addEventListener('pause', () => {
+                isPlaying = false;
+                bigPlayBtn.classList.remove('hidden');
+                bigPlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+                wrapper.classList.add('paused');
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+
+            videoPlayer.addEventListener('ended', () => {
+                isPlaying = false;
+                bigPlayBtn.classList.remove('hidden');
+                bigPlayBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                trackView(true);
+            });
+
+            // Progress Bar
+            videoPlayer.addEventListener('timeupdate', () => {
+                const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progressFill.style.width = progress + '%';
+                currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+                
+                if (!viewTracked && videoPlayer.duration > 0) {
+                    const progressRatio = videoPlayer.currentTime / videoPlayer.duration;
+                    if (progressRatio >= 0.5) {
+                        trackView(false);
+                    }
+                }
+            });
+
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(videoPlayer.duration);
+            });
+
+            // Click on progress bar to seek
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                videoPlayer.currentTime = pos * videoPlayer.duration;
+            });
+
+            // Volume Control
+            muteBtn.addEventListener('click', () => {
+                videoPlayer.muted = !videoPlayer.muted;
+                updateVolumeIcon();
+            });
+
+            volumeSlider.addEventListener('input', (e) => {
+                videoPlayer.volume = e.target.value;
+                videoPlayer.muted = false;
+                updateVolumeIcon();
+            });
+
+            function updateVolumeIcon() {
+                const icon = muteBtn.querySelector('i');
+                if (videoPlayer.muted || videoPlayer.volume === 0) {
+                    icon.className = 'fas fa-volume-xmark';
+                } else if (videoPlayer.volume < 0.5) {
+                    icon.className = 'fas fa-volume-low';
+                } else {
+                    icon.className = 'fas fa-volume-high';
+                }
+            }
+
+            // Playback Speed
+            const speeds = [0.5, 1, 1.5, 2];
+            let currentSpeedIndex = 1;
+            speedBtn.addEventListener('click', () => {
+                currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+                videoPlayer.playbackRate = speeds[currentSpeedIndex];
+                speedBtn.innerHTML = `<span class="text-sm">${speeds[currentSpeedIndex]}x</span>`;
+            });
+
+            // Fullscreen
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    wrapper.requestFullscreen();
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                } else {
+                    document.exitFullscreen();
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                switch(e.key.toLowerCase()) {
+                    case ' ':
+                    case 'k':
+                        e.preventDefault();
+                        if (videoPlayer.paused) videoPlayer.play();
+                        else videoPlayer.pause();
+                        break;
+                    case 'f':
+                        if (!document.fullscreenElement) {
+                            wrapper.requestFullscreen();
+                            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                        } else {
+                            document.exitFullscreen();
+                            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                        }
+                        break;
+                    case 'm':
+                        videoPlayer.muted = !videoPlayer.muted;
+                        updateVolumeIcon();
+                        break;
+                    case 'arrowleft':
+                        videoPlayer.currentTime -= 5;
+                        break;
+                    case 'arrowright':
+                        videoPlayer.currentTime += 5;
+                        break;
+                }
+            });
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
 
         function generateSessionId() {
             return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
@@ -307,171 +619,57 @@
         async function loadVideo() {
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('id');
-            console.log('📹 Video ID from URL:', videoId);
             
             if (!videoId) {
-                showError('Video ID is required. Please use: video.html?id=VIDEO_ID');
+                showError('Video ID is required');
                 return;
             }
             
             try {
-                console.log('📡 Fetching video from API...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
-                console.log('✅ API Response status:', response.status);
                 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ API Error:', errorText);
-                    throw new Error(`API returned ${response.status}: ${errorText}`);
+                    throw new Error(`API returned ${response.status}`);
                 }
                 
                 const data = await response.json();
                 console.log('📦 Video data received:', data);
                 
-                if (!data || !data.videoUrl) {
-                    console.error('❌ Missing video URL in response');
-                    throw new Error('Video URL is missing from API response');
+                // Clean URLs
+                const cleanVideoUrl = (data.videoUrl || '').replace(/\/+/g, '/').trim();
+                const cleanThumbnail = data.thumbnail ? data.thumbnail.replace(/\/+/g, '/').trim() : data.thumbnail;
+                
+                if (!cleanVideoUrl) {
+                    throw new Error('Video URL is missing');
                 }
                 
-                currentVideo = data;
+                currentVideo = { ...data, videoUrl: cleanVideoUrl, thumbnail: cleanThumbnail };
                 document.getElementById('pageTitle').textContent = `${data.title} - Xplitleaks`;
                 
-                setupPlayer(data);
+                // Set video source
+                const source = videoPlayer.querySelector('source');
+                source.src = cleanVideoUrl;
+                source.type = 'video/mp4';
+                
+                if (cleanThumbnail) {
+                    videoPlayer.setAttribute('poster', cleanThumbnail);
+                }
+                
+                videoPlayer.load();
+                
                 updateVideoInfo(data);
                 loadRelatedShorts(data);
                 loadRelatedVideos(data);
                 setTimeout(() => trackView(false), 10000);
                 
-                console.log('👁️ Showing video content...');
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('errorState').classList.add('hidden');
                 document.getElementById('videoContent').classList.remove('hidden');
                 
-                console.log('✅ Video content displayed successfully');
-                
             } catch (error) {
-                console.error('💥 Load video error:', error);
+                console.error('Load video error:', error);
                 showError('Failed to load video: ' + error.message);
             }
-        }
-
-        // ✅ SETUP PLAYER with fallback to native
-        function setupPlayer(video) {
-            console.log('🎬 Setting up player...');
-            console.log('🔗 Video URL:', video.videoUrl);
-            
-            // Check if Video.js is available
-            if (typeof videojs !== 'undefined' && !window.USE_NATIVE_PLAYER) {
-                // Use Video.js
-                console.log('✅ Using Video.js player');
-                videoPlayer = videojs('videoPlayer', {
-                    autoplay: false,
-                    controls: true,
-                    preload: 'metadata',
-                    fluid: true,
-                    responsive: true,
-                    playbackRates: [0.5, 1, 1.5, 2],
-                    controlBar: {
-                        children: [
-                            'playToggle',
-                            'volumePanel',
-                            'currentTimeDisplay',
-                            'timeDivider',
-                            'durationDisplay',
-                            'progressControl',
-                            'fullscreenToggle',
-                            'playbackRateMenuButton'
-                        ]
-                    }
-                }, function() {
-                    console.log('✅ Video.js player ready');
-                    
-                    this.src({ src: video.videoUrl, type: 'video/mp4' });
-                    
-                    if (video.thumbnail) {
-                        this.poster(video.thumbnail);
-                    }
-                    
-                    this.load();
-                    
-                    this.on('error', () => {
-                        const error = this.error();
-                        console.error('❌ Video.js error:', error);
-                        showVideoError('Failed to load video file.');
-                    });
-                    
-                    this.on('loadeddata', () => {
-                        console.log('✅ Video loaded successfully');
-                    });
-                    
-                    this.on('canplay', () => {
-                        console.log('✅ Video can play');
-                    });
-                    
-                    this.on('ended', () => {
-                        console.log('⏹️ Video ended, tracking view');
-                        trackView(true);
-                    });
-                    
-                    this.on('timeupdate', () => {
-                        if (this.duration() > 0 && !viewTracked) {
-                            const progress = this.currentTime() / this.duration();
-                            if (progress >= 0.5) {
-                                console.log('📊 50% watched, tracking view');
-                                trackView(false);
-                            }
-                        }
-                    });
-                });
-            } else {
-                // Fallback to native HTML5 player
-                console.log('⚠️ Using native HTML5 player (Video.js not available)');
-                const nativePlayer = document.getElementById('videoPlayer');
-                
-                const source = nativePlayer.querySelector('source');
-                if (source) {
-                    source.src = video.videoUrl;
-                    source.type = 'video/mp4';
-                }
-                
-                if (video.thumbnail) {
-                    nativePlayer.setAttribute('poster', video.thumbnail);
-                }
-                
-                nativePlayer.addEventListener('error', () => {
-                    console.error('❌ Native video error');
-                    showVideoError('Failed to load video file.');
-                });
-                
-                nativePlayer.addEventListener('loadeddata', () => {
-                    console.log('✅ Video loaded successfully');
-                });
-                
-                nativePlayer.addEventListener('ended', () => {
-                    console.log('⏹️ Video ended, tracking view');
-                    trackView(true);
-                });
-                
-                nativePlayer.addEventListener('timeupdate', () => {
-                    if (nativePlayer.duration > 0 && !viewTracked) {
-                        const progress = nativePlayer.currentTime / nativePlayer.duration;
-                        if (progress >= 0.5) {
-                            console.log('📊 50% watched, tracking view');
-                            trackView(false);
-                        }
-                    }
-                });
-                
-                videoPlayer = nativePlayer;
-                nativePlayer.load();
-            }
-        }
-
-        function showVideoError(message) {
-            const errorDiv = document.getElementById('videoErrorMessage');
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-            showToast('Video playback error', 'error');
         }
 
         function updateVideoInfo(video) {
@@ -538,14 +736,7 @@
                     countEl.textContent = formatNumber(currentVideo.likes);
                 }
             } catch (error) {
-                console.error('❌ Like error:', error);
-                if (wasLiked) {
-                    btn.classList.add('bg-primary', 'border-primary');
-                    icon.className = 'fas fa-heart';
-                } else {
-                    btn.classList.remove('bg-primary', 'border-primary');
-                    icon.className = 'far fa-heart';
-                }
+                console.error('Like error:', error);
                 showToast('Failed to update like', 'error');
             }
         }
@@ -554,20 +745,8 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                let watchDuration = 0.5;
-                let watchTime = 0;
-                
-                if (videoPlayer) {
-                    if (typeof videoPlayer.currentTime === 'function') {
-                        // Video.js
-                        watchDuration = isComplete ? 1 : (videoPlayer.currentTime() / videoPlayer.duration()) || 0.5;
-                        watchTime = videoPlayer.currentTime() || 0;
-                    } else {
-                        // Native
-                        watchDuration = isComplete ? 1 : (videoPlayer.currentTime / videoPlayer.duration) || 0.5;
-                        watchTime = videoPlayer.currentTime || 0;
-                    }
-                }
+                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
+                const watchTime = videoPlayer?.currentTime || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
@@ -576,9 +755,8 @@
                 });
                 
                 viewTracked = true;
-                console.log('✅ View tracked successfully');
             } catch (error) {
-                console.error('❌ Track view error:', error);
+                console.error('Track view error:', error);
             }
         }
 
@@ -603,7 +781,6 @@
                     copyLink();
                 }
             } catch (error) {
-                console.error('❌ Share error:', error);
                 copyLink();
             }
         }
@@ -641,7 +818,6 @@
             const sidebar = document.getElementById('shortsSidebar');
             
             try {
-                console.log('📱 Loading related shorts...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
                 let shorts = await response.json();
                 
@@ -662,59 +838,46 @@
                     }
                 }
             } catch (error) {
-                console.error('❌ Load shorts error:', error);
+                console.error('Load shorts error:', error);
             }
         }
 
         function createShortCardCompact(short) {
-            return `
-                <a href="shorts.html?id=${short.numericId}" class="flex-none w-[120px] md:w-[140px] bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all group">
-                    <div class="relative aspect-[9/16]">
-                        <img src="${short.thumbnail || ''}" 
-                            alt="${short.title}" 
-                            class="w-full h-full object-cover"
-                            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22200%22><rect fill=%22%23333%22 width=%22120%22 height=%22200%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
-                        <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
+            return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[120px] md:w-[140px] bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-all group">
+                <div class="relative aspect-[9/16]">
+                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover"
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22200%22><rect fill=%22%23333%22 width=%22120%22 height=%22200%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
+                    <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
+                </div>
+                <div class="p-2">
+                    <h4 class="text-xs font-semibold line-clamp-2 group-hover:text-primary">${short.title}</h4>
+                    <div class="flex items-center gap-1 text-xs text-muted mt-1">
+                        <span><i class="fas fa-eye text-[10px]"></i> ${formatNumber(short.views || 0)}</span>
                     </div>
-                    <div class="p-2">
-                        <h4 class="text-xs font-semibold line-clamp-2 group-hover:text-primary">${short.title}</h4>
-                        <div class="flex items-center gap-1 text-xs text-muted mt-1">
-                            <span><i class="fas fa-eye text-[10px]"></i> ${formatNumber(short.views || 0)}</span>
-                        </div>
-                    </div>
-                </a>
-            `;
+                </div>
+            </a>`;
         }
 
         function createShortSidebarItem(short) {
-            return `
-                <a href="shorts.html?id=${short.numericId}" class="flex gap-3 group">
-                    <div class="relative w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden">
-                        <img src="${short.thumbnail || ''}" 
-                             alt="${short.title}" 
-                             class="w-full h-full object-cover"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22150%22><rect fill=%22%23333%22 width=%22100%22 height=%22150%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
-                        <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">
-                            ${short.duration || '0:00'}
-                        </span>
+            return `<a href="shorts.html?id=${short.numericId}" class="flex gap-3 group">
+                <div class="relative w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden">
+                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover"
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22150%22><rect fill=%22%23333%22 width=%22100%22 height=%22150%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumb</text></svg>';">
+                    <span class="absolute bottom-1 right-1 bg-black/80 text-white px-1 py-0.5 rounded text-xs">${short.duration || '0:00'}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">${short.title}</h4>
+                    <div class="flex items-center gap-2 text-xs text-muted mt-1">
+                        <span><i class="fas fa-eye"></i> ${formatNumber(short.views || 0)}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">
-                            ${short.title}
-                        </h4>
-                        <div class="flex items-center gap-2 text-xs text-muted mt-1">
-                            <span><i class="fas fa-eye"></i> ${formatNumber(short.views || 0)}</span>
-                        </div>
-                    </div>
-                </a>
-            `;
+                </div>
+            </a>`;
         }
 
         async function loadRelatedVideos(video) {
             const container = document.getElementById('relatedVideosGrid');
             
             try {
-                console.log('🎬 Loading recommended videos...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=12`);
                 const videos = await response.json();
                 
@@ -724,32 +887,24 @@
                     container.innerHTML = filtered.map(v => createVideoCardResponsive(v)).join('');
                 }
             } catch (error) {
-                console.error('❌ Load recommendations error:', error);
+                console.error('Load recommendations error:', error);
             }
         }
 
         function createVideoCardResponsive(video) {
-            return `
-                <a href="video.html?id=${video.numericId || video.id}" class="group block">
-                    <div class="relative aspect-video rounded-lg overflow-hidden mb-2 bg-dark">
-                        <img src="${video.thumbnail || ''}" 
-                             alt="${video.title}" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-1.5 py-0.5 rounded text-xs font-semibold">
-                            ${video.duration || '0:00'}
-                        </span>
-                    </div>
-                    <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-                        ${video.title}
-                    </h3>
-                    <div class="flex items-center gap-2 text-xs text-muted mt-1">
-                        <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
-                        <span>•</span>
-                        <span>${video.uploadDate || 'N/A'}</span>
-                    </div>
-                </a>
-            `;
+            return `<a href="video.html?id=${video.numericId || video.id}" class="group block">
+                <div class="relative aspect-video rounded-lg overflow-hidden mb-2 bg-dark">
+                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22>No Thumbnail</text></svg>';">
+                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-1.5 py-0.5 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
+                </div>
+                <h3 class="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight">${video.title}</h3>
+                <div class="flex items-center gap-2 text-xs text-muted mt-1">
+                    <span><i class="fas fa-eye"></i> ${formatNumber(video.views || 0)}</span>
+                    <span>•</span>
+                    <span>${video.uploadDate || 'N/A'}</span>
+                </div>
+            </a>`;
         }
 
         function openReportModal() {
@@ -778,13 +933,11 @@
                 showToast('Report submitted successfully', 'success');
                 closeReportModal();
             } catch (error) {
-                console.error('❌ Submit report error:', error);
                 showToast('Failed to submit report', 'error');
             }
         }
 
         function showError(message) {
-            console.error('❌ Showing error:', message);
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('errorState').classList.remove('hidden');
             document.getElementById('errorMessage').textContent = message;
