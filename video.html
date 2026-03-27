@@ -26,8 +26,7 @@
                         muted: '#888888',
                         success: '#00d084',
                         warning: '#ffab00',
-                        danger: '#ff0050',
-                        appblue: '#001489'
+                        danger: '#ff0050'
                     }
                 }
             }
@@ -124,15 +123,15 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="bg-appblue text-white font-sans antialiased min-h-screen overflow-x-hidden">
+<body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
 
     <!-- Header -->
-    <header class="bg-appblue border-b border-white/10 sticky top-0 z-[1000] px-4 py-3 flex justify-between items-center">
-        <div class="text-xl font-bold text-white">Xplitleaks</div>
-        <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-all">
+    <header class="bg-dark border-b border-border sticky top-0 z-[1000] px-4 py-3 flex justify-between items-center">
+        <div class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Xplitleaks</div>
+        <a href="index.html" class="inline-flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-lg text-sm hover:bg-primary hover:border-primary transition-all">
             <i class="fas fa-arrow-left"></i><span class="hidden sm:inline">Back</span>
         </a>
     </header>
@@ -151,7 +150,7 @@
             <i class="fas fa-exclamation-triangle text-6xl text-danger mb-4"></i>
             <h2 class="text-2xl font-bold mb-2">Video Not Found</h2>
             <p id="errorMessage" class="text-muted mb-6">The video you're looking for doesn't exist or has been removed.</p>
-            <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all">
+            <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-primary hover:border-primary transition-all">
                 <i class="fas fa-home"></i><span>Back to Home</span>
             </a>
         </div>
@@ -160,9 +159,9 @@
         <div id="videoContent" class="hidden animate-fade-in">
             
             <!-- Video Player Section -->
-            <section class="w-full bg-appblue mb-4">
+            <section class="w-full mb-4">
                 <!-- Full-width Video Player -->
-                <div class="video-player-container">
+                <div class="video-player-container rounded-xl overflow-hidden border border-border mb-4">
                     <div class="video-aspect">
                         <video id="videoPlayer" controls playsinline preload="metadata" poster="">
                             <source src="" type="video/mp4" />
@@ -172,69 +171,71 @@
                 </div>
 
                 <!-- Video Info - Adaptive Layout -->
-                <div class="px-4 py-3">
+                <div class="bg-card border border-border rounded-xl p-4 sm:p-6">
                     <!-- Title - Adaptive font size -->
-                    <h1 id="videoTitle" class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-3 text-white leading-tight">
+                    <h1 id="videoTitle" class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-4 leading-tight">
                         Loading...
                     </h1>
                     
                     <!-- Category, Duration, Views, Date -->
                     <div class="flex flex-wrap items-center gap-3 mb-4">
-                        <span id="videoCategory" class="bg-yellow-500 text-black px-2.5 py-1 rounded text-xs font-bold">
+                        <span id="videoCategory" class="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-semibold">
                             Category
                         </span>
-                        <span class="text-sm text-white/80 flex items-center gap-1">
+                        <span class="text-sm text-muted flex items-center gap-1">
                             <i class="far fa-clock text-xs"></i>
                             <span id="videoDuration">0:00</span>
                         </span>
-                        <span class="text-sm text-white/60 flex items-center gap-1">
+                        <span class="text-sm text-muted flex items-center gap-1">
                             <i class="fas fa-eye text-xs"></i>
                             <span id="videoViews">0</span> views
                         </span>
-                        <span class="text-sm text-white/60 flex items-center gap-1">
+                        <span class="text-sm text-muted flex items-center gap-1">
                             <i class="fas fa-calendar text-xs"></i>
                             <span id="videoDate">N/A</span>
                         </span>
                     </div>
 
                     <!-- Action Buttons - Responsive -->
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <button id="likeBtn" onclick="toggleLike()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm sm:text-base">
+                    <div class="flex flex-wrap gap-3 py-4 border-t border-border">
+                        <button id="likeBtn" onclick="toggleLike()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
                             <i class="far fa-heart"></i>
                             <span>Like</span>
-                            <span id="likeCount" class="text-white/60">0</span>
+                            <span id="likeCount" class="text-muted text-sm">0</span>
                         </button>
-                        <button id="shareBtn" onclick="shareVideo()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm sm:text-base">
+                        <button id="shareBtn" onclick="shareVideo()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
                             <i class="fas fa-share"></i>
                             <span>Share</span>
                         </button>
-                        <button onclick="copyLink()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm sm:text-base">
+                        <button onclick="copyLink()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
                             <i class="fas fa-link"></i>
                             <span class="hidden sm:inline">Copy Link</span>
                             <span class="sm:hidden">Copy</span>
                         </button>
-                        <button onclick="openReportModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm sm:text-base">
+                        <button onclick="openReportModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
                             <i class="fas fa-flag"></i>
                             <span class="hidden sm:inline">Report</span>
                         </button>
                     </div>
                     
                     <!-- Description -->
-                    <div id="videoDescription" class="mt-4 pt-4 border-t border-white/10 text-sm text-white/70 hidden leading-relaxed"></div>
+                    <div id="videoDescription" class="text-muted leading-relaxed mt-4 pt-4 border-t border-border hidden"></div>
                     
                     <!-- Tags -->
-                    <div id="tagsContainer" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/10 hidden"></div>
+                    <div id="tagsContainer" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border hidden"></div>
                 </div>
             </section>
 
             <!-- Shorts Section - Horizontal Carousel -->
-            <section class="px-4 py-6 bg-appblue border-t border-white/10">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <section class="mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-3">
                         <i class="fas fa-mobile-alt text-primary"></i>
                         Related Shorts
                     </h2>
-                    <a href="shorts.html" class="text-primary text-sm font-medium">View All</a>
+                    <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
                 
                 <div id="shortsCarousel" class="shorts-carousel no-scrollbar">
@@ -246,10 +247,10 @@
             </section>
 
             <!-- Related Videos Section -->
-            <section class="px-4 py-6 bg-appblue">
-                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <section class="mb-8">
+                <h2 class="text-xl font-bold flex items-center gap-3 mb-6">
                     <i class="fas fa-th-large text-primary"></i>
-                    Related Videos
+                    Recommended for You
                 </h2>
                 
                 <div id="recommendedVideos" class="related-grid">
@@ -263,18 +264,18 @@
     </main>
 
     <!-- Report Modal -->
-    <div id="reportModal" class="hidden fixed inset-0 bg-black/90 z-[2000] flex items-center justify-center p-4">
-        <div class="bg-card border border-border rounded-xl p-6 max-w-[500px] w-full">
+    <div id="reportModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
+        <div class="bg-card border border-border rounded-xl p-6 sm:p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold flex items-center gap-2">
                     <i class="fas fa-flag text-primary"></i>Report Video
                 </h3>
-                <button onclick="closeReportModal()" class="text-muted hover:text-danger text-2xl">&times;</button>
+                <button onclick="closeReportModal()" class="text-muted hover:text-danger hover:rotate-90 transition-all text-2xl">&times;</button>
             </div>
             <form id="reportForm" onsubmit="submitReport(event)">
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm text-muted">Reason *</label>
-                    <select id="reportReason" required class="w-full px-3 py-2 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary">
+                <div class="mb-5">
+                    <label for="reportReason" class="block mb-2 text-sm text-muted">Reason *</label>
+                    <select id="reportReason" required class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary">
                         <option value="">Select a reason</option>
                         <option value="inappropriate">Inappropriate Content</option>
                         <option value="copyright">Copyright Violation</option>
@@ -283,12 +284,12 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm text-muted">Additional Details</label>
-                    <textarea id="reportDetails" rows="3" class="w-full px-3 py-2 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
+                <div class="mb-5">
+                    <label for="reportDetails" class="block mb-2 text-sm text-muted">Additional Details</label>
+                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details..." class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
                 </div>
-                <button type="submit" class="w-full py-3 bg-danger rounded-lg hover:bg-danger/90 transition-all font-medium">
-                    Submit Report
+                <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-danger border border-danger rounded-lg hover:bg-danger/90 transition-all">
+                    <i class="fas fa-paper-plane"></i>Submit Report
                 </button>
             </form>
         </div>
@@ -406,7 +407,7 @@
             const videoId = video.numericId || video.id;
             const likeBtn = document.getElementById('likeBtn');
             if (isLiked(videoId)) {
-                likeBtn.classList.add('bg-primary');
+                likeBtn.classList.add('bg-primary', 'border-primary');
                 likeBtn.querySelector('i').className = 'fas fa-heart';
             }
             
@@ -414,7 +415,7 @@
             const tagsContainer = document.getElementById('tagsContainer');
             if (tags.length > 0) {
                 tagsContainer.innerHTML = tags.map(tag =>
-                    `<a href="index.html?tag=${encodeURIComponent(tag)}" class="bg-white/10 px-3 py-1 rounded-full text-xs hover:bg-white/20 transition-all">#${tag}</a>`
+                    `<a href="index.html?tag=${encodeURIComponent(tag)}" class="bg-dark border border-border text-muted px-3 py-1 rounded-full text-sm hover:border-primary hover:text-primary transition-all">#${tag}</a>`
                 ).join('');
                 tagsContainer.classList.remove('hidden');
             }
@@ -437,12 +438,12 @@
                 if (response.ok) {
                     const data = await response.json();
                     if (data.action === 'liked') {
-                        btn.classList.add('bg-primary');
+                        btn.classList.add('bg-primary', 'border-primary');
                         icon.className = 'fas fa-heart';
                         currentVideo.likes = (currentVideo.likes || 0) + 1;
                         markAsLiked(videoId);
                     } else {
-                        btn.classList.remove('bg-primary');
+                        btn.classList.remove('bg-primary', 'border-primary');
                         icon.className = 'far fa-heart';
                         currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
                         markAsUnliked(videoId);
@@ -547,18 +548,18 @@
         // Shorts Card - Horizontal Carousel Style
         function createShortCard(short) {
             return `
-                <a href="shorts.html?id=${short.numericId}" class="short-card bg-dark rounded-xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group">
+                <a href="shorts.html?id=${short.numericId}" class="short-card bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                     <div class="relative aspect-[9/16]">
                         <img src="${short.thumbnail || ''}" 
                             alt="${short.title}" 
-                            class="w-full h-full object-cover" 
+                            class="w-full h-full object-cover bg-dark" 
                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22500%22><rect fill=%22%23333%22 width=%22280%22 height=%22500%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22>No Thumbnail</text></svg>';">
                         
                         <!-- Overlay gradient -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
                         
                         <!-- Duration badge -->
-                        <span class="absolute top-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
                             ${short.duration || '0:00'}
                         </span>
                         
@@ -570,11 +571,14 @@
                         </div>
                         
                         <!-- Info overlay -->
-                        <div class="absolute bottom-0 left-0 right-0 p-3">
-                            <h3 class="font-bold text-white mb-1 line-clamp-2 text-xs sm:text-sm">${short.title}</h3>
-                            <div class="flex items-center gap-2 text-xs text-white/70">
+                        <div class="absolute bottom-0 left-0 right-0 p-4">
+                            <h3 class="font-semibold mb-2 line-clamp-2 text-sm">${short.title}</h3>
+                            <div class="flex gap-3 text-xs text-muted">
                                 <span class="flex items-center gap-1">
-                                    <i class="fas fa-eye text-[10px]"></i> ${formatNumber(short.views || 0)}
+                                    <i class="fas fa-eye text-primary"></i> ${formatNumber(short.views || 0)}
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i class="fas fa-heart text-primary"></i> ${formatNumber(short.likes || 0)}
                                 </span>
                             </div>
                         </div>
@@ -604,15 +608,15 @@
         // Video Card - Grid Style
         function createVideoCard(video) {
             return `
-                <a href="video.html?id=${video.numericId || video.id}" class="bg-dark rounded-lg overflow-hidden border border-white/10 hover:border-primary/50 transition-all group">
+                <a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                     <div class="relative aspect-video">
                         <img src="${video.thumbnail || ''}" 
                             alt="${video.title}" 
-                            class="w-full h-full object-cover" 
+                            class="w-full h-full object-cover bg-dark" 
                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22><rect fill=%22%23333%22 width=%22280%22 height=%22180%22/><text fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22>No Thumbnail</text></svg>';">
                         
                         <!-- Duration -->
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-1.5 py-0.5 rounded text-xs">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
                             ${video.duration || '0:00'}
                         </span>
                         
@@ -620,13 +624,15 @@
                         <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     
-                    <div class="p-3">
-                        <h3 class="font-semibold text-sm text-white mb-2 line-clamp-2 leading-tight">${video.title}</h3>
-                        <div class="flex items-center justify-between text-xs text-white/60">
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2 line-clamp-2">${video.title}</h3>
+                        <div class="flex flex-wrap gap-3 text-sm text-muted">
                             <span class="flex items-center gap-1">
-                                <i class="fas fa-eye text-[10px]"></i> ${formatNumber(video.views || 0)}
+                                <i class="fas fa-eye text-primary"></i> ${formatNumber(video.views || 0)}
                             </span>
-                            <span>${video.uploadDate || 'N/A'}</span>
+                            <span class="flex items-center gap-1">
+                                <i class="fas fa-clock text-primary"></i> ${video.uploadDate || 'N/A'}
+                            </span>
                         </div>
                     </div>
                 </a>
