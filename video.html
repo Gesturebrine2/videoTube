@@ -36,11 +36,6 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Vidstack Player - CDN Bundle -->
-    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
-    <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
-    <script type="module" src="https://cdn.vidstack.io/player"></script>
-    
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
@@ -49,42 +44,27 @@
         * { transition: background-color 0.2s, border-color 0.2s, transform 0.2s; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Vidstack Custom Theme Overrides for Xplitleaks */
-        media-player {
-            --media-brand: #ff0050;
-            --media-focus-ring: 0 0 0 2px #ff0050;
-            --media-slider-track-bg: #333333;
-            --media-slider-track-fill-bg: #ff0050;
-            --media-menu-bg: #1a1a1a;
-            --media-menu-border: #333333;
-            --media-tooltip-bg: #1a1a1a;
-            --media-tooltip-border: #333333;
-            --media-time-bg: rgba(0, 0, 0, 0.8);
-            --media-control-bg: rgba(26, 26, 26, 0.8);
-            --media-control-hover-bg: #ff0050;
-            --media-control-hover-color: white;
-            --media-volume-slider-bg: #333333;
-            --media-volume-slider-fill-bg: #ff0050;
-        }
-        
-        /* Custom aspect ratio container for Vidstack */
-        .vidstack-container {
+        .video-aspect {
             position: relative;
-            width: 100%;
-            background: #000;
-            border-radius: 0.75rem;
+            padding-bottom: 56.25%;
+            height: 0;
             overflow: hidden;
-            border: 1px solid #333333;
         }
-        
+        .video-aspect video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
-<base target="_blank">
 </head>
 <body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
 
@@ -123,28 +103,11 @@
             
             <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
-                <!-- Vidstack Player Container -->
-                <div class="vidstack-container mb-6">
-                    <media-player
-                        id="vidstackPlayer"
-                        load="lazy"
-                        playsinline
-                        aspect-ratio="16/9"
-                        title="Loading..."
-                    >
-                        <media-provider>
-                            <source id="videoSource" src="" type="video/mp4" />
-                        </media-provider>
-                        
-                        <!-- Vidstack Default Layout with Custom Branding -->
-                        <media-video-layout 
-                            thumbnails=""
-                            icons="default"
-                        >
-                            <!-- Custom slots for branding -->
-                            <media-tooltip slot="tooltip" position="top center"></media-tooltip>
-                        </media-video-layout>
-                    </media-player>
+                <div class="video-aspect bg-dark rounded-xl overflow-hidden border border-border mb-6">
+                    <video id="videoPlayer" class="w-full h-full" controls playsinline preload="metadata" poster="">
+                        <source src="" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
 
                 <div id="videoErrorMessage" class="hidden bg-danger/10 border border-danger text-danger p-4 rounded-lg mb-6 text-center"></div>
@@ -253,7 +216,7 @@
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
         let currentVideo = null;
-        let vidstackPlayer = null;
+        let videoPlayer = null;
         let viewTracked = false;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -301,6 +264,7 @@
                 updateVideoInfo(data);
                 loadRelatedShorts(data);
                 loadRecommendedVideos(data);
+                setTimeout(() => trackView(false), 10000);
                 
                 console.log('👁️ Showing video content...');
                 document.getElementById('loadingState').classList.add('hidden');
@@ -316,72 +280,55 @@
         }
 
         function setupPlayer(video) {
-            vidstackPlayer = document.getElementById('vidstackPlayer');
-            const videoSource = document.getElementById('videoSource');
-            
-            console.log('🎬 Setting up Vidstack player...');
+            videoPlayer = document.getElementById('videoPlayer');
+            console.log('🎬 Setting up native video player...');
             console.log('🔗 Video URL:', video.videoUrl);
             
-            if (!vidstackPlayer) {
-                console.error('❌ Vidstack player element not found!');
+            if (!videoPlayer) {
+                console.error('❌ Video player element not found!');
                 return;
             }
             
-            // Set player attributes
-            vidstackPlayer.setAttribute('title', video.title);
+            const source = videoPlayer.querySelector('source');
+            if (source) {
+                source.src = video.videoUrl;
+                source.type = 'video/mp4';
+            }
+            
             if (video.thumbnail) {
-                vidstackPlayer.setAttribute('poster', video.thumbnail);
+                videoPlayer.setAttribute('poster', video.thumbnail);
             }
             
-            // Set source
-            if (videoSource) {
-                videoSource.src = video.videoUrl;
-                videoSource.type = 'video/mp4';
-            }
-            
-            // Vidstack event listeners for view tracking
-            vidstackPlayer.addEventListener('loaded-data', () => {
-                console.log('✅ Video loaded successfully');
-            });
-            
-            vidstackPlayer.addEventListener('can-play', () => {
-                console.log('✅ Video can play');
-            });
-            
-            vidstackPlayer.addEventListener('error', (event) => {
-                console.error('❌ Vidstack player error:', event);
+            videoPlayer.addEventListener('error', (e) => {
+                console.error('❌ Video element error:', e);
+                console.error('❌ Error code:', videoPlayer.error?.code);
                 showVideoError('Failed to load video file. The file may be unavailable.');
             });
             
-            // View tracking - track after 10 seconds or 50% watched
-            vidstackPlayer.addEventListener('ended', () => {
+            videoPlayer.addEventListener('loadeddata', () => {
+                console.log('✅ Video loaded successfully');
+            });
+            
+            videoPlayer.addEventListener('canplay', () => {
+                console.log('✅ Video can play');
+            });
+            
+            videoPlayer.load();
+            
+            videoPlayer.addEventListener('ended', () => {
                 console.log('⏹️ Video ended, tracking view');
                 trackView(true);
             });
             
-            // Track time updates for 50% progress
-            let duration = 0;
-            vidstackPlayer.addEventListener('duration-change', (e) => {
-                duration = e.detail;
-            });
-            
-            vidstackPlayer.addEventListener('time-update', (e) => {
-                const currentTime = e.detail;
-                if (duration > 0 && !viewTracked) {
-                    const progress = currentTime / duration;
+            videoPlayer.addEventListener('timeupdate', () => {
+                if (videoPlayer.duration > 0 && !viewTracked) {
+                    const progress = videoPlayer.currentTime / videoPlayer.duration;
                     if (progress >= 0.5) {
                         console.log('📊 50% watched, tracking view');
                         trackView(false);
                     }
                 }
             });
-            
-            // Also track view after 10 seconds of playback
-            setTimeout(() => {
-                if (!viewTracked && vidstackPlayer.state?.playing) {
-                    trackView(false);
-                }
-            }, 10000);
         }
 
         function showVideoError(message) {
@@ -472,8 +419,8 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : 0.5;
-                const watchTime = vidstackPlayer?.currentTime || 0;
+                const watchDuration = isComplete ? 1 : (videoPlayer?.currentTime / videoPlayer?.duration) || 0.5;
+                const watchTime = videoPlayer?.currentTime || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
@@ -566,6 +513,7 @@
             }
         }
 
+        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createShortCard(short) {
             return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-[9/16]">
@@ -613,6 +561,7 @@
             }
         }
 
+        // ✅ FIXED: Added this.onerror=null to prevent infinite loop
         function createVideoCard(video) {
             return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
                 <div class="relative aspect-video">
