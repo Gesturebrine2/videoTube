@@ -36,8 +36,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ✅ ADDED: Fluid Player CSS -->
-    <link rel="stylesheet" href="https://cdn.fluidplayer.com/docs/3.x.x/fluidplayer.css"/>
+    <!-- ✅ FIXED: Correct Fluid Player CDN v3 (CSS embedded, no separate link needed) -->
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
     
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -62,7 +62,7 @@
             object-fit: contain;
             background: #000;
         }
-        /* ✅ ADDED: Fluid Player responsive fix */
+        /* ✅ Fluid Player responsive container fix */
         .video-aspect .fluid_video_wrapper {
             position: absolute !important;
             top: 0 !important;
@@ -115,7 +115,6 @@
             <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
                 <div class="video-aspect bg-dark rounded-xl overflow-hidden border border-border mb-6">
-                    <!-- ✅ NO CHANGE NEEDED: Fluid Player uses the same video tag -->
                     <video id="videoPlayer" class="w-full h-full" controls playsinline preload="metadata" poster="">
                         <source src="" type="video/mp4" />
                         Your browser does not support the video tag.
@@ -220,9 +219,6 @@
         </div>
     </div>
 
-    <!-- ✅ ADDED: Fluid Player JS -->
-    <script src="https://cdn.fluidplayer.com/docs/3.x.x/fluidplayer.js"></script>
-
     <script>
         const CONFIG = {
             apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
@@ -231,7 +227,7 @@
         localStorage.setItem('sessionId', CONFIG.sessionId);
 
         let currentVideo = null;
-        let videoPlayer = null; // This will now hold the Fluid Player instance
+        let videoPlayer = null; // Will hold Fluid Player instance
         let viewTracked = false;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -294,44 +290,47 @@
             }
         }
 
-        // ✅ REPLACED: setupPlayer function for Fluid Player
+        // ✅ UPDATED: setupPlayer for Fluid Player
         function setupPlayer(video) {
             console.log('🎬 Setting up Fluid Player...');
             console.log('🔗 Video URL:', video.videoUrl);
             
-            // Set the video source before initializing Fluid Player
             const videoElement = document.getElementById('videoPlayer');
             if (!videoElement) {
                 console.error('❌ Video player element not found!');
                 return;
             }
             
+            // Set source before initialization
             const source = videoElement.querySelector('source');
             if (source) {
                 source.src = video.videoUrl;
                 source.type = 'video/mp4';
             }
-            
             if (video.thumbnail) {
                 videoElement.setAttribute('poster', video.thumbnail);
             }
             
-            // ✅ Initialize Fluid Player
+            // Safety check for Fluid Player library
+            if (typeof fluidPlayer === 'undefined') {
+                console.error('❌ Fluid Player library not loaded');
+                showVideoError('Player failed to load. Please refresh.');
+                return;
+            }
+            
+            // Initialize Fluid Player
             videoPlayer = fluidPlayer('videoPlayer', {
                 layoutControls: {
-                    controlBar: {
-                        autoHideTimeout: 3,
-                        animated: true,
-                        autoHide: true
-                    },
                     fillToContainer: true,
-                    primaryColor: '#ff0050', // Matches your primary color
+                    primaryColor: '#ff0050',
                     playbackRateEnabled: true,
                     allowTheatre: false,
                     autoPlay: false,
                     mute: false,
-                    playerInitCallback: function() {
-                        console.log('✅ Fluid Player initialized');
+                    controlBar: {
+                        autoHide: true,
+                        autoHideTimeout: 3,
+                        animated: true
                     }
                 },
                 vastOptions: {
@@ -340,37 +339,34 @@
                 }
             });
             
-            // ✅ Fluid Player event listeners (adapted from native)
-            videoPlayer.on('ended', () => {
-                console.log('⏹️ Video ended, tracking view');
-                trackView(true);
-            });
+            console.log('✅ Fluid Player initialized');
             
-            videoPlayer.on('timeupdate', () => {
-                if (!viewTracked) {
-                    // Fluid Player API: getCurrentTime() and getDuration()
-                    const currentTime = videoPlayer.getCurrentTime();
-                    const duration = videoPlayer.getDuration();
-                    if (duration > 0) {
-                        const progress = currentTime / duration;
-                        if (progress >= 0.5) {
-                            console.log('📊 50% watched, tracking view');
-                            trackView(false);
+            // Fluid Player event listeners
+            if (videoPlayer && typeof videoPlayer.on === 'function') {
+                videoPlayer.on('ended', () => {
+                    console.log('⏹️ Video ended, tracking view');
+                    trackView(true);
+                });
+                
+                videoPlayer.on('timeupdate', () => {
+                    if (!viewTracked) {
+                        const currentTime = videoPlayer.getCurrentTime();
+                        const duration = videoPlayer.getDuration();
+                        if (duration > 0) {
+                            const progress = currentTime / duration;
+                            if (progress >= 0.5) {
+                                console.log('📊 50% watched, tracking view');
+                                trackView(false);
+                            }
                         }
                     }
-                }
-            });
-            
-            videoPlayer.on('error', () => {
-                console.error('❌ Fluid Player error');
-                showVideoError('Failed to load video file. The file may be unavailable.');
-            });
-            
-            videoPlayer.on('play', () => {
-                console.log('▶️ Video playing');
-            });
-            
-            // No need to call .load() - Fluid Player handles this
+                });
+                
+                videoPlayer.on('error', () => {
+                    console.error('❌ Fluid Player error');
+                    showVideoError('Failed to load video file.');
+                });
+            }
         }
 
         function showVideoError(message) {
@@ -457,13 +453,16 @@
             }
         }
 
+        // ✅ UPDATED: trackView uses Fluid Player API methods
         async function trackView(isComplete) {
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                // ✅ Use Fluid Player methods for time/duration
-                const watchDuration = isComplete ? 1 : (videoPlayer?.getCurrentTime() / videoPlayer?.getDuration()) || 0.5;
-                const watchTime = videoPlayer?.getCurrentTime() || 0;
+                // Use Fluid Player methods
+                const currentTime = videoPlayer?.getCurrentTime ? videoPlayer.getCurrentTime() : 0;
+                const duration = videoPlayer?.getDuration ? videoPlayer.getDuration() : 1;
+                const watchDuration = isComplete ? 1 : (duration > 0 ? currentTime / duration : 0.5);
+                const watchTime = currentTime;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
