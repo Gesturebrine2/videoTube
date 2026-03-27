@@ -36,68 +36,58 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Vidstack CSS -->
-    <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
+    <!-- Vidstack CSS & JS (Combined CDN for easier setup) -->
+    <link rel="stylesheet" href="https://cdn.vidstack.io/player/styles/default/theme.css" />
+    <script src="https://cdn.vidstack.io/player/iife/index.js" defer></script>
     
-    <!-- Custom Styles for Vidstack & Animations -->
+    <!-- Custom Styles -->
     <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0a0a;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff0050;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff0050; }
+        * { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Smooth transitions */
-        * {
-            transition-property: background-color, border-color, color, fill, stroke;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-        }
-        
-        /* Hide scrollbar for carousel but keep functionality */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        
-        /* Vidstack theme customization */
-        .vidstack-player {
+        /* Vidstack theming */
+        media-player {
             --media-brand: #ff0050;
             --media-focus-ring: 0 0 0 3px rgba(255, 0, 80, 0.4);
+            --media-controls-color: white;
+            --media-controls-bg: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Ensure player container has proper sizing */
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .player-wrapper media-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body class="bg-darker text-white font-sans antialiased min-h-screen overflow-x-hidden">
 
-    <!-- ==================== TOAST CONTAINER ==================== -->
+    <!-- Toast Container -->
     <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
 
-    <!-- ==================== HEADER ==================== -->
+    <!-- Header -->
     <header class="bg-dark border-b border-border sticky top-0 z-[1000] px-4 md:px-8 py-4 flex justify-between items-center">
-        <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Xplitleaks
-        </div>
+        <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Xplitleaks</div>
         <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm hover:bg-primary hover:border-primary hover:-translate-x-1 transition-all">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to Home</span>
+            <i class="fas fa-arrow-left"></i><span>Back to Home</span>
         </a>
     </header>
 
-    <!-- ==================== MAIN CONTENT ==================== -->
+    <!-- Main Content -->
     <main class="max-w-[1200px] mx-auto px-4 md:px-8 py-8">
         
         <!-- Loading State -->
@@ -112,122 +102,87 @@
             <h2 class="text-2xl font-bold mb-2">Video Not Found</h2>
             <p id="errorMessage" class="text-muted mb-6">The video you're looking for doesn't exist or has been removed.</p>
             <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-primary hover:border-primary transition-all">
-                <i class="fas fa-home"></i>
-                <span>Back to Home</span>
+                <i class="fas fa-home"></i><span>Back to Home</span>
             </a>
         </div>
 
         <!-- Video Content -->
         <div id="videoContent" class="hidden">
             
-            <!-- ==================== VIDEO PLAYER SECTION ==================== -->
+            <!-- Video Player Section -->
             <section class="mb-8 max-w-[1000px] mx-auto">
-                <!-- Vidstack Player Container -->
-                <div class="bg-dark rounded-xl overflow-hidden border border-border mb-6 aspect-video relative">
-                    <media-player 
-                        id="videoPlayer" 
-                        class="w-full h-full"
-                        title="Video Player"
-                        src=""
-                        poster=""
-                        crossorigin
-                        playsinline
-                    >
+                <div class="player-wrapper bg-dark rounded-xl overflow-hidden border border-border mb-6">
+                    <!-- Vidstack Player with fallback to native video -->
+                    <media-player id="videoPlayer" title="Video Player" crossorigin playsinline class="w-full h-full">
+                        <source type="video/mp4" />
                         <media-video-layout></media-video-layout>
                     </media-player>
+                    
+                    <!-- Fallback native video if Vidstack fails -->
+                    <video id="videoFallback" class="hidden w-full h-full" controls playsinline poster="">
+                        <source src="" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
 
-                <!-- Video Error Message -->
                 <div id="videoErrorMessage" class="hidden bg-danger/10 border border-danger text-danger p-4 rounded-lg mb-6 text-center"></div>
 
                 <!-- Video Info Card -->
                 <div class="bg-card border border-border rounded-xl p-6 mb-6">
                     <h1 id="videoTitle" class="text-2xl font-bold mb-4">Loading...</h1>
                     
-                    <!-- Video Metadata -->
                     <div class="flex flex-wrap gap-4 items-center text-sm text-muted mb-4">
                         <span id="videoCategory" class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">Category</span>
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-eye text-primary"></i>
-                            <span id="videoViews">0</span> views
-                        </span>
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-clock text-primary"></i>
-                            <span id="videoDuration">0:00</span>
-                        </span>
-                        <span class="flex items-center gap-2">
-                            <i class="fas fa-calendar text-primary"></i>
-                            <span id="videoDate">N/A</span>
-                        </span>
+                        <span class="flex items-center gap-2"><i class="fas fa-eye text-primary"></i><span id="videoViews">0</span> views</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-clock text-primary"></i><span id="videoDuration">0:00</span></span>
+                        <span class="flex items-center gap-2"><i class="fas fa-calendar text-primary"></i><span id="videoDate">N/A</span></span>
                     </div>
 
-                    <!-- Engagement Buttons -->
                     <div class="flex flex-wrap gap-3 py-4 border-t border-border mt-4">
                         <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="far fa-heart"></i>
-                            <span>Like</span>
-                            <span id="likeCount" class="text-muted text-sm">0</span>
+                            <i class="far fa-heart"></i><span>Like</span><span id="likeCount" class="text-muted text-sm">0</span>
                         </button>
                         <button id="shareBtn" onclick="shareVideo()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-share"></i>
-                            <span>Share</span>
+                            <i class="fas fa-share"></i><span>Share</span>
                         </button>
                         <button onclick="copyLink()" class="flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-link"></i>
-                            <span>Copy Link</span>
+                            <i class="fas fa-link"></i><span>Copy Link</span>
                         </button>
                         <button onclick="openReportModal()" class="ml-auto flex items-center gap-2 px-5 py-3 bg-dark border border-border rounded-lg hover:bg-primary hover:border-primary hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-flag"></i>
-                            <span>Report</span>
+                            <i class="fas fa-flag"></i><span>Report</span>
                         </button>
                     </div>
 
-                    <!-- Video Description -->
                     <div id="videoDescription" class="text-muted leading-relaxed mt-4 pt-4 border-t border-border hidden"></div>
-                    
-                    <!-- Tags Container -->
                     <div id="tagsContainer" class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border hidden"></div>
                 </div>
             </section>
 
-            <!-- ==================== SHORTS CAROUSEL ==================== -->
+            <!-- Shorts Carousel -->
             <section class="mb-12 relative">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold flex items-center gap-3">
-                        <i class="fas fa-mobile-alt text-primary"></i>
-                        Related Shorts
-                    </h2>
-                    <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h2 class="text-2xl font-bold flex items-center gap-3"><i class="fas fa-mobile-alt text-primary"></i>Related Shorts</h2>
+                    <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
-                
                 <div class="relative">
-                    <!-- Scroll Buttons -->
-                    <button onclick="scrollShorts('left')" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all group-hover:opacity-100">
+                    <button onclick="scrollShorts('left')" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button onclick="scrollShorts('right')" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all group-hover:opacity-100">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-
-                    <!-- Shorts Carousel -->
                     <div id="shortsCarousel" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-4">
                         <div class="text-center py-16 w-full text-muted">
                             <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
                             <p>Loading shorts...</p>
                         </div>
                     </div>
+                    <button onclick="scrollShorts('right')" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-primary/80 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 hover:bg-primary transition-all">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </section>
 
-            <!-- ==================== RECOMMENDED VIDEOS ==================== -->
+            <!-- Recommended Videos -->
             <section class="mb-12">
-                <h2 class="text-2xl font-bold flex items-center gap-3 mb-6">
-                    <i class="fas fa-th-large text-primary"></i>
-                    Recommended for You
-                </h2>
-                
+                <h2 class="text-2xl font-bold flex items-center gap-3 mb-6"><i class="fas fa-th-large text-primary"></i>Recommended for You</h2>
                 <div id="recommendedVideos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <div class="text-center py-16 col-span-full text-muted">
                         <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
@@ -238,19 +193,13 @@
         </div>
     </main>
 
-    <!-- ==================== REPORT MODAL ==================== -->
+    <!-- Report Modal -->
     <div id="reportModal" class="hidden fixed inset-0 bg-black/80 z-[2000] flex items-center justify-center p-4">
-        <div class="bg-card border border-border rounded-xl p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto animate-[modalPop_0.3s_ease-out]">
+        <div class="bg-card border border-border rounded-xl p-8 max-w-[500px] w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2">
-                    <i class="fas fa-flag text-primary"></i>
-                    Report Video
-                </h3>
-                <button onclick="closeReportModal()" class="text-muted hover:text-danger hover:rotate-90 transition-all text-2xl">
-                    &times;
-                </button>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-flag text-primary"></i>Report Video</h3>
+                <button onclick="closeReportModal()" class="text-muted hover:text-danger hover:rotate-90 transition-all text-2xl">&times;</button>
             </div>
-            
             <form id="reportForm" onsubmit="submitReport(event)">
                 <div class="mb-5">
                     <label for="reportReason" class="block mb-2 text-sm text-muted">Reason *</label>
@@ -263,39 +212,16 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-                
                 <div class="mb-5">
                     <label for="reportDetails" class="block mb-2 text-sm text-muted">Additional Details</label>
-                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details about your report..." class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
+                    <textarea id="reportDetails" rows="4" placeholder="Please provide more details..." class="w-full px-3 py-3 bg-dark border border-border rounded-lg text-white focus:outline-none focus:border-primary resize-y"></textarea>
                 </div>
-                
                 <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-danger border border-danger rounded-lg hover:bg-danger/90 transition-all">
-                    <i class="fas fa-paper-plane"></i>
-                    Submit Report
+                    <i class="fas fa-paper-plane"></i>Submit Report
                 </button>
             </form>
         </div>
     </div>
-
-    <!-- ==================== VIDSTACK PLAYER SCRIPT ==================== -->
-    <script type="module">
-        import { MediaProvider } from 'https://cdn.vidstack.io/player';
-        
-        // Initialize Vidstack player
-        const player = document.getElementById('videoPlayer');
-        
-        // Export player to window for global access
-        window.vidstackPlayer = player;
-        
-        // Listen for player events
-        player?.addEventListener('loaded-data', () => {
-            console.log('✅ Video loaded successfully');
-        });
-        
-        player?.addEventListener('error', (e) => {
-            console.error('❌ Video error:', e);
-        });
-    </script>
 
     <!-- ==================== JAVASCRIPT ==================== -->
     <script>
@@ -309,11 +235,32 @@
         // ==================== STATE ====================
         let currentVideo = null;
         let viewTracked = false;
+        let activePlayer = null; // Will hold either Vidstack or native player
+        let playerType = 'vidstack'; // Track which player is active
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Page loaded, initializing...');
-            loadVideo();
+            
+            // Wait for Vidstack to be ready, then load video
+            if (typeof MediaPlayer !== 'undefined') {
+                // Vidstack is already loaded
+                loadVideo();
+            } else {
+                // Wait for Vidstack script to load
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        if (typeof MediaPlayer !== 'undefined') {
+                            console.log('✅ Vidstack loaded');
+                            loadVideo();
+                        } else {
+                            console.warn('⚠️ Vidstack not available, falling back to native player');
+                            playerType = 'native';
+                            loadVideo();
+                        }
+                    }, 500);
+                });
+            }
         });
 
         function generateSessionId() {
@@ -362,24 +309,16 @@
                 }
                 
                 currentVideo = cleanedData;
-                
-                // Update page title
                 document.getElementById('pageTitle').textContent = `${cleanedData.title} - Xplitleaks`;
                 
-                // Setup player
+                // Setup player (will use Vidstack or fallback to native)
                 setupPlayer(cleanedData);
-                
-                // Update info
                 updateVideoInfo(cleanedData);
-                
-                // Load related content
                 loadRelatedShorts(cleanedData);
                 loadRecommendedVideos(cleanedData);
-                
-                // Track view (after 10 seconds or 50% watched)
                 setTimeout(() => trackView(false), 10000);
                 
-                // 🔥 FIX: Hide error state BEFORE showing content
+                // Show content
                 console.log('👁️ Showing video content...');
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('errorState').classList.add('hidden');
@@ -393,56 +332,128 @@
             }
         }
 
-        // ==================== SETUP VIDSTACK PLAYER ====================
+        // ==================== SETUP PLAYER (Vidstack or Native Fallback) ====================
         function setupPlayer(video) {
-            const player = document.getElementById('videoPlayer');
-            console.log('🎬 Setting up Vidstack player...');
+            const vidstackPlayer = document.getElementById('videoPlayer');
+            const nativePlayer = document.getElementById('videoFallback');
+            
+            console.log('🎬 Setting up player (type:', playerType, ')...');
             console.log('🔗 Video URL:', video.videoUrl);
             
-            if (!player) {
-                console.error('❌ Player element not found!');
-                return;
+            if (playerType === 'vidstack' && vidstackPlayer && typeof MediaPlayer !== 'undefined') {
+                // === VIDSTACK SETUP ===
+                console.log('⚙️ Initializing Vidstack player...');
+                
+                try {
+                    // Set source using Vidstack's provider API
+                    vidstackPlayer.src = video.videoUrl;
+                    
+                    // Set poster
+                    if (video.thumbnail) {
+                        vidstackPlayer.setAttribute('poster', video.thumbnail);
+                    }
+                    
+                    // Wait for player to be ready
+                    vidstackPlayer.addEventListener('loaded-data', () => {
+                        console.log('✅ Vidstack: Video loaded successfully');
+                    }, { once: true });
+                    
+                    vidstackPlayer.addEventListener('can-play', () => {
+                        console.log('✅ Vidstack: Video can play');
+                    }, { once: true });
+                    
+                    // Error handling
+                    vidstackPlayer.addEventListener('error', (e) => {
+                        console.error('❌ Vidstack error:', e);
+                        // Fallback to native player
+                        console.log('🔄 Falling back to native player...');
+                        fallbackToNative(video);
+                    }, { once: true });
+                    
+                    // Track view events
+                    vidstackPlayer.addEventListener('ended', () => {
+                        console.log('⏹️ Video ended, tracking view');
+                        trackView(true);
+                    });
+                    
+                    vidstackPlayer.addEventListener('time-update', () => {
+                        if (vidstackPlayer.duration > 0 && !viewTracked) {
+                            const progress = vidstackPlayer.currentTime / vidstackPlayer.duration;
+                            if (progress >= 0.5) {
+                                console.log('📊 50% watched, tracking view');
+                                trackView(false);
+                            }
+                        }
+                    });
+                    
+                    activePlayer = vidstackPlayer;
+                    
+                } catch (err) {
+                    console.error('❌ Vidstack setup failed:', err);
+                    fallbackToNative(video);
+                }
+                
+            } else {
+                // === NATIVE PLAYER SETUP (Fallback or Default) ===
+                console.log('⚙️ Initializing native video player...');
+                fallbackToNative(video);
             }
+        }
+
+        // Fallback to native HTML5 video player
+        function fallbackToNative(video) {
+            playerType = 'native';
+            const vidstackPlayer = document.getElementById('videoPlayer');
+            const nativePlayer = document.getElementById('videoFallback');
             
-            // Set video source
-            player.src = video.videoUrl;
+            // Hide Vidstack, show native
+            if (vidstackPlayer) vidstackPlayer.classList.add('hidden');
+            if (nativePlayer) nativePlayer.classList.remove('hidden');
             
-            // Set poster if available
+            // Set up native player
+            const source = nativePlayer.querySelector('source');
+            if (source) {
+                source.src = video.videoUrl;
+                source.type = 'video/mp4';
+            }
             if (video.thumbnail) {
-                player.setAttribute('poster', video.thumbnail);
+                nativePlayer.setAttribute('poster', video.thumbnail);
             }
             
-            // Error handling
-            player.addEventListener('error', (e) => {
-                console.error('❌ Video element error:', e);
+            // Native player events
+            nativePlayer.addEventListener('error', (e) => {
+                console.error('❌ Native video error:', e);
                 showVideoError('Failed to load video file. The file may be unavailable.');
             });
             
-            // Success handling
-            player.addEventListener('loaded-data', () => {
-                console.log('✅ Video loaded successfully');
+            nativePlayer.addEventListener('loadeddata', () => {
+                console.log('✅ Native: Video loaded successfully');
             });
             
-            player.addEventListener('can-play', () => {
-                console.log('✅ Video can play');
+            nativePlayer.addEventListener('canplay', () => {
+                console.log('✅ Native: Video can play');
             });
             
-            // Track view on video end
-            player.addEventListener('ended', () => {
+            nativePlayer.addEventListener('ended', () => {
                 console.log('⏹️ Video ended, tracking view');
                 trackView(true);
             });
             
-            // Track progress for view tracking
-            player.addEventListener('time-update', () => {
-                if (player.duration > 0 && !viewTracked) {
-                    const progress = player.currentTime / player.duration;
+            nativePlayer.addEventListener('timeupdate', () => {
+                if (nativePlayer.duration > 0 && !viewTracked) {
+                    const progress = nativePlayer.currentTime / nativePlayer.duration;
                     if (progress >= 0.5) {
                         console.log('📊 50% watched, tracking view');
                         trackView(false);
                     }
                 }
             });
+            
+            // Load the video
+            nativePlayer.load();
+            activePlayer = nativePlayer;
+            
+            console.log('✅ Native player initialized');
         }
 
         function showVideoError(message) {
@@ -460,17 +471,14 @@
             document.getElementById('videoDuration').textContent = video.duration || '0:00';
             document.getElementById('videoDate').textContent = video.uploadDate || 'N/A';
             
-            // Description
             const descEl = document.getElementById('videoDescription');
             if (video.description) {
                 descEl.textContent = video.description;
                 descEl.classList.remove('hidden');
             }
             
-            // Like count
             document.getElementById('likeCount').textContent = formatNumber(video.likes || 0);
             
-            // Update like button state
             const videoId = video.numericId || video.id;
             const likeBtn = document.getElementById('likeBtn');
             if (isLiked(videoId)) {
@@ -478,7 +486,6 @@
                 likeBtn.querySelector('i').className = 'fas fa-heart';
             }
             
-            // Load tags
             const tags = JSON.parse(video.tags || '[]');
             const tagsContainer = document.getElementById('tagsContainer');
             if (tags.length > 0) {
@@ -499,13 +506,9 @@
             const videoId = currentVideo.numericId || currentVideo.id;
             
             try {
-                console.log('❤️ Toggling like for video:', videoId);
                 const response = await fetch(`${CONFIG.apiEndpoint}/short/like`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
                     body: JSON.stringify({ shortId: videoId })
                 });
                 
@@ -542,21 +545,14 @@
             if (viewTracked || !currentVideo) return;
             try {
                 const videoId = currentVideo.numericId || currentVideo.id;
-                const player = document.getElementById('videoPlayer');
+                const player = activePlayer;
                 const watchDuration = isComplete ? 1 : (player?.currentTime / player?.duration) || 0.5;
                 const watchTime = player?.currentTime || 0;
                 
                 await fetch(`${CONFIG.apiEndpoint}/short/view`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
-                    body: JSON.stringify({
-                        shortId: videoId,
-                        watchDuration,
-                        watchTime
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
+                    body: JSON.stringify({ shortId: videoId, watchDuration, watchTime })
                 });
                 
                 viewTracked = true;
@@ -573,25 +569,16 @@
             try {
                 await fetch(`${CONFIG.apiEndpoint}/short/share`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
                     body: JSON.stringify({ shortId: videoId })
                 });
                 
                 btn.classList.add('bg-success', 'border-success');
                 showToast('Share counted! ↗️', 'success');
-                
-                setTimeout(() => {
-                    btn.classList.remove('bg-success', 'border-success');
-                }, 500);
+                setTimeout(() => btn.classList.remove('bg-success', 'border-success'), 500);
                 
                 if (navigator.share) {
-                    navigator.share({
-                        title: currentVideo.title,
-                        url: window.location.href
-                    }).catch(() => {});
+                    navigator.share({ title: currentVideo.title, url: window.location.href }).catch(() => {});
                 } else {
                     copyLink();
                 }
@@ -602,11 +589,9 @@
         }
 
         function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                showToast('Link copied! 📋', 'success');
-            }).catch(() => {
-                showToast('Failed to copy link', 'error');
-            });
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => showToast('Link copied! 📋', 'success'))
+                .catch(() => showToast('Failed to copy link', 'error'));
         }
 
         // ==================== LIKE STATE MANAGEMENT ====================
@@ -636,7 +621,6 @@
         async function loadRelatedShorts(video) {
             const carousel = document.getElementById('shortsCarousel');
             try {
-                console.log('📱 Loading related shorts...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=10`);
                 let shorts = await response.json();
                 
@@ -649,112 +633,72 @@
                     }
                     carousel.innerHTML = related.map(short => createShortCard(short)).join('');
                 } else {
-                    carousel.innerHTML = `
-                        <div class="text-center py-16 w-full text-muted">
-                            <i class="fas fa-video text-4xl mb-3"></i>
-                            <p>No shorts available</p>
-                        </div>
-                    `;
+                    carousel.innerHTML = `<div class="text-center py-16 w-full text-muted"><i class="fas fa-video text-4xl mb-3"></i><p>No shorts available</p></div>`;
                 }
             } catch (error) {
                 console.error('❌ Load shorts error:', error);
-                carousel.innerHTML = `
-                    <div class="text-center py-16 w-full text-muted">
-                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
-                        <p>Failed to load shorts</p>
-                    </div>
-                `;
+                carousel.innerHTML = `<div class="text-center py-16 w-full text-muted"><i class="fas fa-exclamation-triangle text-4xl mb-3"></i><p>Failed to load shorts</p></div>`;
             }
         }
 
         function createShortCard(short) {
-            return `
-                <a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary hover:shadow-[0_5px_20px_rgba(255,0,80,0.3)] transition-all group">
-                    <div class="relative aspect-[9/16]">
-                        <img src="${short.thumbnail || ''}"
-                            alt="${short.title}"
-                            class="w-full h-full object-cover bg-dark"
-                            onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
-                            ${short.duration || '0:00'}
-                        </span>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                            <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
-                            <div class="flex gap-3 text-xs text-muted">
-                                <span class="flex items-center gap-1"><i class="fas fa-eye text-primary"></i> ${formatNumber(short.views || 0)}</span>
-                                <span class="flex items-center gap-1"><i class="fas fa-heart text-primary"></i> ${formatNumber(short.likes || 0)}</span>
-                            </div>
-                        </div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div class="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-xl scale-100 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-play ml-1"></i>
-                            </div>
+            return `<a href="shorts.html?id=${short.numericId}" class="flex-none w-[180px] bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
+                <div class="relative aspect-[9/16]">
+                    <img src="${short.thumbnail || ''}" alt="${short.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22320%22%3E%3Crect fill=%22%23333%22 width=%22180%22 height=%22320%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${short.duration || '0:00'}</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                        <div class="text-sm font-semibold mb-2 line-clamp-2">${short.title}</div>
+                        <div class="flex gap-3 text-xs text-muted">
+                            <span><i class="fas fa-eye text-primary"></i> ${formatNumber(short.views || 0)}</span>
+                            <span><i class="fas fa-heart text-primary"></i> ${formatNumber(short.likes || 0)}</span>
                         </div>
                     </div>
-                </a>
-            `;
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center text-xl"><i class="fas fa-play ml-1"></i></div>
+                    </div>
+                </div>
+            </a>`;
         }
 
         function scrollShorts(direction) {
             const carousel = document.getElementById('shortsCarousel');
-            const scrollAmount = direction === 'left' ? -400 : 400;
-            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            carousel.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' });
         }
 
         // ==================== LOAD RECOMMENDED VIDEOS ====================
         async function loadRecommendedVideos(video) {
             const container = document.getElementById('recommendedVideos');
             try {
-                console.log('🎬 Loading recommended videos...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/videos?limit=8`);
                 const videos = await response.json();
                 
                 if (videos && videos.length > 0) {
                     const currentId = currentVideo.numericId || currentVideo.id;
-                    const filtered = videos.filter(v =>
-                        (v.numericId || v.id) !== currentId
-                    );
+                    const filtered = videos.filter(v => (v.numericId || v.id) !== currentId);
                     container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
                 } else {
-                    container.innerHTML = `
-                        <div class="text-center py-16 col-span-full text-muted">
-                            <i class="fas fa-video text-4xl mb-3"></i>
-                            <p>No recommendations available</p>
-                        </div>
-                    `;
+                    container.innerHTML = `<div class="text-center py-16 col-span-full text-muted"><i class="fas fa-video text-4xl mb-3"></i><p>No recommendations available</p></div>`;
                 }
             } catch (error) {
                 console.error('❌ Load recommendations error:', error);
-                container.innerHTML = `
-                    <div class="text-center py-16 col-span-full text-muted">
-                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
-                        <p>Failed to load recommendations</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center py-16 col-span-full text-muted"><i class="fas fa-exclamation-triangle text-4xl mb-3"></i><p>Failed to load recommendations</p></div>`;
             }
         }
 
         function createVideoCard(video) {
-            return `
-                <a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary hover:shadow-[0_5px_20px_rgba(255,0,80,0.2)] transition-all group">
-                    <div class="relative aspect-video">
-                        <img src="${video.thumbnail || ''}"
-                            alt="${video.title}"
-                            class="w-full h-full object-cover bg-dark"
-                            onerror="this.src='image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
-                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
-                            ${video.duration || '0:00'}
-                        </span>
+            return `<a href="video.html?id=${video.numericId || video.id}" class="bg-card border border-border rounded-xl overflow-hidden hover:-translate-y-1 hover:border-primary transition-all group">
+                <div class="relative aspect-video">
+                    <img src="${video.thumbnail || ''}" alt="${video.title}" class="w-full h-full object-cover bg-dark" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22180%22%3E%3Crect fill=%22%23333%22 width=%22280%22 height=%22180%22/%3E%3Ctext fill=%22%23888%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo%20Thumbnail%3C/text%3E%3C/svg%3E'">
+                    <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">${video.duration || '0:00'}</span>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold mb-2 line-clamp-2">${video.title}</h3>
+                    <div class="flex flex-wrap gap-3 text-sm text-muted">
+                        <span><i class="fas fa-eye text-primary"></i> ${formatNumber(video.views || 0)}</span>
+                        <span><i class="fas fa-clock text-primary"></i> ${video.uploadDate || 'N/A'}</span>
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold mb-2 line-clamp-2">${video.title}</h3>
-                        <div class="flex flex-wrap gap-3 text-sm text-muted">
-                            <span class="flex items-center gap-1"><i class="fas fa-eye text-primary"></i> ${formatNumber(video.views || 0)}</span>
-                            <span class="flex items-center gap-1"><i class="fas fa-clock text-primary"></i> ${video.uploadDate || 'N/A'}</span>
-                        </div>
-                    </div>
-                </a>
-            `;
+                </div>
+            </a>`;
         }
 
         // ==================== REPORT MODAL ====================
@@ -778,17 +722,9 @@
             try {
                 await fetch(`${CONFIG.apiEndpoint}/report`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
-                    body: JSON.stringify({
-                        videoId,
-                        videoType: 'video',
-                        reason: reason + (details ? ': ' + details : '')
-                    })
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
+                    body: JSON.stringify({ videoId, videoType: 'video', reason: reason + (details ? ': ' + details : '') })
                 });
-                
                 showToast('Report submitted successfully', 'success');
                 closeReportModal();
             } catch (error) {
@@ -809,31 +745,13 @@
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
+            const colors = { success: 'border-success', error: 'border-danger', info: 'border-primary' };
+            const icons = { success: 'fa-check-circle text-success', error: 'fa-exclamation-circle text-danger', info: 'fa-info-circle text-primary' };
             
-            const colors = {
-                success: 'border-success',
-                error: 'border-danger',
-                info: 'border-primary'
-            };
-            
-            const icons = {
-                success: 'fa-check-circle text-success',
-                error: 'fa-exclamation-circle text-danger',
-                info: 'fa-info-circle text-primary'
-            };
-            
-            toast.className = `bg-card border-l-4 ${colors[type]} border border-border rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[300px] animate-[slideInRight_0.3s_ease-out]`;
-            
-            toast.innerHTML = `
-                <i class="fas ${icons[type]} text-xl"></i>
-                <span class="flex-1">${message}</span>
-                <button onclick="this.parentElement.remove()" class="text-muted hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
+            toast.className = `bg-card border-l-4 ${colors[type]} border border-border rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[300px]`;
+            toast.innerHTML = `<i class="fas ${icons[type]} text-xl"></i><span class="flex-1">${message}</span><button onclick="this.parentElement.remove()" class="text-muted hover:text-white"><i class="fas fa-times"></i></button>`;
             
             container.appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';
@@ -843,41 +761,20 @@
 
         // ==================== UTILITIES ====================
         function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            } else if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
         // Close modal on outside click
         document.getElementById('reportModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'reportModal') {
-                closeReportModal();
-            }
+            if (e.target.id === 'reportModal') closeReportModal();
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeReportModal();
-            }
+            if (e.key === 'Escape') closeReportModal();
         });
-
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes modalPop {
-                from { opacity: 0; transform: scale(0.9); }
-                to { opacity: 1; transform: scale(1); }
-            }
-            @keyframes slideInRight {
-                from { opacity: 0; transform: translateX(100%); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
