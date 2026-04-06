@@ -58,9 +58,6 @@
             border-radius: 12px;
             overflow: hidden;
         }
-        .fluid_video_wrapper canvas {
-            border-radius: 12px;
-        }
     </style>
 </head>
 <body class="bg-darker text-white font-sans antialiased min-h-screen">
@@ -358,19 +355,24 @@
             const urlParams = new URLSearchParams(window.location.search);
             const videoId = urlParams.get('id');
             
+            console.log('📹 Video ID:', videoId);
+            
             if (!videoId) {
                 showError('Video ID is required');
                 return;
             }
             
             try {
+                console.log('📡 Fetching from API...');
                 const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
+                console.log('📡 Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`API returned ${response.status}`);
                 }
                 
                 const data = await response.json();
+                console.log('📦 Data received:', data);
                 
                 if (!data || !data.videoUrl) {
                     throw new Error('Video URL is missing');
@@ -396,78 +398,81 @@
                 document.getElementById('videoContent').classList.remove('hidden');
                 
             } catch (error) {
-                console.error('Load video error:', error);
+                console.error('💥 Load video error:', error);
                 showError('Failed to load video: ' + error.message);
             }
         }
 
         // Initialize Fluid Player
         function initFluidPlayer(videoUrl, thumbnail) {
-            playerInstance = fluidPlayer('videoPlayer', {
-                layoutControls: {
-                    primaryColor: "#ff0050",
-                    posterImage: thumbnail || null,
-                    adProgressColor: "#ff0050",
-                    playButtonShowing: true,
-                    playPauseContainer: true,
-                    fillToContainer: true,
-                    autoPlay: false,
-                    mute: false,
-                    allowTheatre: true,
-                    theatreSettings: {
-                        width: '100%',
-                        height: '60%',
-                        marginTop: 25,
-                        horizontalAlign: 'center',
-                        verticalAlign: 'top',
-                        zIndex: 10000
-                    },
-                    playerSubControls: {
-                        closeButton: true,
-                        playButton: true,
-                        progress: true,
-                        time: true,
-                        title: true,
-                        fullScreen: true,
-                        source: true,
-                        volume: true
+            console.log('🎬 Initializing Fluid Player...');
+            console.log('🔗 Video URL:', videoUrl);
+            
+            try {
+                playerInstance = fluidPlayer('videoPlayer', {
+                    layoutControls: {
+                        primaryColor: "#ff0050",
+                        posterImage: thumbnail || null,
+                        adProgressColor: "#ff0050",
+                        playButtonShowing: true,
+                        fillToContainer: true,
+                        autoPlay: false,
+                        mute: false,
+                        allowTheatre: true
                     }
-                },
-                vastOptions: {
-                    adList: [],
-                    skipButtonCaption: "Skip ad in [seconds]",
-                    skipButtonClickCaption: "Skip Ad"
-                }
-            });
+                });
 
-            // Track view on video end
-            playerInstance.on('videoEnded', () => {
-                console.log('⏹️ Video ended, tracking view');
+                // Track view on video end
+                playerInstance.on('videoEnded', () => {
+                    console.log('⏹️ Video ended');
+                    trackView(true);
+                });
+
+                // Track progress
+                playerInstance.on('onProgressUpdate', (progress) => {
+                    if (!viewTracked && progress > 50) {
+                        console.log('📊 50% watched');
+                        trackView(false);
+                    }
+                });
+
+            } catch (error) {
+                console.error('❌ Fluid Player error:', error);
+                // Fallback to native player
+                fallbackToNativePlayer(videoUrl, thumbnail);
+            }
+        }
+
+        // Fallback to native HTML5 player
+        function fallbackToNativePlayer(videoUrl, thumbnail) {
+            console.log('⚠️ Using native player fallback');
+            
+            const videoEl = document.getElementById('videoPlayer');
+            const source = videoEl.querySelector('source');
+            
+            if (source) {
+                source.src = videoUrl;
+                source.type = 'video/mp4';
+            }
+            
+            if (thumbnail) {
+                videoEl.setAttribute('poster', thumbnail);
+            }
+            
+            videoEl.load();
+            
+            videoEl.addEventListener('ended', () => {
                 trackView(true);
             });
-
-            // Track progress
-            playerInstance.on('onProgressUpdate', (progress) => {
-                if (!viewTracked && progress > 50) {
-                    console.log('📊 50% watched, tracking view');
-                    trackView(false);
+            
+            videoEl.addEventListener('timeupdate', () => {
+                if (!viewTracked && videoEl.duration > 0) {
+                    const progress = (videoEl.currentTime / videoEl.duration) * 100;
+                    if (progress > 50) {
+                        trackView(false);
+                    }
                 }
             });
-
-            // For mobile, also initialize the mobile player
-            if (isMobile) {
-                const mobileVideo = document.getElementById('videoPlayerMobile');
-                if (mobileVideo) {
-                    const source = mobileVideo.querySelector('source');
-                    if (source) {
-                        source.src = videoUrl;
-                    }
-                    if (thumbnail) {
-                        mobileVideo.setAttribute('poster', thumbnail);
-                    }
-                    mobileVideo.load();
-                }
-            }
         }
 
         function updateVideoInfo(video) {
@@ -593,16 +598,6 @@
                     showToast('Thanks for your feedback! 👎', 'info');
                 }
             }
-            
-            // Send to API
-            fetch(`${CONFIG.apiEndpoint}/short/reaction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Session-Id': CONFIG.sessionId
-                },
-                body: JSON.stringify({ shortId: videoId, reaction: userReaction })
-            }).catch(err => console.error('Reaction error:', err));
         }
 
         async function trackView(isComplete) {
@@ -618,8 +613,9 @@
                 });
                 
                 viewTracked = true;
+                console.log('✅ View tracked');
             } catch (error) {
-                console.error('Track view error:', error);
+                console.error('❌ Track view error:', error);
             }
         }
 
@@ -676,7 +672,7 @@
                     }
                 }
             } catch (error) {
-                console.error('Load shorts error:', error);
+                console.error('❌ Load shorts error:', error);
             }
         }
 
@@ -739,7 +735,7 @@
                     }
                 }
             } catch (error) {
-                console.error('Load recommendations error:', error);
+                console.error('❌ Load recommendations error:', error);
             }
         }
 
