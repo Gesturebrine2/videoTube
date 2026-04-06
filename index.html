@@ -34,7 +34,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -51,14 +50,12 @@
             background: #ff0050;
         }
         
-        /* Smooth transitions */
         * {
             transition-property: background-color, border-color, color, fill, stroke;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 150ms;
         }
         
-        /* Hide scrollbar for horizontal scroll but keep functionality */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -67,7 +64,6 @@
             scrollbar-width: none;
         }
         
-        /* Gradient text animation */
         @keyframes gradient {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -76,45 +72,192 @@
             background-size: 200% 200%;
             animation: gradient 3s ease infinite;
         }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="bg-darker text-white font-sans antialiased min-h-screen">
 
     <!-- ==================== HEADER ==================== -->
     <header class="bg-dark border-b border-border sticky top-0 z-50">
-        <div class="px-4 py-4 flex justify-between items-center">
-            <!-- Logo -->
-            <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent animate-gradient">
-                Xplitleaks
-            </h1>
+        <div class="px-4 py-3 flex justify-between items-center">
+            <!-- Left: Menu & Logo -->
+            <div class="flex items-center gap-3">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-card rounded-lg transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Logo -->
+                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent animate-gradient">
+                    Xplitleaks
+                </h1>
+            </div>
             
-            <!-- Shorts Button -->
-            <a href="shorts.html" class="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium hover:bg-primary hover:border-primary transition-all">
-                <i class="fas fa-mobile-alt"></i>
-                <span class="hidden sm:inline">Shorts</span>
-            </a>
+            <!-- Right: Search & Shorts -->
+            <div class="flex items-center gap-2">
+                <!-- Search Toggle (Mobile) -->
+                <button onclick="toggleSearch()" class="lg:hidden p-2 hover:bg-card rounded-lg transition-colors">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+                
+                <!-- Shorts Button -->
+                <a href="shorts.html" class="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-card border border-border rounded-lg text-xs md:text-sm font-medium hover:bg-primary hover:border-primary transition-all">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span class="hidden sm:inline">Shorts</span>
+                </a>
+            </div>
         </div>
-    </header>
-
-    <!-- ==================== MAIN CONTENT ==================== -->
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
         
-        <!-- ==================== SEARCH SECTION ==================== -->
-        <section class="space-y-4">
+        <!-- Mobile Search & Categories Dropdown -->
+        <div id="mobileSearchDropdown" class="hidden lg:hidden border-t border-border bg-dark px-4 py-3 animate-slide-down">
             <!-- Search Bar -->
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex gap-2 mb-3">
                 <div class="relative flex-1">
                     <input 
                         type="text" 
                         id="searchInput" 
+                        placeholder="Search videos..." 
+                        class="w-full px-4 py-2.5 bg-card border border-border rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    >
+                </div>
+                <button 
+                    onclick="handleSearch()" 
+                    class="px-4 py-2.5 bg-primary border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all"
+                >
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <!-- Category Tags -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="filterCategory('all')" class="category-btn active px-3 py-1.5 bg-primary border border-primary rounded-full text-xs font-medium transition-all">
+                    All
+                </button>
+                <button onclick="filterCategory('amateur')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Amateur
+                </button>
+                <button onclick="filterCategory('teen')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Teen
+                </button>
+                <button onclick="filterCategory('mature')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Mature
+                </button>
+                <button onclick="filterCategory('interracial')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Interracial
+                </button>
+                <button onclick="filterCategory('anal')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Anal
+                </button>
+                <button onclick="filterCategory('lesbian')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Lesbian
+                </button>
+                <button onclick="filterCategory('homemade')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    Homemade
+                </button>
+                <button onclick="filterCategory('bbc')" class="category-btn px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                    BBC
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== SIDEBAR MENU (Mobile) ==================== -->
+    <div id="sidebarMenu" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleMenu()"></div>
+        
+        <!-- Sidebar -->
+        <div class="absolute left-0 top-0 h-full w-64 bg-card border-r border-border transform -translate-x-full transition-transform duration-300" id="sidebarContent">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h2 class="text-lg font-bold">Menu</h2>
+                <button onclick="toggleMenu()" class="p-2 hover:bg-dark rounded-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="p-4 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary rounded-lg text-primary font-medium">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="shorts.html" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Shorts</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-fire"></i>
+                    <span>Trending</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-clock"></i>
+                    <span>Latest</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-border">
+                <h3 class="text-sm font-semibold text-muted mb-3">Categories</h3>
+                <div class="space-y-2">
+                    <button onclick="filterCategory('all'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        All Videos
+                    </button>
+                    <button onclick="filterCategory('amateur'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Amateur
+                    </button>
+                    <button onclick="filterCategory('teen'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Teen
+                    </button>
+                    <button onclick="filterCategory('mature'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Mature
+                    </button>
+                    <button onclick="filterCategory('interracial'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Interracial
+                    </button>
+                    <button onclick="filterCategory('anal'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Anal
+                    </button>
+                    <button onclick="filterCategory('lesbian'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Lesbian
+                    </button>
+                    <button onclick="filterCategory('homemade'); toggleMenu()" class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm">
+                        Homemade
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+        
+        <!-- Desktop Search & Categories (Hidden on Mobile) -->
+        <section class="hidden lg:block space-y-4">
+            <!-- Search Bar -->
+            <div class="flex gap-3">
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInputDesktop" 
                         placeholder="Search videos..." 
                         class="w-full px-4 py-3 bg-card border border-border rounded-lg text-white placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                     >
                     <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-muted"></i>
                 </div>
                 <button 
-                    onclick="handleSearch()" 
-                    class="px-6 py-3 bg-primary border border-primary rounded-lg font-semibold hover:bg-primary/90 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                    onclick="handleSearchDesktop()" 
+                    class="px-6 py-3 bg-primary border border-primary rounded-lg font-semibold hover:bg-primary/90 hover:scale-105 transition-all flex items-center gap-2"
                 >
                     <i class="fas fa-search"></i>
                     <span>Search</span>
@@ -123,31 +266,31 @@
             
             <!-- Category Filters -->
             <div class="flex flex-wrap gap-2">
-                <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 bg-primary border border-primary rounded-full text-sm font-medium transition-all hover:scale-105">
+                <button onclick="filterCategory('all')" class="category-btn-desktop active px-4 py-2 bg-primary border border-primary rounded-full text-sm font-medium transition-all hover:scale-105">
                     All
                 </button>
-                <button onclick="filterCategory('amateur')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('amateur')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Amateur
                 </button>
-                <button onclick="filterCategory('teen')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('teen')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Teen
                 </button>
-                <button onclick="filterCategory('mature')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('mature')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Mature
                 </button>
-                <button onclick="filterCategory('interracial')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('interracial')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Interracial
                 </button>
-                <button onclick="filterCategory('anal')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('anal')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Anal
                 </button>
-                <button onclick="filterCategory('lesbian')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('lesbian')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Lesbian
                 </button>
-                <button onclick="filterCategory('homemade')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('homemade')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     Homemade
                 </button>
-                <button onclick="filterCategory('bbc')" class="category-btn px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
+                <button onclick="filterCategory('bbc')" class="category-btn-desktop px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-primary transition-all">
                     BBC
                 </button>
             </div>
@@ -219,14 +362,39 @@
             
             // Search on Enter key
             document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleSearch();
-                }
+                if (e.key === 'Enter') handleSearch();
+            });
+            document.getElementById('searchInputDesktop')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearchDesktop();
             });
         });
 
         function generateSessionId() {
             return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        // ==================== MOBILE MENU ====================
+        function toggleMenu() {
+            const menu = document.getElementById('sidebarMenu');
+            const content = document.getElementById('sidebarContent');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                content.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // ==================== MOBILE SEARCH ====================
+        function toggleSearch() {
+            const dropdown = document.getElementById('mobileSearchDropdown');
+            dropdown.classList.toggle('hidden');
         }
 
         // ==================== SEARCH ====================
@@ -237,20 +405,45 @@
             }
         }
 
+        function handleSearchDesktop() {
+            const query = document.getElementById('searchInputDesktop').value.trim();
+            if (query) {
+                window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+
         // ==================== CATEGORY FILTER ====================
         function filterCategory(category) {
             currentCategory = category;
             
-            // Update button styles
-            document.querySelectorAll('.category-btn').forEach(btn => {
+            // Update mobile buttons
+            document.querySelectorAll('#mobileSearchDropdown .category-btn').forEach(btn => {
                 btn.classList.remove('bg-primary', 'border-primary', 'text-white');
                 btn.classList.add('bg-card', 'border-border', 'text-muted');
             });
             
-            event.target.classList.remove('bg-card', 'border-border', 'text-muted');
-            event.target.classList.add('bg-primary', 'border-primary', 'text-white');
+            // Update desktop buttons
+            document.querySelectorAll('.category-btn-desktop').forEach(btn => {
+                btn.classList.remove('bg-primary', 'border-primary', 'text-white');
+                btn.classList.add('bg-card', 'border-border', 'text-muted');
+            });
             
-            // Reload content with filter
+            // Highlight active button
+            const mobileBtn = Array.from(document.querySelectorAll('#mobileSearchDropdown .category-btn'))
+                .find(btn => btn.textContent.toLowerCase().includes(category) || (category === 'all' && btn.textContent === 'All'));
+            const desktopBtn = Array.from(document.querySelectorAll('.category-btn-desktop'))
+                .find(btn => btn.textContent.toLowerCase().includes(category) || (category === 'all' && btn.textContent === 'All'));
+            
+            if (mobileBtn) {
+                mobileBtn.classList.remove('bg-card', 'border-border', 'text-muted');
+                mobileBtn.classList.add('bg-primary', 'border-primary', 'text-white');
+            }
+            if (desktopBtn) {
+                desktopBtn.classList.remove('bg-card', 'border-border', 'text-muted');
+                desktopBtn.classList.add('bg-primary', 'border-primary', 'text-white');
+            }
+            
+            // Reload content
             if (category === 'all') {
                 loadLatestVideos();
             } else {
@@ -325,7 +518,6 @@
                 let videos = await response.json();
                 
                 if (videos && videos.length > 0) {
-                    // Filter by category
                     videos = videos.filter(v => {
                         const tags = JSON.parse(v.tags || '[]');
                         return v.category?.toLowerCase() === category || tags.includes(category);
@@ -439,26 +631,16 @@
 
         // ==================== UTILITIES ====================
         function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            } else if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
-        // Add CSS animation for toast
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideInRight {
-                from {
-                    opacity: 0;
-                    transform: translateX(100%);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
             }
         `;
         document.head.appendChild(style);
