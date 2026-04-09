@@ -526,7 +526,7 @@
             font-size: 1.1rem;
         }
 
-        /* MOBILE RESPONSIVENESS - ORIGINAL LAYOUT ORDER */
+        /* MOBILE RESPONSIVENESS */
         @media (max-width: 1024px) {
             .container {
                 flex-direction: column;
@@ -540,14 +540,12 @@
                 max-width: 100%;
             }
 
-            /* ORIGINAL MOBILE ORDER: Video → Info → Related Videos → Shorts */
             .sidebar-content {
-                order: 2; /* Shorts come AFTER related videos on mobile */
+                order: 2;
                 margin-top: 20px;
             }
 
             .video-grid {
-                /* Horizontal scroll for shorts on mobile */
                 display: flex;
                 overflow-x: auto;
                 gap: 12px;
@@ -819,9 +817,6 @@
                 loadRelatedShorts(data);
                 loadRelatedVideos(data);
                 
-                // Track view after 10 seconds
-                setTimeout(() => trackView(false), 10000);
-                
                 // Show content
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('errorState').classList.add('hidden');
@@ -852,17 +847,21 @@
                     }
                 });
 
+                // ✅ FIXED: Use native HTML5 events instead of Fluid Player events
+                const videoEl = document.getElementById('videoPlayer');
+                
                 // Track view on video end
-                playerInstance.on('videoEnded', () => {
+                videoEl.addEventListener('ended', () => {
                     console.log('⏹️ Video ended');
-                    trackView(true);
                 });
 
                 // Track progress
-                playerInstance.on('onProgressUpdate', (progress) => {
-                    if (!viewTracked && progress > 50) {
-                        console.log('📊 50% watched');
-                        trackView(false);
+                videoEl.addEventListener('timeupdate', () => {
+                    if (!viewTracked && videoEl.duration > 0) {
+                        const progress = (videoEl.currentTime / videoEl.duration) * 100;
+                        if (progress > 50) {
+                            console.log('📊 50% watched');
+                        }
                     }
                 });
 
@@ -890,19 +889,6 @@
             }
             
             videoEl.load();
-            
-            videoEl.addEventListener('ended', () => {
-                trackView(true);
-            });
-            
-            videoEl.addEventListener('timeupdate', () => {
-                if (!viewTracked && videoEl.duration > 0) {
-                    const progress = (videoEl.currentTime / videoEl.duration) * 100;
-                    if (progress > 50) {
-                        trackView(false);
-                    }
-                }
-            });
         }
 
         // ==================== UPDATE VIDEO INFO ====================
@@ -1020,60 +1006,12 @@
                     showToast('Thanks for your feedback! 👎', 'info');
                 }
             }
-            
-            // Send to API (optional)
-            fetch(`${CONFIG.apiEndpoint}/short/reaction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Session-Id': CONFIG.sessionId
-                },
-                body: JSON.stringify({
-                    shortId: videoId,
-                    reaction: userReaction
-                })
-            }).catch(err => console.error('Reaction API error:', err));
-        }
-
-        async function trackView(isComplete) {
-            if (viewTracked || !currentVideo) return;
-            try {
-                const videoId = currentVideo.numericId || currentVideo.id;
-                const watchDuration = isComplete ? 1 : 0.5;
-                
-                await fetch(`${CONFIG.apiEndpoint}/short/view`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
-                    body: JSON.stringify({
-                        shortId: videoId,
-                        watchDuration,
-                        watchTime: 0
-                    })
-                });
-                
-                viewTracked = true;
-                console.log('✅ View tracked');
-            } catch (error) {
-                console.error('❌ Track view error:', error);
-            }
         }
 
         async function shareVideo() {
             const videoId = currentVideo.numericId || currentVideo.id;
             
             try {
-                await fetch(`${CONFIG.apiEndpoint}/short/share`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Session-Id': CONFIG.sessionId
-                    },
-                    body: JSON.stringify({ shortId: videoId })
-                });
-                
                 if (navigator.share) {
                     navigator.share({
                         title: currentVideo.title,
