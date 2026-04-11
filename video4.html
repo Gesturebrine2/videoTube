@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0a0a0a">
+    <title id="pageTitle">Loading... - Xplitleaks</title>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fluid Player CSS -->
+    <link rel="stylesheet" href="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css" type="text/css"/>
+
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-main: #ffffff;
+            --text-sec: #888888;
+            --accent: #ff0050;
+            --accent-hover: #ff3370;
+            --border: #333333;
+            --btn-hover: #2a2a2a;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            line-height: 1.5; 
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header { 
+            padding: 12px 16px; 
+            background: var(--card-bg); 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .logo { 
+            font-size: clamp(1.1rem, 4vw, 1.4rem); 
+            font-weight: bold; 
+            background: linear-gradient(135deg, var(--accent), #00f2ea); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+        }
+
+        .back-btn { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            transition: all 0.2s; 
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+
+        .back-btn:hover { 
+            background: var(--accent); 
+            border-color: var(--accent); 
+        }
+
+        /* ==================== LAYOUT STRUCTURE ==================== */
+
+        .container { 
+            max-width: 100%; 
+            margin: 0 auto; 
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Video Section */
+        .video-section {
+            width: 100%;
+            background: #000;
+        }
+
+        .video-wrapper { 
+            width: 100%; 
+            background: #000; 
+            position: relative;
+            aspect-ratio: 16/9;
+            max-height: 70vh;
+        }
+
+        .fluid_video_wrapper {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute !important;
+            top: 0;
+            left: 0;
+        }
+
+        .fluid_video_wrapper video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+        }
+
+        .fluid_video_wrapper.fluid_player_layout_default .fluid_controls_container {
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%) !important;
+        }
+
+        /* Video Info */
+        .video-info { 
+            background: var(--card-bg); 
+            border-bottom: 1px solid var(--border);
+            padding: 16px; 
+        }
+
+        .video-info h1 { 
+            font-size: clamp(1.1rem, 4vw, 1.4rem); 
+            margin-bottom: 12px; 
+            line-height: 1.4; 
+            word-wrap: break-word;
+        }
+
+        /* Uploader Info */
+        .uploader-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .uploader-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #00f2ea);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .uploader-details {
+            flex: 1;
+        }
+
+        .uploader-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .uploader-meta {
+            font-size: 0.85rem;
+            color: var(--text-sec);
+        }
+
+        .subscribe-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .subscribe-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .meta-tags { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+            margin-bottom: 12px; 
+        }
+
+        .tag { 
+            background: var(--accent); 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            text-transform: capitalize; 
+        }
+
+        .stats { 
+            color: var(--text-sec); 
+            font-size: 0.9rem; 
+            margin-bottom: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+        }
+
+        .stats i { 
+            color: var(--accent); 
+            margin-right: 4px; 
+        }
+
+        /* Action Bar - No numbers */
+        .action-bar { 
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px; 
+            margin-bottom: 16px;
+        }
+
+        .action-btn { 
+            background: var(--bg-color); 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; 
+            font-size: 1rem; 
+            transition: all 0.2s; 
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        .action-btn:hover { 
+            background: var(--btn-hover); 
+            border-color: var(--accent); 
+        }
+
+        .action-btn.like.active, .action-btn.dislike.active { 
+            background: var(--accent); 
+            border-color: var(--accent); 
+        }
+
+        .action-btn i { 
+            font-size: 1.1rem; 
+        }
+
+        .description { 
+            color: var(--text-sec); 
+            font-size: 0.95rem; 
+            line-height: 1.7; 
+            margin-bottom: 16px; 
+        }
+
+        .tags-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+        }
+
+        .tag-link { 
+            background: var(--bg-color); 
+            border: 1px solid var(--border); 
+            color: var(--text-sec); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-size: 0.8rem; 
+            text-decoration: none; 
+            transition: all 0.2s; 
+        }
+
+        .tag-link:hover { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+        }
+
+        /* ==================== SHORTS SECTION ==================== */
+
+        .shorts-section {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-color);
+            order: 2;
+        }
+
+        .section-title { 
+            font-size: 1.1rem; 
+            margin-bottom: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: var(--text-main);
+        }
+
+        .section-title i { 
+            color: var(--accent); 
+        }
+
+        /* Mobile: Horizontal scroll */
+        .shorts-scroll-container {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 8px;
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .shorts-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .short-card {
+            flex: 0 0 auto;
+            width: 140px;
+            scroll-snap-align: start;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            display: block;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .short-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .short-card .thumbnail {
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .short-card .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .short-card .duration {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0,0,0,0.85);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .short-card .card-info {
+            padding: 10px;
+        }
+
+        .short-card .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .short-card .card-meta {
+            font-size: 0.75rem;
+            color: var(--text-sec);
+        }
+
+        /* ==================== RELATED VIDEOS SECTION ==================== */
+
+        .related-section {
+            padding: 20px 16px;
+            background: var(--bg-color);
+            order: 3;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .related-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            display: block;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .related-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .related-card .thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .related-card .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .related-card .duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.85);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .related-card .card-info {
+            padding: 12px;
+        }
+
+        .related-card .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .related-card .card-meta {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+        }
+
+        /* ==================== DESKTOP LAYOUT ==================== */
+
+        @media (min-width: 1024px) {
+            .container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                max-width: 1800px;
+                padding: 24px;
+                gap: 24px;
+                align-items: flex-start;
+            }
+
+            /* Left: Video (60%) */
+            .video-section {
+                width: calc(60% - 12px);
+                flex-shrink: 0;
+                background: transparent;
+            }
+
+            .video-wrapper {
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                max-height: 70vh;
+            }
+
+            .video-info {
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                margin-top: 16px;
+                background: var(--card-bg);
+            }
+
+            /* Right: Shorts in 2-column grid (40%) */
+            .shorts-section {
+                width: calc(40% - 12px);
+                flex-shrink: 0;
+                padding: 0;
+                border: none;
+                background: transparent;
+                order: 2;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                position: sticky;
+                top: 80px;
+            }
+
+            .shorts-section::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .shorts-section::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .shorts-section::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 4px;
+            }
+
+            /* 2-column grid for shorts on desktop */
+            .shorts-scroll-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                overflow-x: visible;
+                overflow-y: visible;
+                padding: 0;
+                margin: 0;
+            }
+
+            .short-card {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .short-card .thumbnail {
+                width: 100%;
+                aspect-ratio: 9/16;
+            }
+
+            /* Related videos below */
+            .related-section {
+                width: calc(60% - 12px);
+                padding: 0;
+                order: 3;
+            }
+
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .action-bar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .action-btn {
+                flex: 1;
+                min-width: 60px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .video-section {
+                width: calc(65% - 12px);
+            }
+
+            .shorts-section {
+                width: calc(35% - 12px);
+            }
+
+            .related-section {
+                width: calc(65% - 12px);
+            }
+
+            .related-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ==================== TABLET ==================== */
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .related-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .shorts-scroll-container {
+                gap: 16px;
+            }
+
+            .short-card {
+                width: 160px;
+            }
+        }
+
+        /* ==================== SMALL MOBILE ==================== */
+
+        @media (max-width: 480px) {
+            .action-bar {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .action-btn span {
+                display: none;
+            }
+
+            .short-card {
+                width: 120px;
+            }
+
+            .uploader-info {
+                flex-wrap: wrap;
+            }
+
+            .subscribe-btn {
+                width: 100%;
+                margin-top: 8px;
+            }
+        }
+
+        /* ==================== MODAL ==================== */
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.9); 
+            justify-content: center; 
+            align-items: center; 
+            padding: 16px; 
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content { 
+            background-color: var(--card-bg); 
+            padding: 24px; 
+            border-radius: 16px; 
+            width: 100%; 
+            max-width: 480px; 
+            position: relative; 
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .close-modal { 
+            position: absolute; 
+            top: 16px; 
+            right: 20px; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            color: var(--text-sec); 
+            transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover { 
+            color: var(--accent); 
+            background: rgba(255,255,255,0.1);
+        }
+
+        .modal h3 { 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 1.3rem;
+        }
+
+        .modal h3 i { 
+            color: var(--accent); 
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: var(--text-sec); 
+            font-size: 0.95rem; 
+        }
+
+        .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--bg-color); 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-group select:focus, .form-group textarea:focus { 
+            outline: none; 
+            border-color: var(--accent); 
+        }
+
+        .modal-actions { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 12px; 
+            margin-top: 24px; 
+        }
+
+        .btn-cancel { 
+            background: transparent; 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-cancel:hover { 
+            background: var(--btn-hover); 
+        }
+
+        .btn-submit { 
+            background: var(--accent); 
+            border: none; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit:hover { 
+            background: var(--accent-hover);
+        }
+
+        /* ==================== LOADING & ERROR ==================== */
+
+        .loading-state, .error-state { 
+            text-align: center; 
+            padding: 60px 20px; 
+            color: var(--text-sec); 
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner { 
+            width: 48px; 
+            height: 48px; 
+            border: 3px solid rgba(255,255,255,0.1); 
+            border-top-color: var(--accent); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px; 
+        }
+
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+
+        .error-state { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .error-state i { 
+            font-size: 3.5rem; 
+            color: var(--accent); 
+            margin-bottom: 16px; 
+        }
+
+        .error-state h2 { 
+            margin-bottom: 12px; 
+            font-size: 1.5rem; 
+            color: var(--text-main);
+        }
+
+        .hidden { 
+            display: none !important; 
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Xplitleaks</div>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </header>
+
+    <div class="container">
+        <div id="loadingState" class="loading-state" style="width: 100%;">
+            <div class="loading-spinner"></div>
+            <p>Loading video...</p>
+        </div>
+
+        <div id="errorState" class="error-state hidden" style="width: 100%;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Video Not Found</h2>
+            <p id="errorMessage">The video you're looking for doesn't exist or has been removed.</p>
+            <a href="index.html" class="back-btn" style="margin-top: 10px;"><i class="fas fa-home"></i> Back to Home</a>
+        </div>
+
+        <div id="videoContent" class="hidden" style="display: contents;">
+
+            <!-- VIDEO SECTION -->
+            <div class="video-section">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls preload="metadata">
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <div class="video-info">
+                    <h1 id="videoTitle">Loading...</h1>
+
+                    <!-- UPLOADER INFO -->
+                    <div class="uploader-info">
+                        <div class="uploader-avatar" id="uploaderAvatar">U</div>
+                        <div class="uploader-details">
+                            <div class="uploader-name" id="uploaderName">Unknown</div>
+                            <div class="uploader-meta" id="subscriberCount">0 subscribers</div>
+                        </div>
+                        <button class="subscribe-btn" id="subscribeBtn">Subscribe</button>
+                    </div>
+
+                    <div class="meta-tags"><span id="videoCategory" class="tag">Category</span></div>
+                    <div class="stats">
+                        <span><i class="fas fa-eye"></i> <span id="videoViews">0</span> views</span>
+                        <span>•</span>
+                        <span><i class="fas fa-clock"></i> <span id="videoDate">N/A</span></span>
+                        <span>•</span>
+                        <span><i class="fas fa-hourglass-half"></i> <span id="videoDuration">0:00</span></span>
+                    </div>
+
+                    <!-- ACTION BUTTONS - NO NUMBERS -->
+                    <div class="action-bar">
+                        <button class="action-btn like" id="likeBtn" aria-label="Like video">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                        <button class="action-btn dislike" id="dislikeBtn" aria-label="Dislike video">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                        <button class="action-btn" id="copyBtn" aria-label="Copy link">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="action-btn" id="shareBtn" aria-label="Share video">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button class="action-btn report" id="reportBtn" aria-label="Report video">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                    </div>
+
+                    <div id="videoDescription" class="description hidden"></div>
+                    <div id="tagsContainer" class="tags-container hidden"></div>
+                </div>
+            </div>
+
+            <!-- SHORTS SECTION -->
+            <div class="shorts-section">
+                <h2 class="section-title"><i class="fas fa-mobile-alt"></i> Related Shorts</h2>
+                <div id="shortsContainer" class="shorts-scroll-container">
+                    <div class="loading-state" style="width: 100%; min-height: 200px;">
+                        <div class="loading-spinner"></div>
+                        <p>Loading shorts...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RELATED VIDEOS SECTION -->
+            <div class="related-section">
+                <h2 class="section-title"><i class="fas fa-play-circle"></i> Related Videos</h2>
+                <div id="relatedVideosGrid" class="related-grid">
+                    <div class="loading-state" style="grid-column: 1/-1;">
+                        <div class="loading-spinner"></div>
+                        <p>Loading recommendations...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="reportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+        <div class="modal-content">
+            <span class="close-modal" aria-label="Close">&times;</span>
+            <h3 id="reportModalTitle"><i class="fas fa-flag"></i> Report Video</h3>
+            <form id="reportForm">
+                <div class="form-group">
+                    <label for="reportReason">Reason for reporting *</label>
+                    <select id="reportReason" required>
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="inappropriate">Inappropriate Content</option>
+                        <option value="copyright">Copyright Violation</option>
+                        <option value="spam">Spam or Misleading</option>
+                        <option value="quality">Poor Quality</option>
+                        <option value="underage">Underage Content</option>
+                        <option value="violence">Violence or Harmful Content</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportDetails">Additional Details (Optional)</label>
+                    <textarea id="reportDetails" rows="3" placeholder="Describe the issue..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fluid Player JS -->
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
+            sessionId: localStorage.getItem('sessionId') || generateSessionId()
+        };
+        localStorage.setItem('sessionId', CONFIG.sessionId);
+
+        // ==================== GLOBALS ====================
+        let currentVideo = null;
+        let userReaction = null;
+        let viewTracked = false;
+        let fluidPlayerInstance = null;
+
+        // ==================== HELPERS ====================
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num || isNaN(num)) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function formatRelativeTime(dateString) {
+            if (!dateString) return 'Recently';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Recently';
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) { const m = Math.floor(diff / 60); return `${m} min${m > 1 ? 's' : ''} ago`; }
+            if (diff < 86400) { const h = Math.floor(diff / 3600); return `${h} hr${h > 1 ? 's' : ''} ago`; }
+            if (diff < 604800) { const d = Math.floor(diff / 86400); return `${d} day${d > 1 ? 's' : ''} ago`; }
+            if (diff < 2592000) { const w = Math.floor(diff / 604800); return `${w} week${w > 1 ? 's' : ''} ago`; }
+            if (diff < 31536000) { const m = Math.floor(diff / 2592000); return `${m} month${m > 1 ? 's' : ''} ago`; }
+            const y = Math.floor(diff / 31536000);
+            return `${y} year${y > 1 ? 's' : ''} ago`;
+        }
+
+        function formatDuration(seconds) {
+            if (isNaN(seconds) || seconds === 0) return '0:00';
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            if (hours > 0) {
+                return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // ==================== API CALLS ====================
+        async function fetchVideo(videoId) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (!data || !data.videoUrl) throw new Error('Video URL missing');
+                return data;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+            }
+        }
+
+        async function submitReport(videoId, reason) {
+            const response = await fetch(`${CONFIG.apiEndpoint}/report`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-Session-Id': CONFIG.sessionId 
+                },
+                body: JSON.stringify({ videoId, videoType: 'video', reason })
+            });
+            if (!response.ok) throw new Error('Report failed');
+            return await response.json();
+        }
+
+        // ==================== LOCAL REACTIONS ====================
+        function loadLocalReaction(videoId) {
+            const key = `video_reaction_${videoId}`;
+            const stored = localStorage.getItem(key);
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+
+            likeBtn.classList.remove('active');
+            dislikeBtn.classList.remove('active');
+
+            if (stored === 'like') {
+                userReaction = 'like';
+                likeBtn.classList.add('active');
+            } else if (stored === 'dislike') {
+                userReaction = 'dislike';
+                dislikeBtn.classList.add('active');
+            } else {
+                userReaction = null;
+            }
+        }
+
+        function saveLocalReaction(videoId, reaction) {
+            const key = `video_reaction_${videoId}`;
+            if (reaction) localStorage.setItem(key, reaction);
+            else localStorage.removeItem(key);
+        }
+
+        function toggleLocalReaction(type) {
+            if (!currentVideo) return;
+            const videoId = currentVideo.numericId || currentVideo.id;
+            const likeBtn = document.getElementById('likeBtn');
+            const dislikeBtn = document.getElementById('dislikeBtn');
+
+            let newReaction = null;
+            if (userReaction === type) {
+                newReaction = null;
+            } else {
+                newReaction = type;
+            }
+
+            likeBtn.classList.remove('active');
+            dislikeBtn.classList.remove('active');
+
+            if (newReaction === 'like') likeBtn.classList.add('active');
+            if (newReaction === 'dislike') dislikeBtn.classList.add('active');
+
+            saveLocalReaction(videoId, newReaction);
+            userReaction = newReaction;
+        }
+
+        // ==================== FLUID PLAYER SETUP ====================
+        function setupFluidPlayer(videoUrl, thumbnail, videoId) {
+            const video = document.getElementById('videoPlayer');
+            const source = video.querySelector('source');
+
+            console.log('Loading Fluid Player with URL:', videoUrl);
+
+            if (source) {
+                source.src = videoUrl;
+                source.type = 'video/mp4';
+            }
+
+            if (fluidPlayerInstance) {
+                try {
+                    fluidPlayerInstance.destroy();
+                } catch(e) {
+                    console.log('No previous player instance to destroy');
+                }
+            }
+
+            try {
+                fluidPlayerInstance = fluidPlayer('videoPlayer', {
+                    layoutControls: {
+                        primaryColor: '#ff0050',
+                        fillToContainer: true,
+                        posterImage: thumbnail || false,
+                        posterImageSize: 'cover',
+                        playButtonShowing: true,
+                        playPauseAnimation: true,
+                        autoPlay: false,
+                        mute: false,
+                        loop: false,
+                        keyboardControl: true,
+                        doubleclickFullscreen: true,
+                        allowTheatre: true,
+                        allowDownload: false,
+                        playbackRateEnabled: true,
+                        subtitlesEnabled: false,
+                        title: currentVideo?.title || false,
+                        controlBar: {
+                            autoHide: true,
+                            autoHideTimeout: 3,
+                            animated: true,
+                            playbackRates: ['x2', 'x1.5', 'x1', 'x0.5']
+                        },
+                        miniPlayer: {
+                            enabled: true,
+                            width: 400,
+                            height: 225,
+                            widthMobile: 40,
+                            placeholderText: 'Playing in Miniplayer',
+                            position: 'bottom right',
+                            autoToggle: false
+                        }
+                    }
+                });
+
+                video.addEventListener('timeupdate', onTimeUpdate);
+                video.addEventListener('error', onVideoError);
+                video.addEventListener('loadedmetadata', function() {
+                    document.getElementById('videoDuration').textContent = formatDuration(video.duration);
+                });
+
+                window.addEventListener('orientationchange', function() {
+                    setTimeout(function() {
+                        if (fluidPlayerInstance) {
+                            fluidPlayerInstance.resize();
+                        }
+                    }, 100);
+                });
+
+            } catch (error) {
+                console.error('Failed to initialize Fluid Player:', error);
+            }
+        }
+
+        function onTimeUpdate() {
+            const video = document.getElementById('videoPlayer');
+            if (!viewTracked && video.duration > 0) {
+                const progress = video.currentTime / video.duration;
+                if (progress >= 0.5) {
+                    viewTracked = true;
+                    console.log('50% watched, tracking view');
+                }
+            }
+        }
+
+        function onVideoError(e) {
+            const video = document.getElementById('videoPlayer');
+            console.error('Video error:', video.error);
+        }
+
+        // ==================== UI UPDATE ====================
+        function updateVideoInfo(video) {
+            document.getElementById('videoTitle').textContent = escapeHtml(video.title);
+            document.getElementById('videoCategory').textContent = escapeHtml(video.category || 'Uncategorized');
+            document.getElementById('videoViews').textContent = formatNumber(video.views || 0);
+            document.getElementById('videoDate').textContent = formatRelativeTime(video.uploadDate);
+
+            // Update uploader info
+            const uploaderName = video.uploader || video.creator || video.author || 'Unknown';
+            document.getElementById('uploaderName').textContent = escapeHtml(uploaderName);
+            document.getElementById('uploaderAvatar').textContent = uploaderName.charAt(0).toUpperCase();
+
+            // Subscriber count (mock or from API)
+            const subs = video.subscribers || video.uploaderSubs || Math.floor(Math.random() * 100000);
+            document.getElementById('subscriberCount').textContent = formatNumber(subs) + ' subscribers';
+
+            const descEl = document.getElementById('videoDescription');
+            if (video.description && video.description.trim()) {
+                descEl.textContent = escapeHtml(video.description);
+                descEl.classList.remove('hidden');
+            } else {
+                descEl.classList.add('hidden');
+            }
+
+            let tags = [];
+            try { 
+                tags = video.tags ? JSON.parse(video.tags) : []; 
+            } catch(e) { 
+                tags = []; 
+            }
+
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            if (tags.length) {
+                tags.forEach(tag => {
+                    if (tag && typeof tag === 'string') {
+                        const safeTag = escapeHtml(tag.trim());
+                        if (safeTag) {
+                            const a = document.createElement('a');
+                            a.href = `index.html?tag=${encodeURIComponent(tag.trim())}`;
+                            a.className = 'tag-link';
+                            a.textContent = `#${safeTag}`;
+                            tagsContainer.appendChild(a);
+                        }
+                    }
+                });
+                tagsContainer.classList.remove('hidden');
+            } else {
+                tagsContainer.classList.add('hidden');
+            }
+        }
+
+        // ==================== RELATED CONTENT ====================
+
+        function createShortCard(video) {
+            const a = document.createElement('a');
+            const idToUse = video.numericId || video.id;
+            a.href = `shorts.html?id=${idToUse}`;
+            a.className = 'short-card';
+
+            const thumbDiv = document.createElement('div');
+            thumbDiv.className = 'thumbnail';
+
+            const img = document.createElement('img');
+            img.src = video.thumbnail || '';
+            img.alt = escapeHtml(video.title);
+            img.loading = 'lazy';
+            img.onerror = function() { 
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMjY2Ij48cmVjdCBmaWxsPSIjMzMzIiB3aWR0aD0iMTUwIiBoZWlnaHQ9IjI2NiIvPjx0ZXh0IGZpbGw9IiM2NjYiIHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gVGh1bWI8L3RleHQ+PC9zdmc+'; 
+            };
+            thumbDiv.appendChild(img);
+
+            const durationSpan = document.createElement('span');
+            durationSpan.className = 'duration';
+            durationSpan.textContent = video.duration || '0:00';
+            thumbDiv.appendChild(durationSpan);
+
+            const cardInfo = document.createElement('div');
+            cardInfo.className = 'card-info';
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'card-title';
+            titleDiv.textContent = escapeHtml(video.title);
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'card-meta';
+            metaDiv.textContent = `${formatNumber(video.views || 0)} views`;
+
+            cardInfo.appendChild(titleDiv);
+            cardInfo.appendChild(metaDiv);
+
+            a.appendChild(thumbDiv);
+            a.appendChild(cardInfo);
+            return a;
+        }
+
+        function createRelatedCard(video) {
+            const a = document.createElement('a');
+            const idToUse = video.numericId || video.id;
+            a.href = `video.html?id=${idToUse}`;
+            a.className = 'related-card';
+
+            const thumbDiv = document.createElement('div');
+            thumbDiv.className = 'thumbnail';
+
+            const img = document.createElement('img');
+            img.src = video.thumbnail || '';
+            img.alt = escapeHtml(video.title);
+            img.loading = 'lazy';
+            img.onerror = function() { 
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMjY2Ij48cmVjdCBmaWxsPSIjMzMzIiB3aWR0aD0iMTUwIiBoZWlnaHQ9IjI2NiIvPjx0ZXh0IGZpbGw9IiM2NjYiIHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gVGh1bWI8L3RleHQ+PC9zdmc+'; 
+            };
+            thumbDiv.appendChild(img);
+
+            const durationSpan = document.createElement('span');
+            durationSpan.className = 'duration';
+            durationSpan.textContent = video.duration || '0:00';
+            thumbDiv.appendChild(durationSpan);
+
+            const cardInfo = document.createElement('div');
+            cardInfo.className = 'card-info';
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'card-title';
+            titleDiv.textContent = escapeHtml(video.title);
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'card-meta';
+            metaDiv.textContent = `${formatNumber(video.views || 0)} views • ${formatRelativeTime(video.uploadDate)}`;
+
+            cardInfo.appendChild(titleDiv);
+            cardInfo.appendChild(metaDiv);
+
+            a.appendChild(thumbDiv);
+            a.appendChild(cardInfo);
+            return a;
+        }
+
+        async function loadRelatedShorts(video) {
+            const container = document.getElementById('shortsContainer');
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=12`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                let shorts = await res.json();
+                if (shorts && shorts.length) {
+                    let related = shorts.filter(s => s.category === video.category);
+                    if (related.length < 12) {
+                        const remaining = shorts.filter(s => s.category !== video.category);
+                        related = [...related, ...remaining].slice(0, 12);
+                    }
+                    container.innerHTML = '';
+                    related.forEach(short => container.appendChild(createShortCard(short)));
+                } else {
+                    container.innerHTML = `
+                        <div class="loading-state" style="width:100%; min-height: 200px;">
+                            <i class="fas fa-video" style="font-size:2rem; margin-bottom:12px; display:block;"></i>
+                            <p>No shorts available</p>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                console.error('Failed to load shorts:', e);
+                container.innerHTML = `
+                    <div class="loading-state" style="width:100%; min-height: 200px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:12px; display:block;"></i>
+                        <p>Failed to load shorts</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadRelatedVideos(video) {
+            const container = document.getElementById('relatedVideosGrid');
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const res = await fetch(`${CONFIG.apiEndpoint}/videos?limit=12`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                let videos = await res.json();
+                if (videos && videos.length) {
+                    const currentId = (video.numericId || video.id).toString();
+                    const filtered = videos.filter(v => {
+                        const vid = v.numericId || v.id;
+                        return vid && vid.toString() !== currentId;
+                    }).slice(0, 12);
+                    container.innerHTML = '';
+                    filtered.forEach(v => container.appendChild(createRelatedCard(v)));
+                } else {
+                    container.innerHTML = `
+                        <div class="loading-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-video" style="font-size:2rem; margin-bottom:12px; display:block;"></i>
+                            <p>No recommendations</p>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                console.error('Failed to load related videos:', e);
+                container.innerHTML = `
+                    <div class="loading-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:12px; display:block;"></i>
+                        <p>Failed to load recommendations</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== REPORT MODAL ====================
+        let activeModal = false;
+
+        function openReportModal() {
+            const modal = document.getElementById('reportModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            activeModal = true;
+            modal.setAttribute('aria-hidden', 'false');
+            const firstFocus = modal.querySelector('select, textarea, button');
+            if (firstFocus) firstFocus.focus();
+        }
+
+        function closeReportModal() {
+            const modal = document.getElementById('reportModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            activeModal = false;
+            modal.setAttribute('aria-hidden', 'true');
+            document.getElementById('reportForm').reset();
+            document.getElementById('reportBtn').focus();
+        }
+
+        async function handleReportSubmit(event) {
+            event.preventDefault();
+            const reason = document.getElementById('reportReason').value;
+            const details = document.getElementById('reportDetails').value;
+
+            if (!reason) {
+                return;
+            }
+
+            const videoId = currentVideo.numericId || currentVideo.id;
+            const fullReason = reason + (details ? ': ' + details : '');
+
+            const submitBtn = event.target.querySelector('.btn-submit');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                await submitReport(videoId, fullReason);
+                closeReportModal();
+            } catch (e) {
+                console.error(e);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ==================== SHARE & COPY ====================
+        async function copyLink() {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+            } catch {
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+
+        async function shareVideo() {
+            const shareData = {
+                title: currentVideo?.title || 'Check out this video',
+                text: currentVideo?.description || '',
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyLink();
+                    }
+                }
+            } else {
+                copyLink();
+            }
+        }
+
+        // ==================== SUBSCRIBE BUTTON ====================
+        document.getElementById('subscribeBtn').addEventListener('click', function() {
+            this.textContent = this.textContent === 'Subscribe' ? 'Subscribed' : 'Subscribe';
+            this.style.background = this.textContent === 'Subscribed' ? '#666' : 'var(--accent)';
+        });
+
+        // ==================== MAIN LOAD ====================
+        async function loadVideo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let videoId = urlParams.get('id');
+
+            if (!videoId) { 
+                showError('Video ID is required'); 
+                return; 
+            }
+
+            try {
+                const data = await fetchVideo(videoId);
+                currentVideo = data;
+                const displayId = currentVideo.numericId || currentVideo.id;
+
+                document.getElementById('pageTitle').textContent = `${escapeHtml(data.title)} - Xplitleaks`;
+                updateVideoInfo(data);
+                setupFluidPlayer(data.videoUrl, data.thumbnail, displayId);
+                loadLocalReaction(displayId);
+
+                await Promise.all([
+                    loadRelatedShorts(data),
+                    loadRelatedVideos(data)
+                ]);
+
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.add('hidden');
+                document.getElementById('videoContent').classList.remove('hidden');
+
+                if (!window.history.state || window.history.state.videoId !== displayId) {
+                    window.history.replaceState({ videoId: displayId }, '', `?id=${displayId}`);
+                }
+
+            } catch (error) {
+                console.error('Load video error:', error);
+                showError('Failed to load video: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.addEventListener('DOMContentLoaded', loadVideo);
+
+        document.getElementById('likeBtn').addEventListener('click', () => toggleLocalReaction('like'));
+        document.getElementById('dislikeBtn').addEventListener('click', () => toggleLocalReaction('dislike'));
+        document.getElementById('copyBtn').addEventListener('click', copyLink);
+        document.getElementById('shareBtn').addEventListener('click', shareVideo);
+        document.getElementById('reportBtn').addEventListener('click', openReportModal);
+
+        const modal = document.getElementById('reportModal');
+        modal.addEventListener('click', (e) => { 
+            if (e.target === modal) closeReportModal(); 
+        });
+        modal.querySelector('.close-modal').addEventListener('click', closeReportModal);
+        modal.querySelector('.btn-cancel').addEventListener('click', closeReportModal);
+        document.getElementById('reportForm').addEventListener('submit', handleReportSubmit);
+
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape' && activeModal) {
+                closeReportModal(); 
+            }
+        });
+
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.videoId) {
+                loadVideo();
+            }
+        });
+    </script>
+</body>
+</html>
