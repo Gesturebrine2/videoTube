@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0a0a0a">
+    <title id="pageTitle">Loading... - Xplitleaks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css"/>
+    <style>
+        :root { --bg: #0a0a0a; --card: #1a1a1a; --text: #fff; --muted: #888; --primary: #ff0050; --border: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+        header { padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.3rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), #00f2ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .back-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .container { max-width: 1800px; margin: 0 auto; padding: 16px; display: flex; flex-wrap: wrap; gap: 20px; }
+        .video-section { flex: 2; min-width: 300px; }
+        .video-wrapper { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .fluid_video_wrapper { width: 100% !important; height: 100% !important; }
+        .video-info { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 16px; }
+        .video-info h1 { font-size: 1.4rem; margin-bottom: 12px; }
+        .uploader-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .uploader-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #00f2ea); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .stats { color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+        .action-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btn { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .action-btn.active { background: var(--primary); border-color: var(--primary); }
+        .shorts-section { flex: 1; min-width: 280px; }
+        .shorts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .short-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: white; }
+        .short-card img { width: 100%; aspect-ratio: 9/16; object-fit: cover; }
+        .short-card .info { padding: 8px; }
+        .short-card .title { font-size: 0.8rem; font-weight: 600; line-clamp: 2; }
+        .related-section { width: 100%; margin-top: 20px; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        .related-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: white; }
+        .related-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        footer { background: var(--card); border-top: 1px solid var(--border); padding: 20px; text-align: center; color: var(--muted); margin-top: 30px; }
+        @media (max-width: 1024px) { .shorts-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" id="siteName">Xplitleaks</div>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </header>
+
+    <div class="container">
+        <div id="loadingState" style="width:100%; text-align:center; padding:60px;"><div class="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div></div>
+        
+        <div id="videoContent" style="display:contents;">
+            <div class="video-section">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls preload="metadata"></video>
+                </div>
+                <div class="video-info">
+                    <h1 id="videoTitle"></h1>
+                    <div class="uploader-info">
+                        <div class="uploader-avatar" id="uploaderAvatar">U</div>
+                        <div><span id="uploaderName">Unknown</span></div>
+                    </div>
+                    <div class="stats">
+                        <span><i class="fas fa-eye"></i> <span id="videoViews">0</span> views</span>
+                        <span><i class="fas fa-clock"></i> <span id="videoDate"></span></span>
+                        <span><i class="fas fa-hourglass-half"></i> <span id="videoDuration">0:00</span></span>
+                    </div>
+                    <div class="action-bar">
+                        <button class="action-btn like" id="likeBtn"><i class="fas fa-thumbs-up"></i> Like</button>
+                        <button class="action-btn" id="shareBtn"><i class="fas fa-share-alt"></i> Share</button>
+                        <button class="action-btn report" id="reportBtn"><i class="fas fa-flag"></i> Report</button>
+                    </div>
+                    <div id="videoDescription" class="hidden"></div>
+                </div>
+            </div>
+
+            <div class="shorts-section">
+                <h2 style="margin-bottom:16px;"><i class="fas fa-mobile-alt text-primary"></i> Related Shorts</h2>
+                <div id="shortsContainer" class="shorts-grid"></div>
+            </div>
+
+            <div class="related-section">
+                <h2 style="margin-bottom:16px;"><i class="fas fa-play-circle text-primary"></i> Related Videos</h2>
+                <div id="relatedVideos" class="related-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p id="footerText">© 2024 Xplitleaks. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+    <script src="placement.js"></script>
+
+    <script>
+        const CONFIG = {
+            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
+            sessionId: localStorage.getItem('sessionId') || ('sess_' + Math.random().toString(36).substr(2,9) + '_' + Date.now())
+        };
+        localStorage.setItem('sessionId', CONFIG.sessionId);
+
+        let currentVideo = null;
+        let fluidPlayer = null;
+        let viewTracked = { threeSec: false, half: false };
+        let startTime = Date.now();
+
+        // Site settings
+        fetch(`${CONFIG.apiEndpoint}/settings/public`).then(r=>r.json()).then(s=>{
+            if(s.site_name) document.getElementById('siteName').textContent = s.site_name;
+            if(s.footer_text) document.getElementById('footerText').textContent = s.footer_text;
+        });
+
+        // Load video
+        async function loadVideo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('id');
+            if (!videoId) return showError('Video ID missing');
+
+            try {
+                const res = await fetch(`${CONFIG.apiEndpoint}/video/${videoId}`);
+                currentVideo = await res.json();
+                if (!currentVideo) throw new Error('Not found');
+                
+                document.getElementById('pageTitle').textContent = currentVideo.title + ' - Xplitleaks';
+                document.getElementById('videoTitle').textContent = currentVideo.title;
+                document.getElementById('videoViews').textContent = formatNumber(currentVideo.views || 0);
+                document.getElementById('videoDate').textContent = formatDate(currentVideo.uploadDate);
+                document.getElementById('uploaderName').textContent = currentVideo.uploaderName || 'Unknown';
+                document.getElementById('uploaderAvatar').textContent = (currentVideo.uploaderName || 'U').charAt(0).toUpperCase();
+                if (currentVideo.description) {
+                    document.getElementById('videoDescription').textContent = currentVideo.description;
+                    document.getElementById('videoDescription').classList.remove('hidden');
+                }
+
+                // Setup Fluid Player with VAST
+                setupFluidPlayer(currentVideo.videoUrl, currentVideo.thumbnail);
+                
+                // Load related content
+                loadRelatedShorts(currentVideo.category);
+                loadRelatedVideos(currentVideo.numericId);
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('videoContent').style.display = 'contents';
+
+                // Initialize placement with video player
+                window.PlacementConfig = { mode: 'video', apiBase: CONFIG.apiEndpoint, videoPlayer: document.getElementById('videoPlayer') };
+                if (typeof PlacementEngine !== 'undefined') { new PlacementEngine(window.PlacementConfig).init(); }
+
+            } catch (e) { showError(e.message); }
+        }
+
+        async function setupFluidPlayer(videoUrl, thumbnail) {
+            const video = document.getElementById('videoPlayer');
+            video.src = videoUrl;
+            
+            // Fetch VAST ad URL from API
+            let vastUrl = '';
+            try {
+                const adRes = await fetch(`${CONFIG.apiEndpoint}/ads/vast`);
+                const ads = await adRes.json();
+                if (ads.length) vastUrl = ads[0].url;
+            } catch (e) {}
+
+            fluidPlayer = fluidPlayer('videoPlayer', {
+                layoutControls: {
+                    primaryColor: '#ff0050',
+                    posterImage: thumbnail,
+                    fillToContainer: true,
+                    autoPlay: false,
+                    mute: false,
+                    keyboardControl: true,
+                    allowDownload: false,
+                    playbackRateEnabled: true,
+                    controlBar: { autoHide: true, autoHideTimeout: 3 }
+                },
+                vastOptions: vastUrl ? { adList: [{ roll: 'preRoll', vastTag: vastUrl }] } : {}
+            });
+
+            video.addEventListener('timeupdate', onTimeUpdate);
+            video.addEventListener('loadedmetadata', () => {
+                document.getElementById('videoDuration').textContent = formatDuration(video.duration);
+            });
+
+            // View tracking on unload
+            window.addEventListener('beforeunload', sendViewData);
+            window.addEventListener('pagehide', sendViewData);
+        }
+
+        function onTimeUpdate() {
+            const video = document.getElementById('videoPlayer');
+            if (!viewTracked.threeSec && video.currentTime >= 3) {
+                viewTracked.threeSec = true;
+                trackView('partial');
+            }
+            if (!viewTracked.half && video.currentTime / video.duration >= 0.5) {
+                viewTracked.half = true;
+                trackView('half');
+            }
+        }
+
+        async function trackView(type) {
+            const watchDuration = (Date.now() - startTime) / 1000;
+            await fetch(`${CONFIG.apiEndpoint}/video/view`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Session-Id': CONFIG.sessionId },
+                body: JSON.stringify({
+                    videoId: currentVideo.numericId,
+                    watchStart: 0,
+                    watchEnd: watchDuration,
+                    watchDuration,
+                    completed: type === 'half',
+                    exitType: 'timeupdate'
+                })
+            });
+        }
+
+        async function sendViewData() {
+            if (!currentVideo) return;
+            const video = document.getElementById('videoPlayer');
+            const watchDuration = (Date.now() - startTime) / 1000;
+            navigator.sendBeacon(`${CONFIG.apiEndpoint}/video/view`, JSON.stringify({
+                videoId: currentVideo.numericId,
+                watchDuration,
+                watchTime: video.currentTime,
+                completed: video.ended,
+                exitType: 'unload'
+            }));
+        }
+
+        async function loadRelatedShorts(category) {
+            try {
+                const res = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=6`);
+                const shorts = await res.json();
+                const container = document.getElementById('shortsContainer');
+                container.innerHTML = shorts.map(s => createShortCard(s)).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadRelatedVideos(currentId) {
+            try {
+                const res = await fetch(`${CONFIG.apiEndpoint}/videos?limit=12`);
+                const videos = await res.json();
+                const filtered = videos.filter(v => (v.numericId || v.id) != currentId).slice(0, 8);
+                const container = document.getElementById('relatedVideos');
+                container.innerHTML = filtered.map(v => createVideoCard(v)).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function createShortCard(short) {
+            return `
+                <a href="shorts.html?id=${short.numericId}" class="short-card">
+                    <img src="${short.thumbnail || ''}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'266\'%3E%3Crect fill=\'%23333\' width=\'150\' height=\'266\'/%3E%3C/svg%3E'">
+                    <div class="info"><div class="title">${short.title}</div></div>
+                </a>
+            `;
+        }
+
+        function createVideoCard(video) {
+            return `
+                <a href="video5.html?id=${video.numericId}" class="related-card">
+                    <img src="${video.thumbnail || ''}">
+                    <div style="padding:8px;"><div style="font-weight:600; font-size:0.9rem;">${video.title}</div></div>
+                </a>
+            `;
+        }
+
+        function formatNumber(n) { return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n.toString(); }
+        function formatDuration(s) { const m=Math.floor(s/60); const sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+        function formatDate(d) { if(!d) return ''; return new Date(d).toLocaleDateString(); }
+        function showError(msg) { document.getElementById('loadingState').innerHTML = `<p class="text-danger">Error: ${msg}</p>`; }
+
+        // Event listeners
+        document.getElementById('likeBtn').addEventListener('click', () => {
+            document.getElementById('likeBtn').classList.toggle('active');
+        });
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (navigator.share) navigator.share({url: window.location.href});
+            else navigator.clipboard?.writeText(window.location.href);
+        });
+
+        loadVideo();
+    </script>
+</body>
+</html>
