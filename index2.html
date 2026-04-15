@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0a0a0a">
+    <title id="siteTitle">Xplitleaks - Home</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff0050',
+                        secondary: '#00f2ea',
+                        dark: '#0a0a0a',
+                        darker: '#050505',
+                        card: '#1a1a1a',
+                        border: '#333333',
+                        muted: '#888888'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0050;
+        }
+        
+        * {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Outstream Ad Container */
+        .outstream-ad {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pagination */
+        .pagination-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background: #ff0050;
+            border-color: #ff0050;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background: #ff0050;
+            border-color: #ff0050;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            border-top: 1px solid #333;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body class="bg-darker text-white font-sans antialiased min-h-screen">
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="bg-dark border-b border-border sticky top-0 z-50">
+        <div class="px-4 py-3 flex justify-between items-center">
+            <!-- Left: Menu & Logo -->
+            <div class="flex items-center gap-3">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMenu()" class="lg:hidden p-2 hover:bg-card rounded-lg transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-2">
+                    <div id="siteLogo" class="hidden"></div>
+                    <h1 id="siteName" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent animate-gradient">
+                        Xplitleaks
+                    </h1>
+                </a>
+            </div>
+            
+            <!-- Right: Search & Shorts -->
+            <div class="flex items-center gap-2">
+                <!-- Search Toggle (Mobile) -->
+                <button onclick="toggleSearch()" class="lg:hidden p-2 hover:bg-card rounded-lg transition-colors">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+                
+                <!-- Shorts Button -->
+                <a href="shorts.html" class="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-card border border-border rounded-lg text-xs md:text-sm font-medium hover:bg-primary hover:border-primary transition-all">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span class="hidden sm:inline">Shorts</span>
+                </a>
+
+                <!-- Upload Button -->
+                <a href="upload.html" class="hidden sm:inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-primary border border-primary rounded-lg text-xs md:text-sm font-medium hover:bg-primary/90 transition-all">
+                    <i class="fas fa-plus"></i>
+                    <span>Upload</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Mobile Search & Categories Dropdown -->
+        <div id="mobileSearchDropdown" class="hidden lg:hidden border-t border-border bg-dark px-4 py-3 animate-slide-down">
+            <!-- Search Bar -->
+            <div class="flex gap-2 mb-3">
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search videos..." 
+                        class="w-full px-4 py-2.5 bg-card border border-border rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    >
+                </div>
+                <button 
+                    onclick="handleSearch()" 
+                    class="px-4 py-2.5 bg-primary border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all"
+                >
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <!-- Category Tags -->
+            <div class="flex flex-wrap gap-2" id="mobileCategories">
+                <!-- Categories loaded dynamically -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== SIDEBAR MENU (Mobile) ==================== -->
+    <div id="sidebarMenu" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleMenu()"></div>
+        
+        <!-- Sidebar -->
+        <div class="absolute left-0 top-0 h-full w-64 bg-card border-r border-border transform -translate-x-full transition-transform duration-300" id="sidebarContent">
+            <div class="p-4 border-b border-border flex justify-between items-center">
+                <h2 class="text-lg font-bold">Menu</h2>
+                <button onclick="toggleMenu()" class="p-2 hover:bg-dark rounded-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="p-4 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary rounded-lg text-primary font-medium">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="shorts.html" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Shorts</span>
+                </a>
+                <a href="upload.html" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </a>
+                <a href="#" onclick="filterCategory('all'); toggleMenu()" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-fire"></i>
+                    <span>Trending</span>
+                </a>
+                <a href="#" onclick="filterCategory('all'); toggleMenu()" class="flex items-center gap-3 px-4 py-3 hover:bg-dark rounded-lg transition-colors">
+                    <i class="fas fa-clock"></i>
+                    <span>Latest</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-border">
+                <h3 class="text-sm font-semibold text-muted mb-3">Categories</h3>
+                <div class="space-y-2" id="sidebarCategories">
+                    <!-- Categories loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+        
+        <!-- Desktop Search & Categories (Hidden on Mobile) -->
+        <section class="hidden lg:block space-y-4">
+            <!-- Search Bar -->
+            <div class="flex gap-3">
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInputDesktop" 
+                        placeholder="Search videos..." 
+                        class="w-full px-4 py-3 bg-card border border-border rounded-lg text-white placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    >
+                    <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-muted"></i>
+                </div>
+                <button 
+                    onclick="handleSearchDesktop()" 
+                    class="px-6 py-3 bg-primary border border-primary rounded-lg font-semibold hover:bg-primary/90 hover:scale-105 transition-all flex items-center gap-2"
+                >
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </button>
+            </div>
+            
+            <!-- Category Filters -->
+            <div class="flex flex-wrap gap-2" id="desktopCategories">
+                <!-- Categories loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- ==================== TRENDING SHORTS ==================== -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <i class="fas fa-mobile-alt text-primary"></i>
+                    Trending Shorts
+                </h2>
+                <a href="shorts.html" class="text-primary hover:text-secondary font-medium flex items-center gap-1 text-sm md:text-base transition-colors">
+                    View All
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <!-- Shorts Container with Outstream Ads -->
+            <div id="shortsContainer" class="space-y-4">
+                <!-- Shorts and ads will be inserted here -->
+            </div>
+        </section>
+
+        <!-- ==================== LATEST VIDEOS ==================== -->
+        <section class="space-y-4">
+            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                <i class="fas fa-video text-primary"></i>
+                Latest Videos
+            </h2>
+            
+            <!-- Videos Grid -->
+            <div id="latestVideos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                <!-- Loading State -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="flex flex-col items-center gap-3 text-muted">
+                        <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin"></div>
+                        <p>Loading videos...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="flex justify-center items-center gap-2 py-8 hidden">
+                <button onclick="changePage(-1)" id="prevBtn" class="pagination-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="pageNumbers" class="flex gap-2">
+                    <!-- Page numbers -->
+                </div>
+                <button onclick="changePage(1)" id="nextBtn" class="pagination-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 id="footerSiteName" class="text-xl font-bold bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent mb-4">
+                        Xplitleaks
+                    </h3>
+                    <p class="text-muted text-sm">
+                        The best platform for sharing and discovering videos and shorts.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-muted">
+                        <li><a href="index.html" class="hover:text-primary transition-colors">Home</a></li>
+                        <li><a href="shorts.html" class="hover:text-primary transition-colors">Shorts</a></li>
+                        <li><a href="upload.html" class="hover:text-primary transition-colors">Upload</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Categories</h4>
+                    <ul class="space-y-2 text-sm text-muted">
+                        <li><a href="#" onclick="filterCategory('amateur')" class="hover:text-primary transition-colors">Amateur</a></li>
+                        <li><a href="#" onclick="filterCategory('teen')" class="hover:text-primary transition-colors">Teen</a></li>
+                        <li><a href="#" onclick="filterCategory('mature')" class="hover:text-primary transition-colors">Mature</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-muted">
+                        <li><a href="#" class="hover:text-primary transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">DMCA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-border pt-8 text-center text-sm text-muted">
+                <p>&copy; 2024 <span id="footerCopyright">Xplitleaks</span>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== TOAST NOTIFICATIONS ==================== -->
+    <div id="toastContainer" class="fixed top-24 right-5 z-[9999] flex flex-col gap-3"></div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            apiEndpoint: 'https://xplitleaks-api.dylancoral.workers.dev/api',
+            sessionId: localStorage.getItem('sessionId') || generateSessionId()
+        };
+        localStorage.setItem('sessionId', CONFIG.sessionId);
+
+        let currentCategory = 'all';
+        let currentPage = 1;
+        let totalPages = 1;
+        let siteConfig = {};
+        let placementState = {
+            urls: [],
+            currentIndex: 0,
+            firstClickDone: false,
+            lastClickTime: 0
+        };
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSiteConfig();
+            setupPlacementFeature();
+            loadCategories();
+            loadTrendingShorts();
+            loadLatestVideos();
+            
+            // Search on Enter key
+            document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+            document.getElementById('searchInputDesktop')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearchDesktop();
+            });
+
+            // Setup view tracking on page leave
+            setupViewTracking();
+        });
+
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        // ==================== SITE CONFIG ====================
+        async function loadSiteConfig() {
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/config`);
+                siteConfig = await response.json();
+                
+                // Update site name
+                if (siteConfig.siteName) {
+                    document.getElementById('siteName').textContent = siteConfig.siteName;
+                    document.getElementById('siteTitle').textContent = `${siteConfig.siteName} - Home`;
+                    document.getElementById('footerSiteName').textContent = siteConfig.siteName;
+                    document.getElementById('footerCopyright').textContent = siteConfig.siteName;
+                }
+                
+                // Update logo if exists
+                if (siteConfig.siteLogo) {
+                    const logoDiv = document.getElementById('siteLogo');
+                    logoDiv.innerHTML = `<img src="${siteConfig.siteLogo}" alt="Logo" class="h-8 w-auto">`;
+                    logoDiv.classList.remove('hidden');
+                }
+                
+                // Load placement URLs
+                if (siteConfig.placementUrls) {
+                    try {
+                        placementState.urls = JSON.parse(siteConfig.placementUrls);
+                    } catch(e) {
+                        placementState.urls = [];
+                    }
+                }
+                
+                // Update colors if set
+                if (siteConfig.primaryColor) {
+                    document.documentElement.style.setProperty('--primary', siteConfig.primaryColor);
+                }
+            } catch (error) {
+                console.error('Failed to load site config:', error);
+            }
+        }
+
+        // ==================== PLACEMENT FEATURE ====================
+        function setupPlacementFeature() {
+            // Wait 3 minutes before activating placement on shorts page logic
+            // For main page: activate immediately
+            document.addEventListener('click', handlePlacementClick, true);
+        }
+
+        function handlePlacementClick(e) {
+            const now = Date.now();
+            
+            // Check if 3 minutes passed since last placement (for subsequent clicks)
+            if (placementState.firstClickDone && (now - placementState.lastClickTime < 180000)) {
+                return; // Still in 3-minute cooldown
+            }
+            
+            if (!placementState.firstClickDone) {
+                // FIRST CLICK: Open current page in new tab, redirect original
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const targetUrl = placementState.urls.length > 0 
+                    ? placementState.urls[placementState.currentIndex] 
+                    : window.location.href;
+                
+                // Open current page in new tab
+                window.open(window.location.href, '_blank');
+                
+                // Redirect original tab
+                window.location.href = targetUrl;
+                
+                // Update index for rotation
+                placementState.currentIndex = (placementState.currentIndex + 1) % placementState.urls.length;
+                placementState.firstClickDone = true;
+                placementState.lastClickTime = now;
+                
+                return false;
+            } else {
+                // SECOND CLICK: Open intended link in new tab, redirect original
+                const target = e.target.closest('a');
+                if (target && target.href) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const intendedUrl = target.href;
+                    const redirectUrl = placementState.urls.length > 0 
+                        ? placementState.urls[placementState.currentIndex] 
+                        : intendedUrl;
+                    
+                    // Open intended in new tab
+                    window.open(intendedUrl, '_blank');
+                    
+                    // Redirect original
+                    window.location.href = redirectUrl;
+                    
+                    // Update index
+                    placementState.currentIndex = (placementState.currentIndex + 1) % placementState.urls.length;
+                    placementState.lastClickTime = now;
+                    
+                    return false;
+                }
+            }
+        }
+
+        // ==================== MOBILE MENU ====================
+        function toggleMenu() {
+            const menu = document.getElementById('sidebarMenu');
+            const content = document.getElementById('sidebarContent');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                content.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // ==================== MOBILE SEARCH ====================
+        function toggleSearch() {
+            const dropdown = document.getElementById('mobileSearchDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // ==================== CATEGORIES ====================
+        const CATEGORIES = [
+            { id: 'all', name: 'All' },
+            { id: 'amateur', name: 'Amateur' },
+            { id: 'teen', name: 'Teen' },
+            { id: 'mature', name: 'Mature' },
+            { id: 'interracial', name: 'Interracial' },
+            { id: 'anal', name: 'Anal' },
+            { id: 'lesbian', name: 'Lesbian' },
+            { id: 'homemade', name: 'Homemade' },
+            { id: 'bbc', name: 'BBC' }
+        ];
+
+        function loadCategories() {
+            const mobileContainer = document.getElementById('mobileCategories');
+            const desktopContainer = document.getElementById('desktopCategories');
+            const sidebarContainer = document.getElementById('sidebarCategories');
+            
+            const mobileHTML = CATEGORIES.map(cat => `
+                <button onclick="filterCategory('${cat.id}')" 
+                    class="category-btn px-3 py-1.5 ${cat.id === 'all' ? 'bg-primary border-primary text-white' : 'bg-card border-border text-muted hover:border-primary hover:text-primary'} rounded-full text-xs font-medium transition-all border">
+                    ${cat.name}
+                </button>
+            `).join('');
+            
+            const desktopHTML = CATEGORIES.map(cat => `
+                <button onclick="filterCategory('${cat.id}')" 
+                    class="category-btn-desktop px-4 py-2 ${cat.id === 'all' ? 'bg-primary border-primary text-white' : 'bg-card border-border text-muted hover:border-primary hover:text-primary'} rounded-full text-sm font-medium transition-all border">
+                    ${cat.name}
+                </button>
+            `).join('');
+            
+            const sidebarHTML = CATEGORIES.map(cat => `
+                <button onclick="filterCategory('${cat.id}'); toggleMenu()" 
+                    class="w-full text-left px-4 py-2 hover:bg-dark rounded-lg transition-colors text-sm ${cat.id === 'all' ? 'text-primary' : 'text-muted'}">
+                    ${cat.name}
+                </button>
+            `).join('');
+            
+            mobileContainer.innerHTML = mobileHTML;
+            desktopContainer.innerHTML = desktopHTML;
+            sidebarContainer.innerHTML = sidebarHTML;
+        }
+
+        // ==================== SEARCH ====================
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                currentPage = 1;
+                searchVideos(query);
+            }
+        }
+
+        function handleSearchDesktop() {
+            const query = document.getElementById('searchInputDesktop').value.trim();
+            if (query) {
+                currentPage = 1;
+                searchVideos(query);
+            }
+        }
+
+        async function searchVideos(query) {
+            const container = document.getElementById('latestVideos');
+            container.innerHTML = `
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="flex flex-col items-center gap-3 text-muted">
+                        <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin"></div>
+                        <p>Searching...</p>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/videos?search=${encodeURIComponent(query)}&page=${currentPage}&limit=12`);
+                const data = await response.json();
+                
+                if (data.videos && data.videos.length > 0) {
+                    container.innerHTML = data.videos.map(video => createVideoCard(video)).join('');
+                    updatePagination(data.pagination);
+                } else {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 text-muted">
+                            <i class="fas fa-search text-4xl mb-3"></i>
+                            <p>No videos found matching "${escapeHtml(query)}"</p>
+                        </div>
+                    `;
+                    document.getElementById('pagination').classList.add('hidden');
+                }
+            } catch (error) {
+                showToast('Search failed', 'error');
+            }
+        }
+
+        // ==================== CATEGORY FILTER ====================
+        function filterCategory(category) {
+            currentCategory = category;
+            currentPage = 1;
+            
+            // Update UI
+            document.querySelectorAll('.category-btn, .category-btn-desktop').forEach(btn => {
+                const isActive = btn.textContent.trim() === CATEGORIES.find(c => c.id === category)?.name;
+                if (isActive) {
+                    btn.classList.remove('bg-card', 'border-border', 'text-muted');
+                    btn.classList.add('bg-primary', 'border-primary', 'text-white');
+                } else {
+                    btn.classList.remove('bg-primary', 'border-primary', 'text-white');
+                    btn.classList.add('bg-card', 'border-border', 'text-muted');
+                }
+            });
+            
+            loadLatestVideos();
+        }
+
+        // ==================== TRENDING SHORTS ====================
+        async function loadTrendingShorts() {
+            const container = document.getElementById('shortsContainer');
+            
+            try {
+                const response = await fetch(`${CONFIG.apiEndpoint}/shorts?limit=12`);
+                const data = await response.json();
+                const shorts = data.shorts || [];
+                
+                if (shorts.length > 0) {
+                    let html = '<div class="shorts-scroll-container flex gap-4 overflow-x-auto no-scrollbar pb-2">';
+                    
+                    shorts.forEach((short, index) => {
+                        // Add outstream ad after every 3 shorts
+                        if (index > 0 && index % 3 === 0 && siteConfig.outstreamAdTags) {
+                            html += createOutstreamAd();
+                        }
+                        
+                        html += createShortCard(short);
+                    });
+                    
+                    html += '</div>';
+                    container.innerHTML = html;
+                    
+                    // Load outstream ads
+                    loadOutstreamAds();
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-muted">
+                            <i class="fas fa-video text-4xl mb-3"></i>
+                            <p>No shorts available</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Load shorts error:', error);
+                container.innerHTML = `
+                    <div class="text-center py-12 text-muted">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
+                        <p>Failed to load shorts</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createShortCard(short) {
+            return `
+                <a href="shorts.html?id=${short.numericId}" class="short-card flex-shrink-0 w-36 sm:w-40 md:w-44 bg-card border border-border rounded-xl overflow-hidden hover:border-primary hover:-translate-y-1 transition-all block">
+                    <div class="relative aspect-[9/16]">
+                        <img src="${short.thumbnail || ''}" 
+                            alt="${escapeHtml(short.title)}" 
+                            class="w-full h-full object-cover"
+                            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMzIwIj48cmVjdCBmaWxsPSIjMzMzIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjMyMCIvPjx0ZXh0IGZpbGw9IiM4ODgiIHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gVGh1bWJuYWlsPC90ZXh0Pjwvc3ZnPg=='">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                            ${short.duration || '0:00'}
+                        </span>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-semibold text-sm line-clamp-2 mb-1">${escapeHtml(short.title)}</h3>
+                        <p class="text-xs text-muted">${formatNumber(short.views || 0)} views</p>
+                    </div>
+                </a>
+            `;
+        }
+
+        function createOutstreamAd() {
+            return `
+                <div class="outstream-ad flex-shrink-0 w-36 sm:w-40 md:w-44" data-outstream="true">
+                    <div class="text-center text-muted text-xs">
+                        <i class="fas fa-ad text-2xl mb-2"></i>
+                        <p>Advertisement</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadOutstreamAds() {
+            if (!siteConfig.outstreamAdTags) return;
+            
+            try {
+                const adTags = JSON.parse(siteConfig.outstreamAdTags);
+                if (!adTags.length) return;
+                
+                const adContainers = document.querySelectorAll('[data-outstream="true"]');
+                adContainers.forEach((container, index) => {
+                    const adTag = adTags[index % adTags.length];
+                    // Insert outstream ad script
+                    container.innerHTML = `
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                            <iframe src="${adTag}" width="100%" height="250" frameborder="0" scrolling="no"></iframe>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                console.error('Outstream ad error:', e);
+            }
+        }
+
+        // ==================== LATEST VIDEOS ====================
+        async function loadLatestVideos() {
+            const container = document.getElementById('latestVideos');
+            
+            container.innerHTML = `
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="flex flex-col items-center gap-3 text-muted">
+                        <div class="w-12 h-12 border-4 border-white/10 border-t-primary rounded-full animate-spin"></div>
+                        <p>Loading videos...</p>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                let url = `${CONFIG.apiEndpoint}/videos?page=${currentPage}&limit=12`;
+                if (currentCategory !== 'all') {
+                    url += `&category=${encodeURIComponent(currentCategory)}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.videos && data.videos.length > 0) {
+                    container.innerHTML = data.videos.map(video => createVideoCard(video)).join('');
+                    updatePagination(data.pagination);
+                } else {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 text-muted">
+                            <i class="fas fa-video text-4xl mb-3"></i>
+                            <p>No videos available</p>
+                        </div>
+                    `;
+                    document.getElementById('pagination').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Load videos error:', error);
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-muted">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-3"></i>
+                        <p>Failed to load videos</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createVideoCard(video) {
+            return `
+                <a href="video5.html?id=${video.numericId || video.id}" class="video-card group block bg-card border border-border rounded-xl overflow-hidden hover:border-primary hover:-translate-y-1 transition-all">
+                    <div class="relative aspect-video">
+                        <img src="${video.thumbnail || ''}" 
+                            alt="${escapeHtml(video.title)}" 
+                            class="w-full h-full object-cover"
+                            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iMTgwIj48cmVjdCBmaWxsPSIjMzMzIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjE4MCIvPjx0ZXh0IGZpbGw9IiM4ODgiIHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gVGh1bWJuYWlsPC90ZXh0Pjwvc3ZnPg=='">
+                        <span class="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                            ${video.duration || '0:00'}
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                            <span class="text-sm font-semibold line-clamp-2">${escapeHtml(video.title)}</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">${escapeHtml(video.title)}</h3>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <span class="flex items-center gap-1">
+                                <i class="fas fa-eye text-xs"></i>
+                                ${formatNumber(video.views || 0)}
+                            </span>
+                            <span>•</span>
+                            <span>${video.creatorName || 'Unknown'}</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // ==================== PAGINATION ====================
+        function updatePagination(pagination) {
+            totalPages = pagination.totalPages;
+            const container = document.getElementById('pagination');
+            const pageNumbers = document.getElementById('pageNumbers');
+            
+            if (totalPages <= 1) {
+                container.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            
+            let html = '';
+            const maxVisible = 5;
+            let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let end = Math.min(totalPages, start + maxVisible - 1);
+            
+            if (end - start < maxVisible) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+            
+            for (let i = start; i <= end; i++) {
+                html += `
+                    <button onclick="goToPage(${i})" 
+                        class="pagination-btn ${i === currentPage ? 'active' : ''}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            pageNumbers.innerHTML = html;
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadLatestVideos();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            loadLatestVideos();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==================== VIEW TRACKING ====================
+        const viewedVideos = new Map(); // videoId -> watchDuration
+
+        function setupViewTracking() {
+            // Track when user leaves page
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    sendViewData();
+                }
+            });
+            
+            window.addEventListener('beforeunload', () => {
+                sendViewData();
+            });
+        }
+
+        function sendViewData() {
+            if (viewedVideos.size === 0) return;
+            
+            const data = Array.from(viewedVideos.entries()).map(([videoId, duration]) => ({
+                videoId,
+                watchDuration: duration
+            }));
+            
+            // Send via beacon for reliability
+            const blob = new Blob([JSON.stringify({ views: data })], { type: 'application/json' });
+            navigator.sendBeacon(`${CONFIG.apiEndpoint}/video/view/batch`, blob);
+            
+            viewedVideos.clear();
+        }
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'border-l-green-500',
+                error: 'border-l-red-500',
+                info: 'border-l-primary'
+            };
+            
+            toast.className = `bg-card border border-border ${colors[type]} border-l-4 rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[280px] animate-[slideInRight_0.3s_ease-out]`;
+            
+            toast.innerHTML = `
+                <span class="flex-1 text-sm">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-muted hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num || isNaN(num)) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // Add slide-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
